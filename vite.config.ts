@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { defineConfig, type Plugin } from 'vite';
 
@@ -59,9 +60,14 @@ const localApi = {
   },
 };
 
+// The host's proxy cache can keep serving an old compressed copy of the manifest
+// after a deploy, so the page asks for it with a version that changes with its content.
+const examplesVersion = createHash('sha256').update(readFileSync('public/examples/examples.json')).digest('hex').slice(0, 10);
+
 export default defineConfig({
   base: BASE,
   plugins: [prerenderPicker()],
+  define: { __EXAMPLES_VERSION__: JSON.stringify(examplesVersion) },
   server: { proxy: localApi },
   preview: { proxy: localApi },
   build: {

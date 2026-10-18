@@ -19,8 +19,11 @@ export interface ExamplePhoto {
 
 const EXAMPLES_URL = `${import.meta.env.BASE_URL}examples/`;
 
+/** Content hash of examples.json, set by vite.config.ts, so a stale cached copy is never used. */
+declare const __EXAMPLES_VERSION__: string;
+
 export async function loadExamples(): Promise<ExamplePhoto[]> {
-  const response = await fetch(`${EXAMPLES_URL}examples.json`);
+  const response = await fetch(`${EXAMPLES_URL}examples.json?v=${__EXAMPLES_VERSION__}`);
   if (!response.ok) throw new Error(`Could not load the example photos (HTTP ${response.status}).`);
   return response.json();
 }
