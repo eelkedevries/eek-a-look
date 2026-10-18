@@ -1,0 +1,13 @@
+{
+  "name": "CMP Facade base",
+  "citation": "Tyleček & Šára (2013), Spatial pattern templates for recognition of objects with regular structure, Proc. GCPR",
+  "images": ".cache/validation/cmp/base",
+  "labels": ".cache/validation/cmp/base",
+  "imageSuffix": ".jpg",
+  "classes": { "1": "background", "2": "facade", "3": "window", "4": "door", "5": "cornice", "6": "sill", "7": "balcony", "8": "blind", "9": "deco", "10": "molding", "11": "pillar", "12": "shop" },
+  "ignore": [],
+  "categories": {
+    "facade": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+  },
+  "rectified": true
+}

@@ -120,3 +120,8 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   The horizon came from façade lines on 17 photos; on photos looking up at
   towers the fallback makes the ground floor too tall, and where all bases are
   hidden it is empty)
+- `022_area_validation.md` (eTRIMS IoU: façade 0.96, sky 0.98, street surface
+  0.92, vehicles 0.93, greenery 0.88; CMP façade 0.84. 91% of eTRIMS door
+  pixels lie inside the computed ground floor. Area ratios match measured gaze
+  on Zürich: MSDB ρ 0.91, IIE 0.82, centre bias 0.42. Report:
+  `docs-dev/reference/secondary_background/areas_validation.md`)

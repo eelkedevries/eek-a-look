@@ -1,0 +1,18 @@
+{
+  "name": "eTRIMS 8-class",
+  "citation": "Korč & Förstner (2009), eTRIMS Image Database, TR-IGG-P-2009-01, University of Bonn",
+  "images": ".cache/validation/etrims/etrims-db_v1/images/08_etrims-ds",
+  "labels": ".cache/validation/etrims/etrims-db_v1/annotations/08_etrims-ds",
+  "objects": ".cache/validation/etrims/etrims-db_v1/annotations-object/08_etrims-ds",
+  "imageSuffix": ".jpg",
+  "classes": { "1": "building", "2": "car", "3": "door", "4": "pavement", "5": "road", "6": "sky", "7": "vegetation", "8": "window" },
+  "ignore": [0],
+  "categories": {
+    "facade": [1, 3, 8],
+    "sky": [6],
+    "greenery": [7],
+    "street-surface": [4, 5],
+    "vehicles": [2]
+  },
+  "doors": 3
+}

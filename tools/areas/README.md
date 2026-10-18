@@ -75,3 +75,41 @@ uv run build.py   # areas for all example photos, overlays in .cache/check/
 
 The first run downloads OneFormer (about 0.9 GB). On the RTX 4070 a photo
 takes about 0.5 s, with a peak of 2 GB of GPU memory.
+
+## Validation (prompt 022)
+
+```sh
+uv run fetch_validation.py   # eTRIMS (78 MB) and CMP Facade base (36.5 MB), SHA-256 checked
+uv run validate.py --all     # writes public/precomputed/areas/validation.json and
+                             # docs-dev/reference/secondary_background/areas_validation.md
+```
+
+- **Street categories** are scored against the human labels of eTRIMS (60
+  street-level photos) and the CMP Facade base set (378 rectified façades):
+  IoU per category, at the mask size.
+- **The ground floor** is tested with eTRIMS's human-labelled doors: what
+  share of door pixels and door instances falls inside it, also for camera
+  heights 1.5–1.7 m and storey heights 3.5–5.0 m.
+- **Attention ÷ size** is reported per area with masks eroded and dilated by
+  1°, and compared with measured gaze on the Zürich photos.
+
+The datasets stay in `.cache/` and are never published: eTRIMS is for
+research use (cite Korč & Förstner 2009); CMP Facade is CC BY-SA (cite
+Tyleček & Šára 2013).
+
+### Scoring your own annotations
+
+Any folder of PNG label masks can be scored, for example areas drawn by an
+expert panel:
+
+```sh
+uv run validate.py --labels path/to/labels --images path/to/photos --mapping my-mapping.json
+```
+
+A label PNG has the same name as its photo and holds one class index per
+pixel. The mapping file says which classes count as which category (see
+`mappings/etrims.json`):
+- `classes`: the class names, for reference;
+- `ignore`: unlabelled indices;
+- `categories`: the category ids with their class indices;
+- optionally `doors`: the door index, for the ground-floor check.
