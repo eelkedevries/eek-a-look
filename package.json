@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build && node scripts/precompress.mjs",
     "preview": "vite preview",
-    "check": "tsc --noEmit && node scripts/validate-examples.mjs && vite build && bash scripts/check-public-build.sh dist && bash scripts/validate-prompts.sh",
+    "check": "tsc --noEmit && node scripts/validate-examples.mjs && vite build && node scripts/precompress.mjs && bash scripts/check-public-build.sh dist && bash scripts/validate-prompts.sh",
     "deploy": "bash scripts/deploy.sh"
   },
   "devDependencies": {

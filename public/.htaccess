@@ -1,11 +1,25 @@
 # The host sends no Content-Type for these, which stops browsers from
-# compiling WebAssembly while it downloads and keeps the files uncompressed.
+# compiling WebAssembly while it downloads.
 AddType application/wasm .wasm
 AddType application/octet-stream .onnx
 
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE application/wasm application/octet-stream application/json
+# The host does not compress WebAssembly, so the build ships a gzip copy
+# (scripts/precompress.mjs) that is served to browsers accepting gzip.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP:Accept-Encoding} gzip
+  RewriteCond %{REQUEST_FILENAME}.gz -f
+  RewriteRule ^(.+\.wasm)$ $1.gz [L]
 </IfModule>
+
+<FilesMatch "\.wasm\.gz$">
+  ForceType application/wasm
+  <IfModule mod_headers.c>
+    Header set Content-Encoding gzip
+    Header append Vary Accept-Encoding
+  </IfModule>
+  SetEnv no-gzip 1
+</FilesMatch>
 
 <IfModule mod_expires.c>
   ExpiresActive On

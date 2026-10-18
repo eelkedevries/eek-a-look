@@ -22,7 +22,9 @@ export type UnisalMessage =
 
 const BASE = `${import.meta.env.BASE_URL}models/unisal/`;
 
-ort.env.wasm.wasmPaths = { wasm: wasmUrl, mjs: mjsUrl };
+// The query only changes the URL: the host's cache held a copy served without
+// a Content-Type before public/.htaccess existed. Bump it if that recurs.
+ort.env.wasm.wasmPaths = { wasm: `${wasmUrl}?v=2`, mjs: mjsUrl };
 ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 1) : 1;
 
 let ready: Promise<{ session: ort.InferenceSession; info: ModelInfo }> | null = null;
