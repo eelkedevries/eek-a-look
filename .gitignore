@@ -53,3 +53,7 @@ tools/measured-gaze/.venv/
 # Areas: validation datasets and check overlays
 tools/areas/.cache/
 tools/areas/.venv/
+
+# Simulated panel
+tools/vlm-panel/.cache/
+tools/vlm-panel/.venv/

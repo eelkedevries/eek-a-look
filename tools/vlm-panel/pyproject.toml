@@ -1,0 +1,18 @@
+[project]
+name = "vlm-panel"
+version = "0.1.0"
+description = "A simulated panel: a local vision-language model judges the eek-a-look example photos on three design principles."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "torch>=2.7",
+  "torchvision",
+  "transformers>=5.20",
+  "accelerate",
+  "bitsandbytes",
+  "pillow",
+  "numpy",
+  "scipy",
+]
+
+[tool.uv]
+package = false

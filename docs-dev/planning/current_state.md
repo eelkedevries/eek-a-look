@@ -131,3 +131,8 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   0.66, entrances 0.55, balconies 0.57, shopfronts 0.36) and its masks are in
   the area files. Glass curtain walls are not seen as windows; "storefront"
   sometimes covers a station hall or a shelter roof)
+- `024_vlm_panel.md` (`tools/vlm-panel/`: Qwen3-VL-8B in 4-bit, peak 7.26 GB,
+  42 s per photo for 8 members. Active ground floor: kappa 0.94, 97% stable,
+  ρ 0.53 with the entrance + shopfront share of the ground floor (exploratory).
+  Rhythm and materials were "present" on all 24 photos, so they do not
+  discriminate)

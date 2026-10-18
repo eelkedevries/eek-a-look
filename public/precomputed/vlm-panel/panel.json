@@ -1,0 +1,949 @@
+{
+ "date": "2026-10-18",
+ "model": "Qwen/Qwen3-VL-8B-Instruct@0c351dd01ed87e9c1b53cbc748cba10e6187ff3b",
+ "licence": "Apache-2.0",
+ "quantisation": "4-bit NF4",
+ "promptSha256": "10131d408cf531fc3b8b884c20a89c4052c98a67bc50c5c73c6b384646f6c0ce",
+ "members": [
+  "architect (seeds 11, 23)",
+  "landscape architect (seeds 11, 23)",
+  "urban designer (seeds 11, 23)",
+  "planner (seeds 11, 23)"
+ ],
+ "consensusRule": "at least 6 of 8 members agree; otherwise ambiguous",
+ "fleissKappa": {
+  "rhythm": null,
+  "groundFloor": 0.943397104687427,
+  "materials": null
+ },
+ "fleissKappaNote": "null: every member gave the same verdict on every photo, so agreement beyond chance is undefined",
+ "stability": {
+  "sameConsensus": 0.9722222222222222,
+  "labels": 72,
+  "secondRunSeeds": [
+   37,
+   41
+  ]
+ },
+ "crossCheck": {
+  "label": "exploratory: two automated methods, not a validation",
+  "spearmanGroundFloorVsOpenShare": 0.527233540863601,
+  "photos": 21
+ },
+ "secondsPerPhoto": 42.3,
+ "peakGpuGb": 7.26,
+ "photos": {
+  "zuidas-gershwinplein": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The buildings show vertical repetition of window bays and horizontal banding of orange and dark brick, creating rhythmic variation across the façades.",
+     "The façades show repeated vertical units of windows and horizontal layers of brick and dark cladding, with variation in color and texture between sections."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floors are enclosed with dark grey brick and glass doors, showing no visible open or active street-level use.",
+     "The ground floor features large glass doors and dark cladding with no visible street-level activity or open storefronts, appearing as closed façades."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The dark grey brickwork at eye level has visible texture and variation, contrasting with smooth glass panels.",
+     "The buildings feature textured brickwork and dark vertical cladding at eye level, with visible grain and pattern that invite tactile engagement."
+    ]
+   }
+  },
+  "zuidas-mahlerplein": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The tall glass buildings show clear horizontal bands of windows and vertical columns of glass, with slight variations in spacing and reflectivity.",
+     "The glass façade of the tall building on the left shows clear horizontal bands of windows and vertical columns of glazing that repeat with variation."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floors are mostly glazed or recessed with minimal street-level activity, showing entrances but no visible open storefronts or public use.",
+     "The ground floor of the main building on the left is largely sealed with glass and appears closed, lacking visible entrances or open storefronts."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The paved plaza features textured stone pavers and cylindrical bollards with visible grain, while the wooden overhang on the right adds tactile warmth.",
+     "The paved plaza features textured stone pavers and cylindrical bollards with visible surface detail, inviting tactile engagement."
+    ]
+   }
+  },
+  "zuidas-strawinskylaan": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The curved glass facade of the left building and the grid-patterned windows of the central tower show clear horizontal and vertical divisions with repeating units.",
+     "The curved glass facade of the building on the left and the grid-like window patterns on the central and right towers show repeated vertical and horizontal divisions with variation."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floors of the visible high-rise buildings are covered in glass or metal cladding with no visible open storefronts or entrances to the street.",
+     "The ground floors of the visible high-rise buildings are covered in glass or smooth panels with no visible storefronts or open entrances to the street."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The concrete railing and textured pavement at eye level show visible grain and tactile detail, contrasting with the smooth glass facades.",
+     "The concrete railing and textured pavement at eye level, along with visible plantings in the median, provide tactile materials inviting closer inspection."
+    ]
+   }
+  },
+  "weena-stationsplein": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The skyscrapers show vertical repetition of window bays, and the lower buildings feature horizontal bands of glass and metal cladding.",
+     "The skyscrapers show vertical repetition of window bays, and the foreground building has horizontal layers defined by its metal cladding and roofline."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The foreground building has large glass windows and visible entrances, allowing street-level activity and visibility into the interior.",
+     "The foreground building features large glass storefronts and visible entrances, allowing street-level activity and transparency."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The building’s facade includes textured metal panels and visible structural elements at eye level, contrasting with smooth glass surfaces.",
+     "The foreground building’s facade includes textured metal panels and visible structural elements at eye level that suggest tactile quality."
+    ]
+   }
+  },
+  "weena-millenniumtoren": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The tall glass tower shows vertical columns of windows with slight variations in spacing, and the curved mid-rise building displays horizontal bands of windows and recessed floors.",
+     "The tall glass skyscraper displays vertical columns of windows and horizontal bands of reflective glass, while the adjacent building shows repeating window bays and a curved top floor, creating rhythmic variation."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor of the main buildings is largely obscured by the tram, trees, and signage, with no visible open storefronts or entrances to the street.",
+     "The ground floors of the main buildings are largely sealed with glass and metal, showing no visible storefronts, entrances, or open spaces to the street."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The foreground grass and young trees provide tactile, textured elements at eye level, contrasting with the smooth glass and metal of the buildings.",
+     "The foreground features grass, young trees with visible bark, and textured pavement, while the building facades show varied finishes including reflective glass and metallic cladding with fine detailing."
+    ]
+   }
+  },
+  "weena-delftse-poort": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The glass skyscraper façade shows vertical columns of windows, and the lower building has horizontal bands of glass and metal cladding.",
+     "The glass skyscraper facade shows repeated vertical window bays, and the lower building has horizontal bands of glazing and metal cladding."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The café building has large glass windows and outdoor seating, clearly open to the street with visible patrons.",
+     "The café has large glass windows and outdoor seating visible to the street, with people actively using the space."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The sidewalk and street are paved with textured brick pavers, and trees with visible bark and leaves add tactile organic texture.",
+     "The sidewalk and street are paved with textured brick pavers, and trees with visible bark and leaves add tactile organic elements at eye level."
+    ]
+   }
+  },
+  "wilhelminapier-hotel-new-york": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The curved skyscraper shows repeating horizontal bands of windows, while the taller tower features varied vertical window bays and a distinct red-brown upper section.",
+     "The curved skyscraper displays horizontal bands of windows and the taller tower shows vertical columns of windows with varied setbacks and color blocks."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The modern curved building and the tower have sealed glass facades at street level, and the historic building’s ground floor appears enclosed with no visible open storefronts or street access.",
+     "The modern buildings have glass curtain walls with no visible street-level openings, and the historic building’s ground floor is obscured by a wooden structure and not open to the street."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The historic Holland America Line building features textured brickwork and ornate stonework at eye level, and the wooden structure in the foreground shows visible grain and texture.",
+     "The historic building features textured brickwork, and the wooden structure in the foreground has visible grain and joinery, inviting tactile engagement."
+    ]
+   }
+  },
+  "wilhelminapier-dolf-henkesplein": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The red and white high-rise buildings show clear horizontal bands of windows and vertical columns of glass and balconies, creating rhythmic variation.",
+     "The red-brick tower and adjacent glass skyscrapers show clear horizontal layering and vertical window bays that repeat with variation."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floors of the tall buildings are mostly obscured or feature closed facades, with no visible storefronts or open street-level activity.",
+     "The ground floors of the high-rise buildings are largely obscured or feature uniform glass curtain walls, with no visible street-level openings or active storefronts."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The foreground plaza features textured concrete paving and large planters with visible soil and foliage, inviting tactile engagement.",
+     "The large planter with grass and the textured concrete paving at eye level offer tactile, non-uniform materials inviting sensory engagement."
+    ]
+   }
+  },
+  "wilhelminapier-towers": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The Holland America Line building shows horizontal layers with cornices and vertical units of windows, while the cylindrical tower displays repeating horizontal bands of glass.",
+     "The Holland America Line building displays horizontal layers with cornices and varied window bays, while the adjacent tower shows vertical repetition of glass panels."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor features open-air seating with orange umbrellas and glass-fronted kiosks, indicating active street-level use.",
+     "The ground floor features open-air café seating with orange umbrellas and glass storefronts, clearly visible to the street."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The brick façade of the Holland America Line building shows visible texture, and the surrounding trees and planters add tactile organic elements at eye level.",
+     "The brick façade of the Holland America Line building shows visible texture, and the trees and planters at eye level add tactile organic elements."
+    ]
+   }
+  },
+  "beatrixkwartier-tram-viaduct": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The brick facades of the buildings show clear horizontal divisions with floor lines and cornices, and vertical units of window bays that repeat with variation.",
+     "The brick buildings show clear horizontal divisions with repeating window bays and cornice lines, while vertical elements like window columns and structural supports vary in spacing and scale."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 6,
+     "absent": 2,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor features visible entrances, storefronts, and pedestrian activity, with people walking and a scooter passing, indicating openness to the street.",
+     "Visible entrances, glass storefronts, and pedestrians moving through ground-level spaces confirm active ground floors engaging with the street."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The photograph shows textured brickwork at eye level and tree trunks with bark, inviting tactile engagement, alongside visible concrete supports and metal structural elements.",
+     "Textured brickwork and exposed concrete supports at eye level, along with tree bark and foliage, provide tactile visual interest and material variety."
+    ]
+   }
+  },
+  "beatrixkwartier-wtc": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The red brick façades of the towers show clear vertical repetition of window bays and horizontal divisions at each floor level, with some variation in window size and placement.",
+     "The red-brick towers show repeated vertical bays of windows and horizontal bands of cladding that create rhythmic variation across their facades."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor of the main buildings appears mostly sealed with no visible storefronts or open entrances, showing only entrances to the 'THE DEN HAAG' building, which are not street-facing in a commercial or open manner.",
+     "The ground floor of the main buildings is largely obscured or recessed, with no visible storefronts or open entrances to the street level."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The prominent red brickwork at eye level shows visible texture and detail, inviting tactile engagement, contrasting with the smooth glass of adjacent towers.",
+     "The reddish-brown brickwork at eye level has visible texture and roughness, contrasting with the smooth glass of upper floors and inviting tactile engagement."
+    ]
+   }
+  },
+  "beatrixkwartier-juliana-van-stolberglaan": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The tall brown brick building shows clear horizontal layers and vertical window bays that repeat with variation.",
+     "The tall brown brick building in the background shows clear horizontal banding and vertical window columns that repeat with variation."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The buildings on the left have closed façades with no visible open entrances or shop windows at street level.",
+     "The ground floor of the foreground building is largely obscured by its structural overhang, with no visible storefronts or open entrances to the street."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The sidewalk features textured brick paving, and the young tree with visible bark and base planting adds tactile organic detail.",
+     "The sidewalk features textured paving stones, and the young tree in the foreground has visible bark and soil, inviting tactile engagement."
+    ]
+   }
+  },
+  "zurich-18": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The buildings display repeating vertical window bays and horizontal divisions such as cornices and rooflines, especially visible on the white building and the pink building.",
+     "The buildings show varied vertical window bays and horizontal divisions like cornices and rooflines, such as the pink building’s stepped cornice and the white building’s window sills and roofline."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor of the right-hand building has visible shopfronts with signage like 'IMPORT PARFUMERIE' and an entrance, while the left building has a McDonald's with glass frontage.",
+     "The ground floor features visible shop entrances and windows, including the 'IMPORT PARFUMERIE' sign and the COOP store with open frontage."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The right-hand building features textured stone cladding and arched openings, and the sidewalk has visible paving stones and tactile surfaces.",
+     "The right-hand building has textured stone or stucco at eye level, and the arches show fine detailing, inviting tactile engagement."
+    ]
+   }
+  },
+  "zurich-19": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The buildings show vertical repetition of window bays and horizontal divisions with cornices and floors, especially visible on the right-hand building and the historic structure under scaffolding.",
+     "The buildings show vertical units like window bays and horizontal layers such as cornices and rooflines, especially visible on the classical building with the green dome and the modern stone facade on the right."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor on the right features storefronts with awnings, visible entrances, and signage like 'coop city', indicating active commercial use open to the street.",
+     "The ground floor on the right features storefronts with awnings and visible entrances, including the 'coop city' sign, and people walking near them, indicating active street-level use."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The building on the right has textured stone cladding at eye level, and the sidewalk edge shows tactile paving, inviting interaction with varied surface textures.",
+     "The building on the right has textured stone cladding at eye level, and the sidewalk and bike racks show varied tactile surfaces, contrasting with smooth glass or metal."
+    ]
+   }
+  },
+  "zurich-22": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The ornate buildings show clear horizontal divisions with cornices and floor lines, and vertical repetition of window bays and pilasters.",
+     "The ornate buildings show repeating vertical bays and horizontal cornices, with varied window placements and decorative elements creating rhythmic variation."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "Many ground floors are sealed with blank walls or service entrances, lacking open storefronts or visible street-level activity.",
+     "Many ground floors are sealed with blank walls or service entrances, lacking visible open storefronts or street-level activity."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The stone façades and decorative mouldings exhibit visible texture and fine detailing at eye level.",
+     "Stone and carved stonework with fine detailing are visible at eye level on the facades, inviting tactile engagement."
+    ]
+   }
+  },
+  "zurich-23": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The ornate building façades show clear horizontal divisions with cornices and vertical units of windows and bays that repeat with variation.",
+     "The ornate buildings show clear horizontal divisions with cornices and floor lines, and vertical repetition of window bays and columns."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "Visible storefronts with awnings and entrances, such as 'SAVOY' and 'TÜRLE', indicate active ground floors open to the street.",
+     "Visible storefronts with awnings and entrances, such as 'SAVOY' and 'TÜRLER', indicate active ground floors open to the street."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The stone and sculptural detailing on the historic buildings at eye level show visible texture and fine craftsmanship.",
+     "The facades feature textured stone and sculpted ornamentation, with visible fine detailing on cornices and window surrounds."
+    ]
+   }
+  },
+  "zurich-24": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The façades show repeating vertical bays and horizontal divisions with cornices and floor lines, especially in the red brick and stone sections.",
+     "The façades show repeating vertical bays and horizontal divisions with cornices and window lines, creating rhythmic variation across the building heights."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "Visible storefronts with awnings, glass windows, and entrances, such as the café on the left and the shop with a yellow sign in the center.",
+     "The ground floor features storefronts with awnings, visible entrances, and shop windows, actively engaging the street level."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "Textured stone cladding, brickwork, and ornate metal balconies are visible at eye level, adding tactile detail to the façades.",
+     "The buildings display textured stone cladding and brickwork at eye level, with visible ornamental detailing that invites tactile appreciation."
+    ]
+   }
+  },
+  "zurich-27": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "Façades show repeating vertical bays and horizontal cornices, such as on the stone building with 'RESTAURANT' signage, creating rhythmic variation.",
+     "Façades show repeating vertical bays and horizontal divisions with cornices and window lines, such as on the stone building with 'RESTAURANT' signage."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "Ground floors feature visible entrances, shop windows, and signage like 'Fribourger Stübl' and 'TORANTE', indicating active street-level use.",
+     "Ground floors feature visible entrances, shop windows, and signage like 'Fribourger Stubli' and 'TORANTE', indicating active street-level use."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "Stone cladding with visible texture and ornate metal balconies at eye level, especially on the right-hand building, invite tactile engagement.",
+     "Stone masonry with textured surfaces and fine detailing is visible at eye level on the right-hand building, inviting tactile engagement."
+    ]
+   }
+  },
+  "zurich-30": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The building's façade shows clear horizontal divisions with cornices and arches, and vertical units with columns and window bays that repeat with variation.",
+     "The building's façade displays clear horizontal divisions with cornices and arches, and vertical units defined by columns and pilasters, creating a rhythmic pattern."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 7,
+     "absent": 1,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor features visible storefronts with signage like 'ilCity' and 'VISILAB', and entrances open to the street with people and cars visible.",
+     "Visible storefronts with signage like 'ilCity' and 'VISILAB', along with street-level entrances and windows, indicate active ground-floor use."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The building's stone façade at eye level shows detailed carvings and textured stonework, with visible statues and ornate reliefs.",
+     "The building features textured stone façades and ornate sculptural details, with visible stonework and carvings at eye level that invite tactile engagement."
+    ]
+   }
+  },
+  "zurich-33": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The façades show repeating vertical bays and horizontal bands of green and white panels, creating a rhythmic pattern with variation in window placement and panel grouping.",
+     "The façades show repeated vertical bays of windows and green panels, with horizontal divisions at base, middle, and top levels."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor consists of uniform grey panels with ventilation grilles and no visible entrances, shop windows, or open street-level activity.",
+     "The ground floor is uniformly rendered with no visible entrances, shops, or open frontage, appearing as a solid wall."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The building features textured paneling and visible seams between tiles, with small planters and window frames adding tactile detail at eye level.",
+     "The green panels and white tiles show visible texture and contrast at eye level, with some planters adding tactile organic detail."
+    ]
+   }
+  },
+  "zurich-42": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The yellow building displays clear horizontal divisions with cornices and floor lines, and vertical units of windows and balconies that repeat with variation.",
+     "The yellow façade shows clear horizontal divisions with cornices and floor lines, and vertical units of windows and balconies that repeat with variation."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor of the yellow building has visible entrances and shop windows, with signage and potted plants indicating active street-level use.",
+     "The ground floor features visible entrances, shop windows, and awnings that open to the street, indicating active use."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The base of the yellow building features textured stone cladding, and potted plants at eye level add tactile organic elements.",
+     "The base of the building uses textured stone, and potted plants at eye level add tactile organic elements to the façade."
+    ]
+   }
+  },
+  "zurich-46": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The building's façade shows clear horizontal layers with distinct floor lines and cornices, and vertical units of window bays that repeat with consistent variation across the facade.",
+     "The building’s façade shows clear horizontal divisions with light green bands and vertical units of windows that repeat across floors, creating rhythmic visual structure."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor features dark, closed roller shutters and minimal openings, appearing as a blank wall rather than an active, open-to-street level.",
+     "The ground floor consists of dark, closed roller shutters with no visible entrances, windows, or open street-level activity."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The building's façade includes textured light green render, visible window frames, and the natural texture of the cut logs and bark in the foreground garden area at eye level.",
+     "The building’s base and window frames show textured painted surfaces, and the foreground includes rough-cut logs and leafy shrubs at eye level, adding tactile variety."
+    ]
+   }
+  },
+  "zurich-51": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The buildings show horizontal layers with cornices and rooflines, and vertical units like window bays that repeat with variation across façades.",
+     "The buildings show horizontal layers with cornices and rooflines, and vertical units like window bays and pilasters that repeat with variation."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "Visible storefronts with signage and entrances, such as 'KURZ' and 'TAGHAUS', indicate active ground floors open to the street.",
+     "Ground-floor storefronts with visible entrances and signage (e.g., 'KURZ', 'TAGHOU') are open to the street."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The yellow-painted pedestrian crossing and textured asphalt at eye level provide tactile surfaces, and stone or brick detailing is visible on building bases and window surrounds.",
+     "Textured stone and stucco surfaces on building façades, along with visible window frames and railings, provide tactile detail at eye level."
+    ]
+   }
+  },
+  "zurich-53": {
+   "rhythm": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The building's façade shows clear horizontal divisions with bands of beige, white, and green tiles, and vertical units formed by repeating window bays and air conditioning units.",
+     "The building’s façade shows clear horizontal layers with alternating beige and white panels, and vertical units of windows that repeat with variation."
+    ]
+   },
+   "groundFloor": {
+    "consensus": "absent",
+    "votes": {
+     "present": 0,
+     "absent": 8,
+     "missing": 0
+    },
+    "evidence": [
+     "The ground floor consists of a covered walkway with closed black panels and red doors, lacking open storefronts or visible street-level activity.",
+     "The ground floor is a covered walkway with closed black panels and red doors, lacking visible storefronts or open access to the street."
+    ]
+   },
+   "materials": {
+    "consensus": "present",
+    "votes": {
+     "present": 8,
+     "absent": 0,
+     "missing": 0
+    },
+    "evidence": [
+     "The lower wall section features textured green marble tiles, and the metal railing on the left has a ribbed, tactile surface visible in the photograph.",
+     "The lower wall section features green marble tiles with visible texture, and the metal railing on the left has a tactile, ribbed surface."
+    ]
+   }
+  }
+ }
+}
