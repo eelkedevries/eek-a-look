@@ -92,14 +92,27 @@ ends with `npm run deploy`.
 | 010 | `010_comparison_views.md`: side by side, "What AI adds", agreement | |
 | 011 | `011_about_and_copy.md`: About section, model notes, privacy, credits, README | v1 done |
 
-## Later (not v1)
+## Second round (owner's Q&A, 2026-10-18)
 
-- **v1.1 Areas of interest:** draw a region (ground floor, façade, sky) and show
+| Topic | Decision |
+|---|---|
+| Overlay colours | Warm heatmap, yellow → orange → red (ColorBrewer YlOrRd), chosen from six rendered options |
+| Better models | DeepGaze IIE and DeepGaze MSDB, run on the owner's laptop GPU (RTX 4070), not on Hugging Face |
+| How they reach visitors | Maps pre-computed for the example photos are published with the site; uploads keep the browser models |
+| Live use | `npm run local` on the laptop runs both models live on any photo, for demos |
+| Licence | DeepGaze has no licence file, so its code and weights are never published; only the resulting maps are |
+
+| # | Prompt | Notes |
+|---|---|---|
+| 012 | `012_warm_heatmap.md`: YlOrRd overlay | |
+| 013 | `013_deepgaze_precompute.md`: `uv` tool, GPU, maps for the examples | Runs on the laptop |
+| 014 | `014_deepgaze_in_app.md`: two more models, "unavailable" state, agreement matrix | |
+| 015 | `015_local_live_helper.md`: `npm run local` with a GPU helper | Laptop only |
+
+## Later
+
+- **Areas of interest:** draw a region (ground floor, façade, sky) and show
   its share of predicted attention.
-- **Large models via Hugging Face** (DeepGaze IIE / MSDB). Before hosting,
-  settle the licence: the DeepGaze repository had no licence file on
-  2026-10-18. Uploading a photo to a remote model is an explicit opt-in, per
-  image. These models use the `remote` runtime in the registry.
 - **Own photos** to replace the Commons examples (eye level, landscape, the same
   camera height throughout).
 - Possibly MSI-Net (MIT licence, TF.js) as a second browser model.
