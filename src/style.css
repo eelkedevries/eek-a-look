@@ -398,6 +398,12 @@ main > section {
   }
 }
 
+@media (min-width: 1080px) {
+  .side-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 .side-cell {
   margin: 0;
 }
@@ -448,39 +454,51 @@ main > section {
   color: var(--muted);
 }
 
-.agreement {
-  display: grid;
-  gap: 10px;
-  max-width: 640px;
-  margin: 0;
-  padding: 0;
-  list-style: none;
+.agreement-wrap {
+  max-width: 100%;
+  overflow-x: auto;
 }
 
-.agreement li {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 120px 3.5em;
-  align-items: center;
-  gap: 12px;
+.agreement-matrix {
+  border-collapse: separate;
+  border-spacing: 4px;
+  font-size: 14px;
 }
 
-.agreement-meter {
-  height: 8px;
-  border-radius: 4px;
-  background: var(--border);
-  overflow: hidden;
-}
-
-.agreement-meter span {
-  display: block;
-  height: 100%;
-  background: var(--gold);
-}
-
-.agreement-value {
+.agreement-matrix th {
+  padding: 4px 6px;
   font-family: var(--font-mono);
+  font-weight: 400;
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.agreement-matrix thead th,
+.agreement-matrix tr:first-child th {
+  text-align: center;
+}
+
+.agreement-matrix th[scope='row'] {
   text-align: right;
+}
+
+.agreement-matrix td {
+  min-width: 3.6em;
+  padding: 8px 6px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  text-align: center;
+}
+
+.agreement-cell {
+  background: color-mix(in srgb, var(--gold) calc(var(--r) * 55%), var(--surface));
   color: var(--text-bright);
+}
+
+.agreement-empty {
+  background: var(--surface);
+  color: var(--muted);
 }
 
 .agreement-caption {

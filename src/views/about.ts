@@ -2,12 +2,6 @@ import type { ExamplePhoto } from '../examples';
 import { models } from '../models/registry';
 import { MIT300_RETRIEVED, MIT300_SOURCE } from '../models/types';
 
-// Larger models shown for comparison only; same source and date as the registry's figures.
-const LARGER = [
-  { name: 'DeepGaze IIE', cc: 0.8242, aucJudd: 0.8829 },
-  { name: 'DeepGaze MSDB', cc: 0.8832, aucJudd: 0.8942 },
-];
-
 const two = (x: number) => (Math.round(x * 100) / 100).toFixed(2);
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, text?: string, className?: string): HTMLElementTagNameMap[K] {
@@ -36,7 +30,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
 
   const intro = el(
     'p',
-    'eek-a-look shows three predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model.',
+    'eek-a-look shows five predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model.',
     'about-lead',
   );
 
@@ -44,7 +38,11 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
   for (const model of models) {
     const term = el('dt', model.subtitle ? `${model.name} · ${model.subtitle}` : model.name);
     const description = el('dd');
-    description.append(`${model.oneLine} `, el('span', `${model.citation}; ${model.licence === 'own implementation' ? 'our own implementation' : `${model.licence} licence`}.`, 'muted'));
+    const licence =
+      model.licence === 'own implementation' ? 'our own implementation'
+      : model.runtime === 'precomputed' ? model.licence
+      : `${model.licence} licence`;
+    description.append(`${model.oneLine} `, el('span', `${model.citation}; ${licence}.`, 'muted'));
     modelList.append(term, description);
   }
 
@@ -65,8 +63,19 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     tr.append(cell, el('td', two(cc)), el('td', two(auc)));
     table.tBodies[0].append(tr);
   };
-  for (const model of models) if (model.benchmark) row(model.name, model.benchmark.cc, model.benchmark.aucJudd, model.kind === 'neural' ? '(on this page)' : undefined);
-  for (const larger of LARGER) row(larger.name, larger.cc, larger.aucJudd, '(larger model, not on this page)');
+  for (const model of models) {
+    if (!model.benchmark) continue;
+    const note =
+      model.runtime === 'precomputed' ? '(computed in advance; example photos only)'
+      : model.kind === 'neural' ? '(runs in your browser)'
+      : undefined;
+    row(model.name, model.benchmark.cc, model.benchmark.aucJudd, note);
+  }
+
+  const large = el(
+    'p',
+    'The two DeepGaze models are too large to run in a browser. Their maps were computed in advance on the author’s laptop graphics card, so they cover the example photos only. For your own photo, UNISAL is the strongest model on this page.',
+  );
 
   const source = el('p', undefined, 'about-source');
   source.append(
@@ -82,13 +91,13 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     'The models learned from people looking at photos on a screen for a few seconds, not from people walking down a real street.',
     'They predict an average viewer, not any one person.',
     'What people are doing changes where they look: finding an entrance is not the same as taking in the view.',
-    'In “What AI adds”, UNISAL mostly adds sharp peaks; where it expects less, the change is small and spread out, so the blue is faint.',
+    'In “What AI adds”, the neural model mostly adds sharp peaks; where it expects less, the change is small and spread out, so the blue is faint.',
   ]) limitList.append(el('li', text));
 
   const privacy = el('h3', 'Privacy');
   const privacyText = el(
     'p',
-    'Your photo is processed on your own device and is never uploaded or stored. The page sends no requests to other sites and uses no analytics and no cookies. The UNISAL model (6.4 MB) and its runtime (3.7 MB) are downloaded from this site the first time they are needed.',
+    'Your photo is processed on your own device and is never uploaded or stored. The page sends no requests to other sites and uses no analytics and no cookies. The UNISAL model (6.4 MB) and its runtime (3.7 MB) are downloaded from this site the first time they are needed; the DeepGaze maps for the examples are small files from this site too.',
   );
 
   const credits = el('h3', 'Credits');
@@ -98,6 +107,13 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     item.append(`${photo.title}, ${photo.city}: `, link(photo.sourceUrl, photo.author), ', ', link(photo.licenceUrl, photo.licence), ` (${photo.changes.toLowerCase()}).`);
     creditList.append(item);
   }
+  const deepgaze = el('li');
+  deepgaze.append(
+    'DeepGaze IIE and DeepGaze MSDB by Matthias Kümmerer and colleagues (',
+    link('https://github.com/matthias-k/DeepGaze', 'DeepGaze on GitHub'),
+    '). Their maps were computed locally; their code and weights are not redistributed here, as the repository carries no licence.',
+  );
+  creditList.append(deepgaze);
   const software = el('li');
   software.append(
     'UNISAL © Richard Droste, Jianbo Jiao and J. Alison Noble, ',
@@ -110,5 +126,5 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
   );
   creditList.append(software);
 
-  section.replaceChildren(heading, intro, modelList, quality, qualityText, table, source, limits, limitList, privacy, privacyText, credits, creditList);
+  section.replaceChildren(heading, intro, modelList, quality, qualityText, table, large, source, limits, limitList, privacy, privacyText, credits, creditList);
 }

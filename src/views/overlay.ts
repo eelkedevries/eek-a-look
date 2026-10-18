@@ -1,4 +1,4 @@
-import { models } from '../models/registry';
+import { models, NEURAL_PREFERENCE } from '../models/registry';
 import { WARM, cssColour } from '../render/colormaps';
 import { drawHeatmap } from '../render/heatmap';
 import { getResults, onResults, type Results } from '../results';
@@ -12,7 +12,7 @@ export function gradientCss(steps = 8): string {
 
 /** The overlay view: one model's heatmap on the photo, with a model selector and an opacity slider. */
 export function mountOverlay(controls: HTMLElement, stage: HTMLElement): void {
-  let selected = models.find((m) => m.kind === 'neural')?.id ?? models[0].id;
+  let selected = NEURAL_PREFERENCE.find((id) => models.some((m) => m.id === id)) ?? models[0].id;
 
   const selector = document.createElement('div');
   selector.className = 'model-selector';
@@ -77,30 +77,42 @@ export function mountOverlay(controls: HTMLElement, stage: HTMLElement): void {
         button.append(small);
       }
       if (state === 'computing') button.append(Object.assign(document.createElement('em'), { textContent: 'Computing…' }));
+      if (state === 'unavailable') button.append(Object.assign(document.createElement('em'), { textContent: 'Example photos only' }));
     }
 
     const frame = stage.querySelector<HTMLElement>('.frame');
     if (!results || !frame) return;
     if (!frame.contains(layer)) frame.append(layer, tag);
 
-    const model = models.find((m) => m.id === selected)!;
-    const outcome = results.status.get(selected);
+    // A model that does not cover this photo hands over to the best one that does.
+    const chosen = models.find((m) => m.id === selected)!;
+    const chosenOutcome = results.status.get(selected);
+    const shownId =
+      chosenOutcome?.state === 'unavailable'
+        ? (NEURAL_PREFERENCE.find((id) => !['unavailable', 'failed'].includes(results.status.get(id)?.state ?? '')) ?? selected)
+        : selected;
+    const model = models.find((m) => m.id === shownId)!;
+    const outcome = results.status.get(shownId);
+    const handover = shownId !== selected ? `${chosen.name} is computed in advance for the example photos only; showing ${model.name}. ` : '';
     if (outcome?.state === 'ready') {
-      if (drawnFor?.results !== results || drawnFor.model !== selected) {
+      if (drawnFor?.results !== results || drawnFor.model !== shownId) {
         drawHeatmap(layer, outcome.map, results.image.width, results.image.height);
-        drawnFor = { results, model: selected };
+        drawnFor = { results, model: shownId };
       }
       layer.hidden = false;
       tag.textContent = `Predicted · ${model.name}`;
-      status.textContent = '';
+      status.textContent = handover;
     } else {
       layer.hidden = true;
       drawnFor = null;
       tag.textContent = 'Predicted';
       status.textContent =
-        outcome?.state === 'failed'
+        handover +
+        (outcome?.state === 'failed'
           ? `${model.name} could not run: ${outcome.message}`
-          : `${model.name}: ${outcome?.state === 'computing' && outcome.detail ? outcome.detail : 'computing…'}`;
+          : outcome?.state === 'unavailable'
+            ? `${model.name}: ${outcome.message}`
+            : `${model.name}: ${outcome?.state === 'computing' && outcome.detail ? outcome.detail : 'computing…'}`);
     }
   }
 

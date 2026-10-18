@@ -2,50 +2,64 @@ import { pearson } from '../maps/saliency-map';
 import { models } from '../models/registry';
 import { onResults } from '../results';
 
-/** Pearson correlation for every pair of models, shown once all maps are ready. */
+const label = (m: (typeof models)[number]) => m.shortName ?? m.name;
+
+/** Pearson correlation for every pair of models, as a lower-triangle matrix, once both maps are ready. */
 export function mountAgreement(section: HTMLElement): void {
   const heading = document.createElement('h2');
   heading.id = 'agreement-heading';
   heading.className = 'section-label';
   heading.textContent = 'How much the models agree';
 
-  const list = document.createElement('ul');
-  list.className = 'agreement';
+  const wrap = document.createElement('div');
+  wrap.className = 'agreement-wrap';
+  const table = document.createElement('table');
+  table.className = 'agreement-matrix';
+  wrap.append(table);
   const caption = document.createElement('p');
   caption.className = 'agreement-caption';
   caption.textContent =
-    'Correlation between two maps for this photo: 0 = unrelated · 1 = same pattern · below 0 = they point to different places.';
-  section.replaceChildren(heading, list, caption);
-
-  const pairs = models.flatMap((a, i) => models.slice(i + 1).map((b) => [a, b] as const));
+    'Correlation between two maps for this photo: 0 = unrelated · 1 = same pattern · below 0 = they point to different places. n/a: a model does not cover this photo.';
+  section.replaceChildren(heading, wrap, caption);
 
   onResults((results) => {
-    list.replaceChildren(
-      ...pairs.map(([a, b]) => {
-        const item = document.createElement('li');
-        const names = document.createElement('span');
-        names.className = 'agreement-pair';
-        names.textContent = `${a.name} and ${b.name}`;
-        const value = document.createElement('span');
-        value.className = 'agreement-value';
-        const meter = document.createElement('span');
-        meter.className = 'agreement-meter';
-        const fill = document.createElement('span');
-        meter.append(fill);
-
-        const sa = results.status.get(a.id);
-        const sb = results.status.get(b.id);
-        if (sa?.state === 'ready' && sb?.state === 'ready') {
-          const r = pearson(sa.map, sb.map);
-          value.textContent = r.toFixed(2);
-          fill.style.width = `${Math.max(0, r) * 100}%`;
-          meter.setAttribute('aria-hidden', 'true');
-        } else {
-          value.textContent = sa?.state === 'failed' || sb?.state === 'failed' ? 'n/a' : '…';
+    const head = document.createElement('tr');
+    head.append(document.createElement('th'));
+    for (const m of models.slice(0, -1)) {
+      const th = document.createElement('th');
+      th.scope = 'col';
+      th.textContent = label(m);
+      th.title = m.name;
+      head.append(th);
+    }
+    const rows = models.slice(1).map((a, i) => {
+      const tr = document.createElement('tr');
+      const th = document.createElement('th');
+      th.scope = 'row';
+      th.textContent = label(a);
+      th.title = a.name;
+      tr.append(th);
+      models.slice(0, -1).forEach((b, j) => {
+        const td = document.createElement('td');
+        if (j <= i) {
+          const sa = results.status.get(a.id);
+          const sb = results.status.get(b.id);
+          if (sa?.state === 'ready' && sb?.state === 'ready') {
+            const r = pearson(sa.map, sb.map);
+            td.textContent = r.toFixed(2);
+            td.style.setProperty('--r', String(Math.max(0, r)));
+            td.className = 'agreement-cell';
+            td.setAttribute('aria-label', `${a.name} and ${b.name}: ${r.toFixed(2)}`);
+          } else {
+            const missing = [sa, sb].some((s) => s?.state === 'failed' || s?.state === 'unavailable');
+            td.textContent = missing ? 'n/a' : '…';
+            td.className = 'agreement-empty';
+          }
         }
-        item.append(names, meter, value);
-        return item;
-      }),
-    );
+        tr.append(td);
+      });
+      return tr;
+    });
+    table.replaceChildren(head, ...rows);
   });
 }

@@ -20,6 +20,7 @@ function getWorker(): Worker {
 export const classicSalience: ModelSpec = {
   id: 'classic-salience',
   name: 'Classic salience',
+  shortName: 'Classic',
   kind: 'classic',
   runtime: 'browser',
   licence: 'own implementation',

@@ -22,6 +22,7 @@ export const unisal: ModelSpec = {
   id: 'unisal',
   name: 'UNISAL',
   subtitle: 'small neural network',
+  shortName: 'UNISAL',
   kind: 'neural',
   runtime: 'browser',
   // Model (6.4 MB) plus the WebAssembly runtime (14.2 MB), before compression.

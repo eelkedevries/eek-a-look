@@ -1,11 +1,13 @@
 import { assertProbability, gridFor, type GridSize, type SaliencyMap } from './maps/saliency-map';
 import { models } from './models/registry';
+import { UnavailableError } from './models/types';
 import { onImageChange, type CurrentImage } from './state';
 
 export type ModelStatus =
   | { state: 'computing'; detail?: string }
   | { state: 'ready'; map: SaliencyMap }
-  | { state: 'failed'; message: string };
+  | { state: 'failed'; message: string }
+  | { state: 'unavailable'; message: string };
 
 export interface Results {
   image: CurrentImage;
@@ -45,12 +47,16 @@ onImageChange((image) => {
       emit(results, model.id);
     };
     model
-      .predict(image.bitmap, grid, report)
+      .predict(image.bitmap, grid, report, { exampleId: image.exampleId })
       .then((map) => {
         if (import.meta.env.DEV) assertProbability(map, model.name);
         results.status.set(model.id, { state: 'ready', map });
       })
       .catch((error: unknown) => {
+        if (error instanceof UnavailableError) {
+          results.status.set(model.id, { state: 'unavailable', message: error.message });
+          return;
+        }
         console.error(error);
         results.status.set(model.id, { state: 'failed', message: error instanceof Error ? error.message : String(error) });
       })

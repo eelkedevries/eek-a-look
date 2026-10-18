@@ -23,6 +23,7 @@ export function centreBiasValues(grid: GridSize, imageWidth: number, imageHeight
 export const centreBias: ModelSpec = {
   id: 'centre-bias',
   name: 'Centre bias',
+  shortName: 'Centre',
   kind: 'baseline',
   runtime: 'browser',
   licence: 'own implementation',

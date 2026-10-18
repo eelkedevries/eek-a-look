@@ -20,6 +20,8 @@ wins and the gap is work still to be done.
 - Page shell (`index.html`, `src/style.css`): site look, self-hosted fonts
   (`@fontsource`, Latin subsets), local-only upload (`src/image-input.ts`),
   app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
+- Five models: three in the browser, DeepGaze IIE and MSDB pre-computed for the
+  examples (`src/models/deepgaze.ts`, `public/precomputed/`).
 - Maps and models: `src/maps/saliency-map.ts` (grid, normalise, resample,
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
   drawing), `src/models/` (types, registry, centre bias, classic salience in a Web Worker
@@ -78,3 +80,5 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
 - `012_warm_heatmap.md` (YlOrRd; overlay slider now defaults to 100 %)
 - `013_deepgaze_precompute.md` (`tools/deepgaze-local/`; IIE about 0.4 s and MSDB
   about 1 s per photo on the RTX 4070, peak 3.1 GB; 24 maps, 0.69 MB)
+- `014_deepgaze_in_app.md` (five models; MSDB is the default overlay, with a
+  fallback to UNISAL for uploads; agreement is now a matrix)

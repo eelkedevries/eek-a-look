@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.5 · **Last updated:** 2026-10-18
+**Version:** 0.6 · **Last updated:** 2026-10-18
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -15,18 +15,23 @@ repository, which already holds the SiteGround secrets, so the owner has no
 secrets to add. 0.4 runs UNISAL on the CPU WebAssembly backend only (prompt 009):
 it takes about 0.1–0.35 s per photo on a desktop CPU, while the WebGPU build would
 add 14 MB (3 MB compressed) of runtime to download. 0.5 changes the heatmap colours to the warm YlOrRd map
-the owner chose (prompt 012).
+the owner chose (prompt 012). 0.6 adds DeepGaze IIE and DeepGaze MSDB, pre-computed
+on the owner's GPU for the example photos (prompts 013–014).
 
 ## Scope
 
 v1 is a single public web page at `https://eelkedevries.com/eek-a-look/`. It
 shows where people are **predicted** to look in a streetscape photo, using
-three models side by side.
+five models side by side: three that run in the visitor's browser, and two
+large models whose maps are pre-computed for the example photos.
 
 In scope for v1:
 
-- three models, all running in the visitor's browser: **centre bias**,
+- three models running in the visitor's browser: **centre bias**,
   **classic salience** (Itti–Koch style) and **UNISAL**;
+- two large models, **DeepGaze IIE** and **DeepGaze MSDB**, run on the owner's
+  laptop GPU (`tools/deepgaze-local/`); their maps are published for the
+  example photos only;
 - twelve example photos of Dutch high-rise streets (Zuidas, Weena,
   Wilhelminapier, Beatrixkwartier), openly licensed, with credits;
 - **upload** of the visitor's own photo (file picker only; no camera capture);
@@ -34,8 +39,7 @@ In scope for v1:
   **"What AI adds"** map, **agreement scores**;
 - a short About section covering the models, honesty, privacy and credits.
 
-Out of scope for v1: drawing areas of interest (v1.1), remote or large models
-(later), comparison with measured eye-tracking data (not planned), languages
+Out of scope for v1: drawing areas of interest, server-hosted models, comparison with measured eye-tracking data (not planned), languages
 other than English, analytics, accounts, saving or sharing results, and a card
 on the eelkedevries.com Projects page.
 
@@ -59,6 +63,10 @@ on the eelkedevries.com Projects page.
   `predict(image: ImageBitmap, grid: GridSize) => Promise<SaliencyMap>`.
   `runtime: 'remote'` is reserved for later large models; v1 contains no remote
   code beyond the type.
+- **Pre-computed models:** `runtime: 'precomputed'`. Maps live in
+  `public/precomputed/<model-id>/<photo-id>.json` (see *Data schemas*). For an
+  upload these models report the status `unavailable`, and the views fall back
+  to the best available neural model (MSDB, IIE, UNISAL).
 - **Workers:** classic salience and UNISAL each run in a Web Worker, so the page
   stays responsive. Centre bias runs on the main thread.
 - **Shared grid:** every model's output is resampled to one grid per image. Its
@@ -111,6 +119,18 @@ interface ModelSpec {
 }
 ```
 
+A pre-computed map, `public/precomputed/<model-id>/<photo-id>.json`:
+
+```ts
+interface PrecomputedMap {
+  model: string;          // 'deepgaze-iie' | 'deepgaze-msdb'
+  photo: string | null;   // example photo id
+  grid: GridSize;         // the shared grid for that photo
+  encoding: 'uint16-base64';
+  data: string;           // little-endian uint16, scaled to the maximum
+}
+```
+
 The example photo manifest is `public/examples/examples.json`, an array of:
 
 ```ts
@@ -156,15 +176,24 @@ interface ExamplePhoto {
   - exported once to ONNX fp16 and verified against PyTorch (Pearson r ≥ 0.99
     on at least five images).
 
+- **DeepGaze IIE** (Linardos et al., ICCV 2021) and **DeepGaze MSDB**
+  (Kümmerer, Khanuja & Bethge, ICCV 2025):
+  - from <https://github.com/matthias-k/DeepGaze> (pinned commit), which has no
+    licence file, so their code and weights are never published, only maps;
+  - photos resized to 1024 px on the long side, with the MIT1003 centre-bias
+    template; MSDB at 35 px per degree with its MIT1003 parameters.
+
 **Derived views**
 
-- **What AI adds** = P_unisal − P_centre on the shared grid, drawn with a
-  diverging colour map symmetric around zero. It is described to visitors as
-  "where the AI expects more (or less) looking than *people look at the
-  middle* alone".
+- **What AI adds** = P_ai − P_centre on the shared grid, where *ai* is the
+  best available neural model (MSDB, then IIE, then UNISAL) and is named in the
+  view. It is drawn with a diverging colour map symmetric around zero and
+  described to visitors as "where the AI expects more (or less) looking than
+  *people look at the middle* alone".
 - **Agreement** = the Pearson correlation of two maps on the shared grid, for
-  each of the three pairs, shown to two decimals with the plain-language scale
-  "0 = unrelated · 1 = same pattern".
+  every pair of models, shown as a lower-triangle matrix to two decimals with
+  the plain-language scale "0 = unrelated · 1 = same pattern"; "n/a" where a
+  model does not cover the photo.
 
 **Honesty** (binding on all visitor-facing text)
 
@@ -230,7 +259,8 @@ interface ExamplePhoto {
 
 - Public repository. Deployment to SiteGround by the eelkedevries.com workflow
   `deploy-eek-a-look.yml`. No secrets in this repository; no GitHub Pages.
-- Exactly three models in v1, all in the browser; weights self-hosted.
+- Five models: three in the browser (weights self-hosted), two pre-computed
+  locally for the example photos. Nothing is processed on a server.
 - Upload only; no camera capture; no remote processing in v1.
 - English only.
 - No comparison with measured eye-tracking data.

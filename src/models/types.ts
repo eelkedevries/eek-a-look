@@ -17,8 +17,14 @@ export interface ModelSpec {
   /** Optional visitor-facing subtitle, e.g. "small neural network". */
   subtitle?: string;
   kind: 'baseline' | 'classic' | 'neural';
-  /** 'remote' is reserved for large server-side models; v1 has none. */
-  runtime: 'browser' | 'remote';
+  /**
+   * 'browser': runs on the visitor's device. 'precomputed': maps computed in
+   * advance on the author's GPU, so only the example photos are covered.
+   * 'remote' is reserved for server-side models; there are none.
+   */
+  runtime: 'browser' | 'precomputed' | 'remote';
+  /** Short label for tight spaces such as the agreement matrix. */
+  shortName?: string;
   /** Weights plus runtime that the visitor downloads. */
   downloadBytes?: number;
   /** SPDX id or "own implementation". */
@@ -28,8 +34,16 @@ export interface ModelSpec {
   oneLine: string;
   benchmark?: BenchmarkScore;
   /** `report` receives short progress messages, such as download progress. */
-  predict(image: ImageBitmap, grid: GridSize, report?: (detail: string) => void): Promise<SaliencyMap>;
+  predict(image: ImageBitmap, grid: GridSize, report?: (detail: string) => void, context?: PredictContext): Promise<SaliencyMap>;
 }
+
+export interface PredictContext {
+  /** Set when the photo is one of the examples. */
+  exampleId?: string;
+}
+
+/** Thrown by a model that does not cover the current photo; shown as "unavailable", not as a failure. */
+export class UnavailableError extends Error {}
 
 export const MIT300_SOURCE = 'https://saliency.tuebingen.ai/results.html';
 export const MIT300_RETRIEVED = '2026-10-18';

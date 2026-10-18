@@ -76,7 +76,8 @@ export function mountSideBySide(panel: HTMLElement): void {
         }
         cell.note.textContent = '';
       } else {
-        cell.note.textContent = status?.state === 'failed' ? 'Could not run' : 'Computing…';
+        cell.note.textContent =
+          status?.state === 'failed' ? 'Could not run' : status?.state === 'unavailable' ? 'Example photos only' : 'Computing…';
       }
     }
   }
