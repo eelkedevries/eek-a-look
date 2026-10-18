@@ -49,3 +49,7 @@ tools/deepgaze-local/.venv/
 # Measured gaze: downloaded dataset, photos and check overlays
 tools/measured-gaze/.cache/
 tools/measured-gaze/.venv/
+
+# Areas: validation datasets and check overlays
+tools/areas/.cache/
+tools/areas/.venv/

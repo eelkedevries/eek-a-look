@@ -115,3 +115,8 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `020_measured_gaze_in_app.md` (spec 0.9: the "Measured gaze" layer and "Match
   with measured gaze" on the Zürich photos; absent on the Dutch photos and on
   uploads)
+- `021_area_categories.md` (spec 0.10; `tools/areas/`: OneFormer street
+  categories and the 4 m ground floor for the 24 photos, 0.59 MB, peak 2 GB.
+  The horizon came from façade lines on 17 photos; on photos looking up at
+  towers the fallback makes the ground floor too tall, and where all bases are
+  hidden it is empty)

@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.9 · **Last updated:** 2026-10-18
+**Version:** 0.10 · **Last updated:** 2026-10-18
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -22,7 +22,8 @@ heatmaps to inferno over a greyed photo after the colour-map research (prompt 01
 openly licensed dataset of Wilming et al. (2017), reversing the decision not to
 compare with measured eye-tracking data (owner's decision of 2026-10-18, prompt 018).
 0.9 shows the measured maps as their own layer, "Measured gaze", with each
-model's match against it (prompt 020).
+model's match against it (prompt 020). 0.10 adds automatic areas for the
+example photos: nine street categories and the ground floor (prompt 021).
 
 ## Scope
 
@@ -80,6 +81,10 @@ on the eelkedevries.com Projects page.
   to 127.0.0.1) runs both models live; the page reaches it only through
   `/eek-a-look/local-api/`, only in builds made by `npm run local`
   (`VITE_LOCAL_HELPER=1`) and only when served from localhost.
+- **Automatic areas:** pre-computed on the owner's laptop GPU by
+  `tools/areas/` for the example photos only, in
+  `public/precomputed/areas/<photo-id>.json` (see *Data schemas*). No
+  segmentation model runs on the site and no weights are published.
 - **Workers:** classic salience and UNISAL each run in a Web Worker, so the page
   stays responsive. Centre bias runs on the main thread.
 - **Shared grid:** every model's output is resampled to one grid per image. Its
@@ -142,6 +147,29 @@ interface PrecomputedMap {
   grid: GridSize;         // the shared grid for that photo
   encoding: 'uint16-base64';
   data: string;           // little-endian uint16, scaled to the maximum
+}
+```
+
+An area file, `public/precomputed/areas/<photo-id>.json`:
+
+```ts
+interface AreaFile {
+  photo: string;          // example photo id
+  width: number;          // mask size: the photo scaled to 640 px on the long side
+  height: number;
+  horizon: { row: number; method: 'vanishing-lines' | 'assumed-level'; support: number };
+  params: { cameraHeightM: number; storeyHeightM: number };
+  models: Record<string, string>;   // step → repository@revision or rule
+  areas: Array<{
+    id: string;           // e.g. 'facade', 'sky', 'ground-floor'
+    label: string;        // visitor-facing
+    group: 'category' | 'element';
+    share: number;        // fraction of all mask pixels
+    rle: number[];        // row-major run lengths, starting outside the area
+    model?: string;       // key in `models` for elements
+    instances?: number;
+    meanScore?: number;
+  }>;
 }
 ```
 
@@ -223,6 +251,36 @@ interface ExamplePhoto {
   photos with measured data. On other photos and on uploads it is left out of
   every view, with no "unavailable" note. It is never in the neural preference
   (MSDB, IIE, UNISAL) and never in the agreement matrix.
+
+**Automatic areas**
+
+- **Street categories:** OneFormer ADE20K Swin-L
+  (`shi-labs/oneformer_ade20k_swin_large`, MIT, pinned revision), semantic
+  task, ADE20K class indices grouped so that every pixel belongs to exactly one
+  category:
+  - façade: 0, 1, 25, 48, 84, 8, 14, 58, 42, 86, 79;
+  - sky: 2;
+  - greenery: 4, 9, 17, 72, 66, 29;
+  - street surface: 3, 6, 11, 52, 13, 94, 91, 46, 53, 59, 121;
+  - people: 12;
+  - vehicles: 20, 80, 83, 102, 116, 127, 76, 103, 90;
+  - signage: 43, 100, 123, 144, 149;
+  - street furniture: 93, 87, 136, 69, 138, 32, 38, 95, 88, 106, 104, 132, 19,
+    15, 114;
+  - other: the rest.
+- **Ground floor** (an element), with camera height *c* = 1.6 m and storey
+  height *H* = 4.0 m:
+  - the horizon row *y<sub>h</sub>* comes from vanishing points of receding
+    horizontal façade edges (RANSAC, zero roll). With fewer than 15 supporting
+    segments, or outside the middle 80% of the image, it falls back to the
+    middle row (`assumed-level`);
+  - per column, the base *y<sub>0</sub>* is the bottom of the lowest façade run
+    where it meets street surface; hidden bases are interpolated within the
+    façade run;
+  - the ground floor is the façade pixels from *y<sub>0</sub>* up to
+    *y<sub>h</sub> − (H − c)/c · (y<sub>0</sub> − y<sub>h</sub>)*.
+- Other façade elements (windows, entrances, balconies, shopfronts) are added
+  by prompt 023.
 
 **Derived views**
 
