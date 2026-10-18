@@ -7,10 +7,11 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "check": "tsc --noEmit && vite build && bash scripts/check-public-build.sh dist && bash scripts/validate-prompts.sh",
+    "check": "tsc --noEmit && node scripts/validate-examples.mjs && vite build && bash scripts/check-public-build.sh dist && bash scripts/validate-prompts.sh",
     "deploy": "bash scripts/deploy.sh"
   },
   "devDependencies": {
+    "sharp": "^0.35.5",
     "typescript": "~6.0.2",
     "vite": "^8.3.0"
   },

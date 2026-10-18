@@ -17,6 +17,9 @@ wins and the gap is work still to be done.
 - Page shell (`index.html`, `src/style.css`): site look, self-hosted fonts
   (`@fontsource`, Latin subsets), local-only upload (`src/image-input.ts`),
   app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
+- Example photos: 12 Commons photos in `public/examples/` with `examples.json`
+  (credits), prepared by `scripts/prepare-photos.mjs`, checked by
+  `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
 - Vite + TypeScript scaffold under base `/eek-a-look/`,
   completed from `eek-a-template` v0.3.0. CI: `check-build.yml`.
 - Deploy: `deploy-eek-a-look.yml` in `eelkedevries/eelkedevries.com` builds this
@@ -34,7 +37,7 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Next: `005_example_photos.md`.
+Next: `006_map_core.md`.
 
 ## Prompts run
 
@@ -42,3 +45,4 @@ Next: `005_example_photos.md`.
 - `002_website_deploy_workflow.md` (eelkedevries.com commit `52007f8`)
 - `003_deploy_command.md`
 - `004_page_shell.md`
+- `005_example_photos.md`
