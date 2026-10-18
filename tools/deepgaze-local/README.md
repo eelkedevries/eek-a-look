@@ -33,6 +33,24 @@ read-out weights from its GitHub releases. Later runs take about 20 seconds.
 On an RTX 4070 Laptop GPU, IIE takes about 0.4 s and MSDB about 1 s per
 photo, using at most 3.1 GB of GPU memory.
 
+To add maps for new photos only, without recomputing the existing ones:
+
+```bash
+uv run precompute.py --only-missing
+```
+
+A photo is skipped for a model when its map for that model already exists.
+The script uses the GPU when CUDA is available and the CPU otherwise. On the
+CPU (a 22-thread laptop, run with `CUDA_VISIBLE_DEVICES=` to hide the GPU),
+the 12 Zürich photos took 7 min 14 s in all: IIE about 1.8 s and MSDB about
+33 s per photo, with a peak of 6.2 GB of RAM.
+
+The printed table gives each model's time per photo and the correlation
+between the two models. For photos with a measured eye-tracking map
+(`tools/measured-gaze/`), a second table gives the Pearson r of each model
+with the measured map, and the mean per model. The run fails if the DeepGaze
+maps average more than 1/24 MB each (prompt 013's budget of 1 MB for 24 maps).
+
 ## Settings
 
 These match the MIT300 benchmark entries quoted on the site:

@@ -96,3 +96,6 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
   datasets. `tools/measured-gaze/` adds 12 Zürich photos from Wilming et al.
   (2017, CC0) and their measured maps in `public/precomputed/measured/`; 48
   observers and 805–929 fixations per photo)
+- `019_deepgaze_measured_photos.md` (`precompute.py --only-missing`; the 24
+  Zürich maps were made on the CPU in 7 min 14 s, MSDB about 33 s per photo.
+  Mean r with the measured maps: IIE 0.74, MSDB 0.81)
