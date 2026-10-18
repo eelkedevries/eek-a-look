@@ -27,7 +27,8 @@ export interface ModelSpec {
   /** Plain-language description, at most 20 words. */
   oneLine: string;
   benchmark?: BenchmarkScore;
-  predict(image: ImageBitmap, grid: GridSize): Promise<SaliencyMap>;
+  /** `report` receives short progress messages, such as download progress. */
+  predict(image: ImageBitmap, grid: GridSize, report?: (detail: string) => void): Promise<SaliencyMap>;
 }
 
 export const MIT300_SOURCE = 'https://saliency.tuebingen.ai/results.html';

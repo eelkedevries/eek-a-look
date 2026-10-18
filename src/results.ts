@@ -2,7 +2,10 @@ import { assertProbability, gridFor, type GridSize, type SaliencyMap } from './m
 import { models } from './models/registry';
 import { onImageChange, type CurrentImage } from './state';
 
-export type ModelStatus = { state: 'computing' } | { state: 'ready'; map: SaliencyMap } | { state: 'failed'; message: string };
+export type ModelStatus =
+  | { state: 'computing'; detail?: string }
+  | { state: 'ready'; map: SaliencyMap }
+  | { state: 'failed'; message: string };
 
 export interface Results {
   image: CurrentImage;
@@ -36,8 +39,13 @@ onImageChange((image) => {
   emit(results);
 
   for (const model of models) {
+    const report = (detail: string) => {
+      if (results.status.get(model.id)?.state !== 'computing') return;
+      results.status.set(model.id, { state: 'computing', detail });
+      emit(results, model.id);
+    };
     model
-      .predict(image.bitmap, grid)
+      .predict(image.bitmap, grid, report)
       .then((map) => {
         if (import.meta.env.DEV) assertProbability(map, model.name);
         results.status.set(model.id, { state: 'ready', map });

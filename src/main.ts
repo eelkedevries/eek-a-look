@@ -59,6 +59,10 @@ uploadInput.addEventListener('change', async () => {
   }
 });
 
+if (import.meta.env.DEV && new URLSearchParams(location.search).get('check') === 'unisal') {
+  import('./dev/unisal-reference').then((m) => m.checkUnisalReference());
+}
+
 loadExamples()
   .then((photos) => {
     for (const photo of photos) photosById.set(photo.id, photo);

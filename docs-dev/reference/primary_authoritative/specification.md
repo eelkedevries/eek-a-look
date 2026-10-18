@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.3 · **Last updated:** 2026-10-18
+**Version:** 0.4 · **Last updated:** 2026-10-18
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -12,7 +12,9 @@ When the codebase and this document conflict, this document is correct.
 Changes: 0.2 records the v1 decisions from the owner Q&A of 2026-10-18
 (see `docs-dev/plan.md`). 0.3 moves the deploy into the eelkedevries.com
 repository, which already holds the SiteGround secrets, so the owner has no
-secrets to add.
+secrets to add. 0.4 runs UNISAL on the CPU WebAssembly backend only (prompt 009):
+it takes about 0.1–0.35 s per photo on a desktop CPU, while the WebGPU build would
+add 14 MB (3 MB compressed) of runtime to download.
 
 ## Scope
 
@@ -62,10 +64,12 @@ on the eelkedevries.com Projects page.
   long side is 128 cells and its short side follows the image's aspect ratio
   (rounded). All comparisons use this grid. Display upsamples it to the image
   size with bilinear interpolation.
-- **UNISAL runtime:** onnxruntime-web. Execution providers in order: `webgpu`,
-  then `wasm`. Use single-threaded WASM unless `crossOriginIsolated` is true.
-  The model and the ORT WASM files are self-hosted under the base path and
-  lazy-loaded after first paint.
+- **UNISAL runtime:** onnxruntime-web, CPU WebAssembly backend (`wasm`) only.
+  Single-threaded unless `crossOriginIsolated` is true. The model and the ORT
+  WASM files are self-hosted under the base path (Vite assets) and lazy-loaded
+  after first paint. The input size follows UNISAL's own MIT1003 rule (32·(n1,
+  n2), aspect-matched), not a letterbox; the Gaussian priors are built in the
+  browser from `model.json`.
 - **Fonts:** Lexend (body), Spectral (headings) and JetBrains Mono (numbers,
   labels), self-hosted through `@fontsource/*` packages. No Google Fonts
   request.

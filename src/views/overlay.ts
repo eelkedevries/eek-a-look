@@ -98,7 +98,9 @@ export function mountOverlay(controls: HTMLElement, stage: HTMLElement): void {
       drawnFor = null;
       tag.textContent = 'Predicted';
       status.textContent =
-        outcome?.state === 'failed' ? `${model.name} could not run: ${outcome.message}` : `${model.name} is computing…`;
+        outcome?.state === 'failed'
+          ? `${model.name} could not run: ${outcome.message}`
+          : `${model.name}: ${outcome?.state === 'computing' && outcome.detail ? outcome.detail : 'computing…'}`;
     }
   }
 

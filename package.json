@@ -18,6 +18,7 @@
   "dependencies": {
     "@fontsource/jetbrains-mono": "^5.3.0",
     "@fontsource/lexend": "^5.3.0",
-    "@fontsource/spectral": "^5.3.0"
+    "@fontsource/spectral": "^5.3.0",
+    "onnxruntime-web": "1.30.0"
   }
 }
