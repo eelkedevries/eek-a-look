@@ -29,3 +29,11 @@ no analytics and no cookies.
 
 Vite + TypeScript, built as a static site. The development workflow and plan
 are in [`docs-dev/`](docs-dev/); start with [`docs-dev/plan.md`](docs-dev/plan.md).
+
+Running locally:
+
+```bash
+npm ci          # install exact dependencies from the lockfile
+npm run dev     # development server at http://localhost:5173/eek-a-look/
+npm run check   # type-check, build and safety checks
+```

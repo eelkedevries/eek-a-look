@@ -14,8 +14,8 @@ wins and the gap is work still to be done.
 
 ## Systems
 
-_None yet._ The repository holds documentation only: the plan, the
-specification and the prompt files.
+- Vite + TypeScript scaffold (placeholder page) under base `/eek-a-look/`,
+  completed from `eek-a-template` v0.3.0. CI: `check-build.yml`.
 
 ## Key decisions
 
@@ -24,8 +24,8 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Next: `001_setup.md`.
+Next: `002_website_deploy_workflow.md`.
 
 ## Prompts run
 
-_None yet._
+- `001_setup.md`

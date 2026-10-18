@@ -1,0 +1,19 @@
+# This file is maintained by Copier; do not edit by hand.
+# It records the answers used to generate this project and enables `copier update`.
+_commit: v0.3.0
+_src_path: gh:eelkedevries/eek-a-template
+description: 'Predicted gaze heatmaps for streetscape photos: open saliency models
+    next to simple baselines, running entirely in your browser.'
+language_locale: British English in code, comments, and user-facing text.
+license: none
+project_name: eek-a-look
+project_title: eek-a-look
+stack: node-vite + typescript
+stack_kind: node
+static_site: true
+testing_policy: no tests unless a prompt asks for them.
+verify_command: '`npm run check` (after the scaffold exists).'
+visibility: public
+workflow_policy: commit and push directly to `main`; no feature branches or pull requests
+    unless explicitly requested.
+
