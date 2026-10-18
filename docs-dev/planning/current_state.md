@@ -17,6 +17,10 @@ wins and the gap is work still to be done.
 - Page shell (`index.html`, `src/style.css`): site look, self-hosted fonts
   (`@fontsource`, Latin subsets), local-only upload (`src/image-input.ts`),
   app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
+- Maps and models: `src/maps/saliency-map.ts` (grid, normalise, resample,
+  Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
+  drawing), `src/models/` (types, registry, centre bias), `src/results.ts` (runs
+  every model per image) and `src/views/overlay.ts` (model selector, slider).
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
@@ -37,7 +41,7 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Next: `006_map_core.md`.
+Next: `007_classic_salience.md`.
 
 ## Prompts run
 
@@ -46,3 +50,4 @@ Next: `006_map_core.md`.
 - `003_deploy_command.md`
 - `004_page_shell.md`
 - `005_example_photos.md`
+- `006_map_core.md`

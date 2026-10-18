@@ -10,6 +10,7 @@ import { loadExamples, renderCredit, renderPicker, showExample, type ExamplePhot
 import { decodeUpload, ImageInputError } from './image-input';
 import { onImageChange, setImage } from './state';
 import { showOnStage } from './stage';
+import { mountOverlay } from './views/overlay';
 
 const stage = document.querySelector<HTMLElement>('#stage')!;
 const credit = document.querySelector<HTMLElement>('#credit')!;
@@ -17,6 +18,8 @@ const examples = document.querySelector<HTMLElement>('#examples')!;
 const uploadButton = document.querySelector<HTMLButtonElement>('#upload-button')!;
 const uploadInput = document.querySelector<HTMLInputElement>('#upload-input')!;
 const uploadMessage = document.querySelector<HTMLElement>('#upload-message')!;
+
+mountOverlay(document.querySelector<HTMLElement>('#overlay-controls')!, stage);
 
 const photosById = new Map<string, ExamplePhoto>();
 let markSelected: (id: string | undefined) => void = () => {};
