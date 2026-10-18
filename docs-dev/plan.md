@@ -116,6 +116,21 @@ ends with `npm run deploy`.
 | Method explanations | One ~100-word paragraph per method under its heatmap, at the bottom of the page (016) |
 | Colour map | Inferno over a greyed photo (option C), chosen after a short literature review; replaces the warm map (017) |
 
+## Fourth round: measured eye tracking (2026-10-18)
+
+| Topic | Decision |
+|---|---|
+| Aim | Compare the models with gaze measured in people, on photos the page can show |
+| Source | Wilming et al. (2017), CC0: 12 Zürich street photos, 48 observers each, 6 s free viewing (study "Baseline") |
+| Rejected | CAT2000 and MIT1003 (no open image licence); HvA high-rise study (data not public) |
+| Automation | Every step downloads and runs without manual work, so a cloud session can do it all |
+
+| # | Prompt | Notes |
+|---|---|---|
+| 018 | `018_measured_gaze_data.md`: photos, measured maps, specification 0.8 | Draft; reverses a locked decision |
+| 019 | `019_deepgaze_measured_photos.md`: DeepGaze maps for the Zürich photos | Draft; CPU in the cloud |
+| 020 | `020_measured_gaze_in_app.md`: "Measured gaze" layer and match scores; deploy | Draft |
+
 ## Later
 
 - **Areas of interest:** draw a region (ground floor, façade, sky) and show
