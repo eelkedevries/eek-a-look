@@ -18,6 +18,7 @@ wins and the gap is work still to be done.
   completed from `eek-a-template` v0.3.0. CI: `check-build.yml`.
 - Deploy: `deploy-eek-a-look.yml` in `eelkedevries/eelkedevries.com` builds this
   repository and rsyncs it to `/eek-a-look/`. The site deploy protects that folder.
+  Started with `npm run deploy` (`scripts/deploy.sh`).
 
 ## Key decisions
 
@@ -30,9 +31,10 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Next: `003_deploy_command.md`.
+Next: `004_page_shell.md`.
 
 ## Prompts run
 
 - `001_setup.md`
 - `002_website_deploy_workflow.md` (eelkedevries.com commit `52007f8`)
+- `003_deploy_command.md`
