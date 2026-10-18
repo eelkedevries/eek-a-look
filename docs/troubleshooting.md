@@ -1,23 +1,28 @@
 # Troubleshooting
 
-Project-facing troubleshooting notes. Replace the placeholders below with the project's actual issues and fixes.
+## UNISAL stays on "Downloading the model" or "Starting the model"
 
-## Blank GitHub Pages screen
+The model and its WebAssembly runtime are about 10 MB together. On a slow
+connection the first map can take a while; later photos reuse the download.
+If it never finishes, reload the page.
 
-A blank deployed page is usually a base-path problem. For a project Pages site served from `https://username.github.io/repository-name/`, the build tool's base path must match the repository name, for example:
+## "UNISAL could not run"
 
-```ts
-base: '/repository-name/'
-```
+UNISAL needs a browser with WebAssembly, Web Workers and OffscreenCanvas:
+current Chrome, Edge, Firefox and Safari (16.4 or later). Older browsers still
+show centre bias and, where OffscreenCanvas is available, classic salience.
 
-Check the browser console for asset 404s after deployment.
+UNISAL runs on the processor (CPU), not the graphics card, so it works the
+same everywhere. On an older phone a map can take a few seconds.
 
-## Development server will not start
+## My photo does not open
 
-- Confirm the required runtime version is installed.
-- Remove `node_modules/` and reinstall dependencies.
+Use a JPEG or PNG under 25 MB. Some browsers cannot read HEIC photos from
+iPhones; export the photo as JPEG first.
 
-## Build succeeds but assets are missing online
+## Development server
 
-- Verify the base path matches the public repository name.
-- Confirm assets are referenced with relative or base-aware paths.
+- `npm ci`, then `npm run dev`; the page is at
+  `http://localhost:5173/eek-a-look/`.
+- `?check=unisal` on the development server compares the browser's UNISAL
+  output with the reference saved by `tools/unisal-export` (expect r ≥ 0.98).

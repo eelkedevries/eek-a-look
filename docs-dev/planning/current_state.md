@@ -14,6 +14,9 @@ wins and the gap is work still to be done.
 
 ## Systems
 
+- v1 is live at https://eelkedevries.com/eek-a-look/ (prompts 001–011).
+- About section (`src/views/about.ts`): models from the registry, MIT300 table
+  (re-checked 2026-10-18), limitations, privacy and credits from the manifest.
 - Page shell (`index.html`, `src/style.css`): site look, self-hosted fonts
   (`@fontsource`, Latin subsets), local-only upload (`src/image-input.ts`),
   app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
@@ -50,7 +53,8 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Next: `011_about_and_copy.md`.
+v1 is complete. Later work is listed in `docs-dev/plan.md` (*Later*): areas of
+interest (v1.1), large models via Hugging Face, and the owner's own photos.
 
 ## Prompts run
 
@@ -68,3 +72,4 @@ Next: `011_about_and_copy.md`.
   `public/.htaccess` sets types for .mjs/.wasm/.onnx, and the live site loads a
   gzip copy of the 14 MB runtime (3.7 MB) because the host does not compress it.
 - `010_comparison_views.md`
+- `011_about_and_copy.md`

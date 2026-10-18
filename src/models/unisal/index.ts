@@ -28,7 +28,7 @@ export const unisal: ModelSpec = {
   downloadBytes: 20_700_000,
   licence: 'Apache-2.0',
   citation: 'Droste, Jiao & Noble (2020), ECCV',
-  oneLine: 'A small neural network trained on where people looked in thousands of photos.',
+  oneLine: 'A small neural network trained on eye- and mouse-tracking data from thousands of images and videos.',
   benchmark: { dataset: 'MIT300', cc: 0.7851, aucJudd: 0.8772, source: MIT300_SOURCE, retrieved: MIT300_RETRIEVED },
   async predict(image, grid, report): Promise<SaliencyMap> {
     const bitmap = await createImageBitmap(image);

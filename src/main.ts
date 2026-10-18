@@ -10,6 +10,7 @@ import { loadExamples, renderCredit, renderPicker, showExample, type ExamplePhot
 import { decodeUpload, ImageInputError } from './image-input';
 import { onImageChange, setImage } from './state';
 import { showOnStage } from './stage';
+import { renderAbout } from './views/about';
 import { mountAgreement } from './views/agreement';
 import { mountOverlay } from './views/overlay';
 import { mountSideBySide } from './views/side-by-side';
@@ -76,12 +77,16 @@ if (import.meta.env.DEV && new URLSearchParams(location.search).get('check') ===
   import('./dev/unisal-reference').then((m) => m.checkUnisalReference());
 }
 
+const about = document.querySelector<HTMLElement>('#about')!;
+
 loadExamples()
   .then((photos) => {
     for (const photo of photos) photosById.set(photo.id, photo);
     markSelected = renderPicker(examples, photos, pick);
+    renderAbout(about, photos);
     if (photos.length) return pick(photos[0]);
   })
   .catch(() => {
     examples.textContent = 'The example photos could not be loaded. You can still use your own photo.';
+    renderAbout(about, []);
   });
