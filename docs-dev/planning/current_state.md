@@ -62,8 +62,14 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-v1 and the second round (prompts 012–015) are complete. Later work is listed in `docs-dev/plan.md` (*Later*): areas of
-interest (v1.1), large models via Hugging Face, and the owner's own photos.
+v1 and rounds two to four (prompts 012–020) are complete. The fifth round is
+planned, not run: automatic areas in the image (OneFormer categories, SAM 3
+façade elements, a 4 m ground-floor rule), attention ÷ size per area, checks
+against eTRIMS and CMP Facade, and a simulated panel with Qwen3-VL (prompts
+021–025; `docs-dev/plan.md`, sources in
+`docs-dev/reference/secondary_background/areas_sources.md`). Prompt 021 needs
+the owner's SAM 3 access on Hugging Face first. Later work is listed in
+`docs-dev/plan.md` (*Later*).
 
 ## Prompts run
 

@@ -127,14 +127,64 @@ ends with `npm run deploy`.
 
 | # | Prompt | Notes |
 |---|---|---|
-| 018 | `018_measured_gaze_data.md`: photos, measured maps, specification 0.8 | Draft; reverses a locked decision |
-| 019 | `019_deepgaze_measured_photos.md`: DeepGaze maps for the Zürich photos | Draft; CPU in the cloud |
-| 020 | `020_measured_gaze_in_app.md`: "Measured gaze" layer and match scores; deploy | Draft |
+| 018 | `018_measured_gaze_data.md`: photos, measured maps, specification 0.8 | Done |
+| 019 | `019_deepgaze_measured_photos.md`: DeepGaze maps for the Zürich photos | Done (CPU, 7 min) |
+| 020 | `020_measured_gaze_in_app.md`: "Measured gaze" layer and match scores; deploy | Done |
+
+## Fifth round: areas in the image (2026-10-18)
+
+**Aim.** Show which parts of a street scene receive attention, in the terms the
+HvA *Building for Wellbeing* panels use: before an experiment they classify
+photos on three design principles (horizontal–vertical rhythm and variety,
+active ground floor, tactile materials; Spanjar & Suurenbroek 2020); after it
+they name the elements that draw attention in heatmaps, such as entrances,
+balconies, windows and contrasts in light and colour (Spanjar et al. 2024).
+The panels never drew regions; eek-a-look adds them automatically and says so.
+All sources, licences and the pilot are in
+[`reference/secondary_background/areas_sources.md`](reference/secondary_background/areas_sources.md).
+
+| Topic | Decision |
+|---|---|
+| Street categories | OneFormer ADE20K Swin-L (MIT): the 150 classes grouped into façade, sky, greenery, street surface, people, vehicles, signage, street furniture and other. Every pixel belongs to exactly one category |
+| Façade elements | SAM 3, one short noun phrase per call: windows, entrances (doors), balconies, shopfronts. Chosen on published evidence ("the one that should be theoretically better"): mask cgF1 54.1 against 3.3 for Grounding DINO-T on SA-Co/Gold. Gated; its licence asks for an acknowledgement |
+| Ground floor | Façade pixels from where each façade meets the ground up to 4 m, computed from the horizon and an eye-height camera (1.6 m). A stated rule, tested for sensitivity |
+| Processing | On the laptop GPU, like DeepGaze. Masks are published for the 24 example photos only; uploads say "example photos only". No model weights on the site |
+| Display | A new "Areas" tab: outlines on the greyed photo, a legend and a table, tagged "Automatic areas · not an expert judgement" |
+| Statistic | Attention ÷ size per area and layer: 1.0× is what the area's size alone predicts. Raw shares alongside; areas under 0.5% of the photo show "–" |
+| Validation | Automatic; the owner draws nothing. Scored against public human labels (eTRIMS: 60 street photos; CMP Facade: 378 rectified façades), plus robustness and ground-floor checks. The scoring script takes any folder of label masks, so an expert panel can add its own later |
+| Mobile scene video | Designed for (the tool is frame-based and the ground-floor rule suits a head-mounted camera), not built; see *Later* |
+| Simulated panel | In this round: Qwen3-VL (Apache-2.0) run locally as eight simulated members on the 2020 panel's three principles and present/absent/ambiguous scale; shown as "AI judgement, not experts" |
+
+**Pilot (2026-10-18).** OneFormer separates sky, façade, pavement, people,
+posters and signs cleanly, but never windows or doors at street distance.
+Grounding DINO + SAM 2.1 found windows and a glass entrance, yet its
+"shopfront" covered a whole building, the multi-category confusion Zeng and
+Boehm (2024) describe. Hence SAM 3 with one concept per call. Balconies are the
+expected weak spot: no published benchmark covers them.
+
+| # | Prompt | Notes |
+|---|---|---|
+| 021 | `021_area_segmentation.md`: `tools/areas/`, categories, elements, ground floor; masks for the 24 photos | Needs SAM 3 access first (owner) |
+| 022 | `022_area_validation.md`: scores against eTRIMS and CMP Facade; ground-floor and robustness checks | Downloads two public datasets |
+| 023 | `023_areas_view.md`: "Areas" tab, attention ÷ size table, credits; deploy | |
+| 024 | `024_vlm_panel.md`: `tools/vlm-panel/`, eight simulated members, consensus, stability | Laptop GPU |
+| 025 | `025_vlm_panel_in_app.md`: panel judgement on the page; deploy | |
 
 ## Later
 
-- **Areas of interest:** draw a region (ground floor, façade, sky) and show
-  its share of predicted attention.
+- **Mobile scene video.** Run the same area tool on scene-camera frames. Assign
+  each fixation to the area under the gaze point (or a 1° disc, after Orquin et
+  al. 2016). Take the horizon from the headset's IMU (pitch and roll) and the
+  camera height from the wearer's eye height, so the ground-floor rule needs no
+  estimation. Use SAM 3's tracker to keep areas stable across frames. Precedent:
+  MYFix (Alinaghi et al. 2024; Mask2Former on scene video). Check against a few
+  hand-labelled frames.
+- **Expert-panel annotation.** The group's panel draws the same areas on the
+  example photos in any tool that exports label masks; `validate.py --labels`
+  then reports their overlap with the automatic areas and how much the
+  attention ratios change.
+- **Live areas for uploads** through `npm run local` (not chosen now).
+- **Visitors drawing their own areas** (the old v1.1 idea).
 - **Own photos** to replace the Commons examples (eye level, landscape, the same
   camera height throughout).
 - Possibly MSI-Net (MIT licence, TF.js) as a second browser model.
@@ -157,8 +207,21 @@ ends with `npm run deploy`.
   *Run workflow* button.
 - **Too few suitable eye-level Commons photos** for an area: use fewer and
   report it.
+- **SAM 3 access is refused or slow.** Fallback: Grounding DINO base + SAM 2.1
+  (Apache-2.0, no sign-up) with one phrase per call, as a superseding prompt
+  `021b`.
+- **The horizon cannot be found** on a photo taken looking up at towers: the
+  tool falls back to the image's middle row and flags the photo, and the page
+  says so.
+- **Qwen3-VL-8B does not fit in 8 GB** even in 4-bit: use Qwen3-VL-4B and record
+  it.
 
 ## What the owner needs to do
 
 Nothing for v1 except giving the go-ahead and approving any permission prompts.
 Optional: take your own photos to replace the Commons examples.
+
+Before prompt 021: request access to SAM 3 at
+<https://huggingface.co/facebook/sam3> (one click, with the eelkedevries
+account), create a read token at <https://huggingface.co/settings/tokens>, and
+log in on the laptop with `! uvx --from huggingface_hub hf auth login`.
