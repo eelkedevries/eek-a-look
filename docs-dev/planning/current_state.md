@@ -72,4 +72,6 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
   `public/.htaccess` sets types for .mjs/.wasm/.onnx, and the live site loads a
   gzip copy of the 14 MB runtime (3.7 MB) because the host does not compress it.
 - `010_comparison_views.md`
-- `011_about_and_copy.md`
+- `011_about_and_copy.md` (live checks on 2026-10-18: Lighthouse mobile
+  performance 98, accessibility 100, best practices 100, CLS 0.003; no
+  third-party requests; no console errors; UNISAL ready about 1.5 s after load)
