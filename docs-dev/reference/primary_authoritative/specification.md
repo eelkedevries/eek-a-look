@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.10 · **Last updated:** 2026-10-18
+**Version:** 0.11 · **Last updated:** 2026-10-18
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -24,6 +24,8 @@ compare with measured eye-tracking data (owner's decision of 2026-10-18, prompt 
 0.9 shows the measured maps as their own layer, "Measured gaze", with each
 model's match against it (prompt 020). 0.10 adds automatic areas for the
 example photos: nine street categories and the ground floor (prompt 021).
+0.11 adds windows, entrances, balconies and shopfronts, each from the model
+that scored best on human-labelled façades (prompt 023).
 
 ## Scope
 
@@ -169,6 +171,7 @@ interface AreaFile {
     model?: string;       // key in `models` for elements
     instances?: number;
     meanScore?: number;
+    lowConfidence?: boolean; // element whose model scored a mean test IoU below 0.20
   }>;
 }
 ```
@@ -279,8 +282,24 @@ interface ExamplePhoto {
     façade run;
   - the ground floor is the façade pixels from *y<sub>0</sub>* up to
     *y<sub>h</sub> − (H − c)/c · (y<sub>0</sub> − y<sub>h</sub>)*.
-- Other façade elements (windows, entrances, balconies, shopfronts) are added
-  by prompt 023.
+- **Façade elements:** one text phrase per model call: windows ← "window",
+  entrances ← "door", balconies ← "balcony", shopfronts ← "storefront". Only
+  pixels inside the façade category dilated by 1% of the width are kept.
+  - Candidate models:
+    - Grounding DINO base + SAM 2.1 large;
+    - OWLv2 large + SAM 2.1 large;
+    - Florence-2 large + SAM 2.1 large;
+    - SAM 3, once Meta's access review allows it.
+    Revisions are pinned in `tools/areas/elements.py`.
+  - Per model and element, the score threshold (0.05–0.70 in steps of 0.05)
+    with the highest IoU on CMP Facade base images with even numbers is
+    used. Florence-2 has no scores and no threshold.
+  - Per element, the model with the highest mean test IoU is used: test sets
+    are the odd CMP images and, for windows and doors, eTRIMS. Within 0.01
+    of the best, an Apache-2.0 or MIT model is preferred.
+  - An element whose chosen model scores a mean test IoU below 0.20 is marked
+    `lowConfidence`.
+  - Elements may overlap each other and the ground floor.
 
 **Derived views**
 

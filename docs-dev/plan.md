@@ -223,5 +223,5 @@ Nothing for v1 except giving the go-ahead and approving any permission prompts.
 Optional: take your own photos to replace the Commons examples.
 
 Done on 2026-10-18: the laptop is logged in to Hugging Face as eelkedevries,
-and SAM 3 access is requested (manual review by Meta). Nothing else is needed
-before prompts 021–024; SAM 3 joins 023's comparison once approved.
+and Meta granted SAM 3 access the same evening, so SAM 3 is part of 023's
+comparison. Nothing else is needed.

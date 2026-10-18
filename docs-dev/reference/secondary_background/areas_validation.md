@@ -82,3 +82,35 @@ Match with measured gaze on the 12 Zürich photos: per photo, the Spearman corre
 | centre-bias | 0.42 | 0.32 | 12 |
 | unisal | not computed: its browser resizing and priors are not reproduced in Python | | |
 | classic-salience | not computed: it exists only in the browser | | |
+
+## Façade elements: model comparison (prompt 023)
+
+One phrase per call (windows: “window”, entrances: “door”, balconies: “balcony”, shopfronts: “storefront”), kept inside the façade category dilated by 1% of the width. Thresholds were chosen per model and element on the CMP Facade base, even image numbers (0.05–0.7); scores are on the CMP Facade base, odd image numbers; eTRIMS 8-class (windows, doors). Instances are connected components (eTRIMS: labelled objects), matched one-to-one at IoU ≥ 0.5; adjacent CMP windows can merge into one component. Florence-2 gives no scores, so it has no threshold.
+
+| Element | Model | Threshold | eTRIMS IoU | eTRIMS P / R | CMP IoU | CMP P / R |
+|---|---|---|---|---|---|---|
+| windows | A: Grounding DINO base + SAM 2.1 large | 0.35 | 0.69 | 0.73 / 0.83 | 0.60 | 0.69 / 0.64 |
+| windows | B: OWLv2 large + SAM 2.1 large | 0.20 | 0.66 | 0.76 / 0.76 | 0.49 | 0.54 / 0.47 |
+| windows | C: Florence-2 large + SAM 2.1 large | – | 0.63 | 0.63 / 0.77 | 0.44 | 0.51 / 0.34 |
+| windows | D: SAM 3 **(chosen)** | 0.65 | 0.71 | 0.86 / 0.87 | 0.60 | 0.73 / 0.70 |
+| entrances | A: Grounding DINO base + SAM 2.1 large | 0.35 | 0.68 | 0.49 / 0.54 | 0.36 | 0.54 / 0.46 |
+| entrances | B: OWLv2 large + SAM 2.1 large | 0.15 | 0.51 | 0.39 / 0.68 | 0.33 | 0.38 / 0.50 |
+| entrances | C: Florence-2 large + SAM 2.1 large | – | 0.34 | 0.46 / 0.55 | 0.07 | 0.16 / 0.42 |
+| entrances | D: SAM 3 **(chosen)** | 0.65 | 0.75 | 0.63 / 0.73 | 0.34 | 0.34 / 0.53 |
+| balconies | A: Grounding DINO base + SAM 2.1 large | 0.45 | – | – | 0.26 | 0.61 / 0.32 |
+| balconies | B: OWLv2 large + SAM 2.1 large | 0.25 | – | – | 0.43 | 0.11 / 0.35 |
+| balconies | C: Florence-2 large + SAM 2.1 large | – | – | – | 0.07 | 0.05 / 0.09 |
+| balconies | D: SAM 3 **(chosen)** | 0.50 | – | – | 0.57 | 0.55 / 0.70 |
+| shopfronts | A: Grounding DINO base + SAM 2.1 large | 0.05 | – | – | 0.03 | 0.00 / 0.00 |
+| shopfronts | B: OWLv2 large + SAM 2.1 large | 0.30 | – | – | 0.30 | 0.01 / 0.09 |
+| shopfronts | C: Florence-2 large + SAM 2.1 large | – | – | – | 0.03 | 0.01 / 0.04 |
+| shopfronts | D: SAM 3 **(chosen)** | 0.45 | – | – | 0.36 | 0.16 / 0.15 |
+
+| Model | Licence | Status | Seconds per image (4 phrases) | Peak GPU |
+|---|---|---|---|---|
+| A: Grounding DINO base + SAM 2.1 large | Apache-2.0 | ok | 2.84 | 3.34 GB |
+| B: OWLv2 large + SAM 2.1 large | Apache-2.0 | ok | 4.65 | 3.51 GB |
+| C: Florence-2 large + SAM 2.1 large | MIT (Florence-2), Apache-2.0 (SAM 2.1) | ok | 2.2 | 3.31 GB |
+| D: SAM 3 | SAM License (acknowledgement required) | ok | 3.29 | 4.63 GB |
+
+Chosen per element by the highest mean test IoU (an open licence preferred within 0.01): windows: D (IoU 0.66); entrances: D (IoU 0.55); balconies: D (IoU 0.57); shopfronts: D (IoU 0.36).

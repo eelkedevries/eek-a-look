@@ -5,6 +5,7 @@ description = "Automatic areas (street categories, ground floor) for the eek-a-l
 requires-python = ">=3.12,<3.13"
 dependencies = [
   "torch>=2.7",
+  "torchvision",
   "transformers>=5.20",
   "pillow",
   "numpy",

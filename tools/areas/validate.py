@@ -277,8 +277,18 @@ def run_all(model: OneFormer) -> dict:
     result["measuredMatch"]["unisal"] = "not computed: its browser resizing and priors are not reproduced in Python"
     result["measuredMatch"]["classic-salience"] = "not computed: it exists only in the browser"
     result["ratios"] = ratios
-    result["elements"] = None
+    # The element comparison (elements.py, prompt 023) is kept across re-runs.
+    previous = json.loads(VALIDATION_JSON.read_text()) if VALIDATION_JSON.exists() else {}
+    result["elements"] = previous.get("elements")
     return result
+
+
+def save_elements(comparison: dict) -> None:
+    """Store the element comparison in validation.json and regenerate the report."""
+    result = json.loads(VALIDATION_JSON.read_text())
+    result["elements"] = comparison
+    VALIDATION_JSON.write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":")))
+    REPORT.write_text(report(result))
 
 
 # --- output ------------------------------------------------------------------------
@@ -374,7 +384,47 @@ def report(result: dict) -> str:
             lines.append(f"| {layer} | {m['meanSpearman']:.2f} | {m['sd']:.2f} | {m['photos']} |")
         else:
             lines.append(f"| {layer} | {m} | | |")
+    if result.get("elements"):
+        lines += elements_report(result["elements"])
     return "\n".join(lines) + "\n"
+
+
+def elements_report(comparison: dict) -> list[str]:
+    candidates = comparison["candidates"]
+    winners = comparison["winners"]
+    lines = [
+        "",
+        "## Façade elements: model comparison (prompt 023)",
+        "",
+        f"One phrase per call ({', '.join(f'{e}: “{p}”' for e, p in comparison['phrases'].items())}), "
+        "kept inside the façade category dilated by 1% of the width. Thresholds were chosen per model and "
+        f"element on the {comparison['calibration']} ({comparison['thresholdGrid'][0]}–{comparison['thresholdGrid'][-1]}); "
+        f"scores are on the {comparison['test']}. Instances are connected components (eTRIMS: labelled "
+        "objects), matched one-to-one at IoU ≥ 0.5; adjacent CMP windows can merge into one component. "
+        "Florence-2 gives no scores, so it has no threshold.",
+        "",
+        "| Element | Model | Threshold | eTRIMS IoU | eTRIMS P / R | CMP IoU | CMP P / R |",
+        "|---|---|---|---|---|---|---|",
+    ]
+    for eid in comparison["phrases"]:
+        for key, res in candidates.items():
+            if res["status"] != "ok":
+                continue
+            t = res["test"].get(eid, {})
+            e, c = t.get("etrims", {}), t.get("cmp", {})
+            pr = lambda d: "–" if not d or d.get("precision") is None else f"{d['precision']:.2f} / {fmt(d.get('recall'))}"
+            mark = " **(chosen)**" if winners[eid]["candidate"] == key else ""
+            lines.append(f"| {eid} | {key}: {res['name']}{mark} | {fmt(res['thresholds'].get(eid))} | {fmt(e.get('iou'))} | "
+                         f"{pr(e)} | {fmt(c.get('iou'))} | {pr(c)} |")
+    lines += ["", "| Model | Licence | Status | Seconds per image (4 phrases) | Peak GPU |", "|---|---|---|---|---|"]
+    for key, res in candidates.items():
+        lines.append(f"| {key}: {res['name']} | {res.get('licence', '–')} | {res['status']} | "
+                     f"{res.get('secondsPerImage', '–')} | {res.get('peakGpuGb', '–')} GB |")
+    low = [e for e, w in winners.items() if w["lowConfidence"]]
+    lines += ["", "Chosen per element by the highest mean test IoU (an open licence preferred within 0.01): "
+              + "; ".join(f"{e}: {w['candidate']} (IoU {w['meanTestIou']:.2f})" for e, w in winners.items()) + "."
+              + (f" Marked low-confidence (mean test IoU below 0.20): {', '.join(low)}." if low else "")]
+    return lines
 
 
 def main() -> int:

@@ -77,7 +77,8 @@ CUDA ≥ 12.6, gated checkpoints) and its `LICENSE`;
 version, `facebook/sam3.1` (March 2026), has the same manual gate. Ungated
 repackaged copies exist, for example `Comfy-Org/sam3.1` (one 1.75 GB fp16
 file for ComfyUI, with the SAM License). This project does not use them; the
-owner chose to wait for Meta's review.
+owner chose to wait for Meta's review. Access to `facebook/sam3` was granted
+on 2026-10-18, a few hours after the request.
 
 **SAM 3 against detector-plus-SAM pipelines.** Carion et al. (2025), SAM 3:
 Segment Anything with Concepts, arXiv:[2511.16719](https://arxiv.org/abs/2511.16719)

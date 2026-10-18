@@ -76,6 +76,41 @@ uv run build.py   # areas for all example photos, overlays in .cache/check/
 The first run downloads OneFormer (about 0.9 GB). On the RTX 4070 a photo
 takes about 0.5 s, with a peak of 2 GB of GPU memory.
 
+## Façade elements (prompt 023)
+
+```sh
+uv run elements.py --compare   # calibrate and test four models on CMP Facade and eTRIMS
+uv run elements.py --apply     # add the winners' windows, entrances, balconies, shopfronts
+```
+
+Each model gets one phrase per call: "window", "door", "balcony",
+"storefront". It returns a score map (per pixel, the highest score of the
+masks covering it), cut to the façade category dilated by 1% of the width.
+The candidates:
+- Grounding DINO base + SAM 2.1 large (Apache-2.0);
+- OWLv2 large + SAM 2.1 large (Apache-2.0);
+- Florence-2 large + SAM 2.1 large (MIT and Apache-2.0). This uses
+  `florence-community/Florence-2-large`, the copy of Microsoft's weights that
+  loads with the class built into `transformers`; remote code is never run;
+- SAM 3 (SAM License, gated: Meta approves access by hand). It is skipped
+  with "access pending" until the download works.
+
+How the winner is chosen:
+1. The threshold per model and element is chosen on CMP images with even
+   numbers.
+2. The models are tested on the odd CMP images and on eTRIMS (windows and
+   doors only).
+3. Per element, the highest mean test IoU wins; within 0.01, an open licence
+   is preferred. A winner below IoU 0.20 is marked `lowConfidence`.
+
+`--compare` saves the comparison to `.cache/elements_comparison.json` and to
+the `elements` section of `validation.json`, and regenerates the report.
+`--apply` reads it, so after SAM 3 access is granted, re-running both
+commands brings SAM 3 into the comparison.
+
+Using SAM 3 requires acknowledging it in publications, under the SAM
+License.
+
 ## Validation (prompt 022)
 
 ```sh

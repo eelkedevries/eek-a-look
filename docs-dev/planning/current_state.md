@@ -125,3 +125,9 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   pixels lie inside the computed ground floor. Area ratios match measured gaze
   on Zürich: MSDB ρ 0.91, IIE 0.82, centre bias 0.42. Report:
   `docs-dev/reference/secondary_background/areas_validation.md`)
+- `023_element_models.md` (spec 0.11; `tools/areas/elements.py` compared
+  Grounding DINO + SAM 2.1, OWLv2 + SAM 2.1, Florence-2 + SAM 2.1 and SAM 3 on
+  CMP Facade and eTRIMS. SAM 3 won all four elements (mean test IoU: windows
+  0.66, entrances 0.55, balconies 0.57, shopfronts 0.36) and its masks are in
+  the area files. Glass curtain walls are not seen as windows; "storefront"
+  sometimes covers a station hall or a shelter roof)
