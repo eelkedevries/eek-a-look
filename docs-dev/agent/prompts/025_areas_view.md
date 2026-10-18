@@ -12,8 +12,9 @@ systems or future prompts.
 
 ## Context
 
-- Area files: `public/precomputed/areas/<photo-id>.json` (021, `AreaFile` in
-  the specification). Validation numbers: `public/precomputed/areas/validation.json` (022).
+- Area files: `public/precomputed/areas/<photo-id>.json` (categories and
+  ground floor from 021, elements from 023; `AreaFile` in the specification).
+  Validation numbers: `public/precomputed/areas/validation.json` (022, 023).
 - Decisions: `docs-dev/plan.md`, *Fifth round*. Statistic: attention ÷ size,
   where 1.0× is what the area's size alone predicts.
 - The host's proxy cache can serve stale copies of changed files (see commit
@@ -49,17 +50,26 @@ systems or future prompts.
      predicts. Areas are found automatically and can be wrong."
    Compute shares in `src/maps/areas.ts`: decode the run lengths, upsample each
    map to the mask size with `resample()`, and sum within the mask.
-5. On a photo whose horizon method is `assumed-level`, add under the table:
-   "Ground floor estimated assuming a level camera."
+5. Under the table:
+   - on a photo whose horizon method is `assumed-level`: "Ground floor
+     estimated assuming a level camera.";
+   - for an element marked `low-confidence`, a note after its name in the
+     legend and the table: "(unreliable: low score in the check)".
 6. About:
-   - a paragraph "Automatic areas" (90–130 words): how the areas are made
-     (OneFormer categories, SAM 3 elements, the 4 m ground-floor rule), the
-     main validation numbers read from `validation.json` (window and façade
-     IoU on eTRIMS, balcony and shopfront IoU on CMP), and the limits (pixel
-     share is not perceived share; balconies are the weak spot; not an
-     expert judgement);
-   - credits: OneFormer (MIT); SAM 3 with the acknowledgement its licence
-     requires; ADE20K; eTRIMS and CMP Facade, used for checking.
+   - a paragraph "Automatic areas" (90–130 words) covering:
+     - how the areas are made: OneFormer categories, the element models
+       named in the area files, the 4 m ground-floor rule;
+     - the main validation numbers, read from `validation.json`: façade IoU
+       and the door share inside the ground floor on eTRIMS, and the element
+       IoUs;
+     - the limits: pixel share is not perceived share; elements can be
+       missed; this is not an expert judgement;
+   - credits:
+     - OneFormer (MIT);
+     - each element model used, with its licence, and the acknowledgement
+       the SAM License requires if SAM 3 is used;
+     - ADE20K;
+     - eTRIMS and CMP Facade, used for checking.
 7. Specification (bump the version, with a line in *Changes*):
    - the Areas view under *Derived views*;
    - the statistic and the 0.5% rule;
@@ -74,7 +84,7 @@ Do not implement:
 - drawing or editing areas by visitors;
 - areas for uploads, or a live route through `npm run local`;
 - other statistics (dwell time, entropy, a centre-bias correction);
-- the simulated panel (025).
+- the simulated panel (026).
 
 ## Acceptance criteria
 

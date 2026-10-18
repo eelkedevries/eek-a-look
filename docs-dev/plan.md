@@ -146,7 +146,7 @@ All sources, licences and the pilot are in
 | Topic | Decision |
 |---|---|
 | Street categories | OneFormer ADE20K Swin-L (MIT): the 150 classes grouped into façade, sky, greenery, street surface, people, vehicles, signage, street furniture and other. Every pixel belongs to exactly one category |
-| Façade elements | SAM 3, one short noun phrase per call: windows, entrances (doors), balconies, shopfronts. Chosen on published evidence ("the one that should be theoretically better"): mask cgF1 54.1 against 3.3 for Grounding DINO-T on SA-Co/Gold. Gated; its licence asks for an acknowledgement |
+| Façade elements | One short noun phrase per call: windows, entrances (doors), balconies, shopfronts. First choice SAM 3, on published evidence ("the one that should be theoretically better": mask cgF1 54.1 against 3.3 for Grounding DINO-T on SA-Co/Gold). Its access is under Meta's manual review, so (owner, later on 2026-10-18) the ungated models are measured now. Grounding DINO + SAM 2.1, OWLv2 + SAM 2.1 and Florence-2 are tuned on half of CMP Facade and tested on the other half and eTRIMS. SAM 3 joins the same test once approved, and the best model per element is used. No unofficial copies of SAM 3 |
 | Ground floor | Façade pixels from where each façade meets the ground up to 4 m, computed from the horizon and an eye-height camera (1.6 m). A stated rule, tested for sensitivity |
 | Processing | On the laptop GPU, like DeepGaze. Masks are published for the 24 example photos only; uploads say "example photos only". No model weights on the site |
 | Display | A new "Areas" tab: outlines on the greyed photo, a legend and a table, tagged "Automatic areas · not an expert judgement" |
@@ -164,11 +164,12 @@ expected weak spot: no published benchmark covers them.
 
 | # | Prompt | Notes |
 |---|---|---|
-| 021 | `021_area_segmentation.md`: `tools/areas/`, categories, elements, ground floor; masks for the 24 photos | Needs SAM 3 access first (owner) |
-| 022 | `022_area_validation.md`: scores against eTRIMS and CMP Facade; ground-floor and robustness checks | Downloads two public datasets |
-| 023 | `023_areas_view.md`: "Areas" tab, attention ÷ size table, credits; deploy | |
+| 021 | `021_area_categories.md`: `tools/areas/`, street categories and ground floor; masks for the 24 photos | No SAM 3 needed |
+| 022 | `022_area_validation.md`: categories against eTRIMS and CMP Facade; ground floor against eTRIMS doors; robustness | Downloads two public datasets |
+| 023 | `023_element_models.md`: fair comparison of element models; the best per element added to the areas | SAM 3 included once approved |
 | 024 | `024_vlm_panel.md`: `tools/vlm-panel/`, eight simulated members, consensus, stability | Laptop GPU |
-| 025 | `025_vlm_panel_in_app.md`: panel judgement on the page; deploy | |
+| 025 | `025_areas_view.md`: "Areas" tab, attention ÷ size table, credits; deploy | |
+| 026 | `026_vlm_panel_in_app.md`: panel judgement on the page; deploy | |
 
 ## Later
 
@@ -207,9 +208,9 @@ expected weak spot: no published benchmark covers them.
   *Run workflow* button.
 - **Too few suitable eye-level Commons photos** for an area: use fewer and
   report it.
-- **SAM 3 access is refused or slow.** Fallback: Grounding DINO base + SAM 2.1
-  (Apache-2.0, no sign-up) with one phrase per call, as a superseding prompt
-  `021b`.
+- **SAM 3 access is refused or slow.** Prompt 023 measures the ungated models
+  meanwhile and uses the best of them; SAM 3 is added by re-running the
+  comparison once access is granted.
 - **The horizon cannot be found** on a photo taken looking up at towers: the
   tool falls back to the image's middle row and flags the photo, and the page
   says so.
@@ -221,7 +222,6 @@ expected weak spot: no published benchmark covers them.
 Nothing for v1 except giving the go-ahead and approving any permission prompts.
 Optional: take your own photos to replace the Commons examples.
 
-Before prompt 021: request access to SAM 3 at
-<https://huggingface.co/facebook/sam3> (one click, with the eelkedevries
-account), create a read token at <https://huggingface.co/settings/tokens>, and
-log in on the laptop with `! uvx --from huggingface_hub hf auth login`.
+Done on 2026-10-18: the laptop is logged in to Hugging Face as eelkedevries,
+and SAM 3 access is requested (manual review by Meta). Nothing else is needed
+before prompts 021–024; SAM 3 joins 023's comparison once approved.

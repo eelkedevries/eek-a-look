@@ -60,6 +60,7 @@ primary source on 2026-10-18, unless marked **not verified**.
 | SegFormer (NVIDIA) ADE20K / Cityscapes | as the dataset | NVIDIA Source Code License: "only may be used ... non-commercially", i.e. "for research or evaluation purposes only" | B0–B5 | Supported; ONNX exports exist (`onnx-community/segformer-b3-finetuned-ade-512-512-ONNX`) |
 | SAM 3 (`facebook/sam3`) | any short noun phrase ("window", "balcony") | SAM License (19 Nov 2025): royalty-free limited licence; redistribution only with the agreement; "you must acknowledge the use of SAM Materials in your publication"; gated on Hugging Face | 848M params (README); 3.44 GB fp32 file; VRAM **not verified**, to be measured | Transformers.js lists SAM 3, but only the tracker (point/box prompts) is exported to ONNX (`onnx-community/sam3-tracker-ONNX`) |
 | Grounding DINO base + SAM 2.1 large | any phrase (boxes), then masks | Apache-2.0 (both); Grounded-SAM-2 repo Apache-2.0 | 233M + 224M params; **measured** peak 4.34 GB | Both listed in Transformers.js |
+| OWLv2 large (`google/owlv2-large-patch14-ensemble`) | any phrase (boxes) | Apache-2.0 | 438M | Listed in Transformers.js |
 | CLIPSeg (`CIDAS/clipseg-rd64-refined`) | any phrase, coarse | Apache-2.0 | 151M | Supported |
 | Florence-2 large | referring segmentation | MIT | 777M | Supported |
 
@@ -70,6 +71,13 @@ Sources: model cards and `config.json` on Hugging Face (fetched 2026-10-18);
 CUDA ≥ 12.6, gated checkpoints) and its `LICENSE`;
 <https://github.com/IDEA-Research/Grounded-SAM-2>;
 <https://huggingface.co/docs/transformers.js/index>.
+
+**SAM 3 access.** The Hugging Face gate of `facebook/sam3` is `manual`
+(checked with the Hub API on 2026-10-18): Meta reviews each request. A later
+version, `facebook/sam3.1` (March 2026), has the same manual gate. Ungated
+repackaged copies exist, for example `Comfy-Org/sam3.1` (one 1.75 GB fp16
+file for ComfyUI, with the SAM License). This project does not use them; the
+owner chose to wait for Meta's review.
 
 **SAM 3 against detector-plus-SAM pipelines.** Carion et al. (2025), SAM 3:
 Segment Anything with Concepts, arXiv:[2511.16719](https://arxiv.org/abs/2511.16719)

@@ -13,7 +13,7 @@ systems or future prompts.
 ## Context
 
 - Panel output: `public/precomputed/vlm-panel/panel.json` (024).
-- The Areas tab exists (023); the panel goes under its table.
+- The Areas tab exists (025); the panel goes under its table.
 - The near-top statement and the honesty rules are in the specification.
 
 ## Required changes

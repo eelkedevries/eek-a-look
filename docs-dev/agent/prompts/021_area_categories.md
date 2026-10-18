@@ -1,10 +1,10 @@
-# Task: Automatic areas for the example photos
+# Task: Street categories and ground floor for the example photos
 
 ## Goal
 
-For each of the 24 example photos, compute automatic areas (street
-categories, façade elements and the ground floor) on the laptop GPU and
-publish them as masks.
+For each of the 24 example photos, compute the automatic street categories
+and the ground floor on the laptop GPU and publish them as masks; façade
+elements follow in 023.
 
 ## Scope
 
@@ -20,15 +20,8 @@ systems or future prompts.
 - **Street categories:** OneFormer ADE20K Swin-L,
   `shi-labs/oneformer_ade20k_swin_large` (MIT). Pilot: 0.24–0.52 s per photo,
   2.65 GB peak. It finds sky, building, pavement, people, posters and signs,
-  but no windows or doors at street distance.
-- **Façade elements:** SAM 3, `facebook/sam3` (SAM License, gated, 848M
-  parameters), through `Sam3Model` and `Sam3Processor` in `transformers` 5.20.
-  Prompt **one concept per call**: several similar categories in one prompt
-  confuse open-vocabulary models (Zeng & Boehm 2024; in the pilot,
-  "shopfront" covered a whole building).
-- **Prerequisite (owner):** access to `facebook/sam3` granted, and a Hugging
-  Face login on the laptop. If the download fails with HTTP 401 or 403, stop
-  and report; do not switch models.
+  but no windows or doors at street distance, which is why the elements get
+  their own prompt (023).
 - The ground-floor rule follows the horizon relation in Hoiem, Efros & Hebert
   (2008); see the sources file.
 
@@ -36,7 +29,7 @@ systems or future prompts.
 
 1. Create `tools/areas/` as a `uv` project with a pinned Python (3.12),
    `torch`, `transformers` (≥ 5.20, locked), `pillow`, `numpy`, `scipy` and
-   `opencv-python-headless`. Pin both model revisions (commit hashes) in code.
+   `opencv-python-headless`. Pin the model revision (commit hash) in code.
 2. `build.py` processes every photo in `public/examples/examples.json`:
    1. **Street categories.** Run OneFormer (task "semantic") on the photo and
       map the 150 ADE20K class indices to nine categories, so that every pixel
@@ -56,12 +49,7 @@ systems or future prompts.
         69 bench, 138 ashcan, 32 fence, 38 railing, 95 bannister, 88 booth,
         106 canopy, 104 fountain, 132 sculpture, 19 chair, 15 table, 114 tent;
       - `other`: every remaining index.
-   2. **Façade elements.** Run SAM 3 once per phrase, with a score threshold of
-      0.5: `windows` ← "window", `entrances` ← "door", `balconies` ←
-      "balcony", `shopfronts` ← "storefront". Keep only pixels inside the
-      `facade` category dilated by 1% of the image width. Elements may
-      overlap each other. Record the instance count and mean score per element.
-   3. **Ground floor.** With camera height *c* = 1.6 m and storey height
+   2. **Ground floor.** With camera height *c* = 1.6 m and storey height
       *H* = 4.0 m:
       - estimate the horizon row *y<sub>h</sub>* from vanishing points of
         receding horizontal façade edges (line segments on façade pixels,
@@ -76,52 +64,53 @@ systems or future prompts.
         *y<sub>h</sub>*;
       - the ground floor is the façade pixels between *y<sub>0</sub>* and
         *y<sub>h</sub> − (H − c)/c · (y<sub>0</sub> − y<sub>h</sub>)*;
-      - document these details and any edge cases in the README.
-   4. **Write** `public/precomputed/areas/<photo-id>.json` in the format of
+      - put the ground-floor code in a module that 022 and 023 can import,
+        and document the details and edge cases in the README.
+   3. **Write** `public/precomputed/areas/<photo-id>.json` in the format of
       step 3, with masks at the photo's size scaled to 640 px on the long
-      side.
-   5. **Check images.** Write two overlays per photo to `.cache/check/`
-      (categories; elements with the ground-floor band and the horizon line).
-      Print a table: id, horizon method, head offset (median top row of
-      standing people minus the horizon row, in % of the height; "–" without
-      people), % per category, % per element, seconds per photo, and the peak
-      GPU memory.
+      side. The ground floor is an `element`; 023 adds the other elements to
+      the same files without changing the categories.
+   4. **Check images.** Write an overlay per photo to `.cache/check/`
+      (categories, the ground-floor band and the horizon line). Print a table:
+      id, horizon method, head offset (median top row of standing people
+      minus the horizon row, in % of the height; "–" without people), % per
+      category, % ground floor, seconds per photo, and the peak GPU memory.
 3. Add to `specification.md` (bump to 0.10, with a line in *Changes*):
    - *Data schemas*: `AreaFile`:
-     `{ photo; width; height; horizon: { row, method: 'vanishing-lines' | 'assumed-level' }; params: { cameraHeightM, storeyHeightM, sam3Threshold }; models: { oneformer, sam3 }; areas: Array<{ id, label, group: 'category' | 'element', share, rle: number[], instances?, meanScore? }> }`.
+     `{ photo; width; height; horizon: { row, method: 'vanishing-lines' | 'assumed-level' }; params: { cameraHeightM, storeyHeightM }; models: Record<string, string>; areas: Array<{ id, label, group: 'category' | 'element', share, rle: number[], model?, instances?, meanScore? }> }`.
      `rle` holds row-major run lengths that start outside the area.
-     `share` is the area's fraction of all pixels.
-   - *Domain rules*: an "Automatic areas" block with the category table, the
-     element phrases and the ground-floor rule above.
+     `share` is the area's fraction of all pixels. `models` maps a step to
+     its repository and revision.
+   - *Domain rules*: an "Automatic areas" block with the category table and
+     the ground-floor rule. Façade elements are named in 023.
    - *Architecture*: area masks are pre-computed for the example photos only.
-4. Write `tools/areas/README.md`: purpose, the recipe, licences (OneFormer MIT;
-   SAM 3 under the SAM License, gated, acknowledged, never published), the
-   commands, and what the areas are not (an expert judgement, a measured
-   share of perception).
+4. Write `tools/areas/README.md`: purpose, the recipe, the licence (OneFormer
+   MIT, weights never published), the commands, and what the areas are not
+   (an expert judgement, a measured share of perception).
 5. Add `tools/areas/.cache/` and `tools/areas/.venv/` to `.gitignore`.
 
 ## Do not implement
 
 Do not implement:
-- any page change (023) or an `npm run local` route;
+- façade elements other than the ground floor (023);
+- any page change (025) or an `npm run local` route;
 - scoring against datasets (022);
-- other element phrases, prompt tuning on these photos, or a fallback model;
 - the simulated panel (024).
 
 ## Acceptance criteria
 
 The task is complete when:
 - `uv run build.py` in `tools/areas/` writes 24 area files and the table;
-- in every file: each mask's run lengths sum to width × height; the nine
-  categories cover every pixel exactly once and their shares sum to 1 (within
-  1e-9); the ground floor lies inside `facade`; each element lies inside the
-  dilated `facade`; the file is at most 150 kB;
-- the run finishes on the RTX 4070, and the peak GPU memory is printed and
-  quoted in the final report;
+- in every file:
+  - each mask's run lengths sum to width × height;
+  - the nine categories cover every pixel exactly once, and their shares sum
+    to 1 (within 1e-9);
+  - the ground floor lies inside `facade`;
+  - the file is at most 150 kB;
+- the peak GPU memory is printed and quoted in the final report;
 - for zuidas-gershwinplein, weena-stationsplein, zurich-18 and zurich-23, the
   final report states for each photo, after viewing the overlays:
-  - whether windows on the visible façades were found (yes, partly or no);
-  - which entrances, balconies and shopfronts were found or missed;
+  - whether the categories look right, and what is mislabelled;
   - whether the ground-floor top lies near the first-floor line;
   - where the horizon lies relative to the heads of standing people;
 - no model weights or files over 50 MB are in git, and `npm run check` passes.

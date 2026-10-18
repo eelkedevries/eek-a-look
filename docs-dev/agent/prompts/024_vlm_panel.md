@@ -66,7 +66,7 @@ systems or future prompts.
    - **exploratory cross-check**, labelled as such: the Spearman correlation
      between the ground-floor verdicts (present = 1, absent = 0, ambiguous
      left out) and the share of each photo's ground floor covered by
-     entrances and shopfronts (area files from 021);
+     entrances and shopfronts (area files from 021 and 023);
    - print a table per photo, the kappas, the stability, the cross-check, the
      time per photo and the peak GPU memory.
 4. Write `public/precomputed/vlm-panel/panel.json`: model id, revision,
@@ -82,7 +82,7 @@ systems or future prompts.
 ## Do not implement
 
 Do not implement:
-- page changes (025);
+- page changes (026);
 - scores on a scale, rankings, or judgements beyond the three principles;
 - hosted models or API calls;
 - fine-tuning, or tuning the prompt to reach a wanted result.
