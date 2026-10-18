@@ -25,8 +25,14 @@ const BASE = `${import.meta.env.BASE_URL}models/unisal/`;
 // On the live host the runtime is fetched as the gzip copy the build writes
 // (scripts/precompress.mjs), which public/.htaccess serves gzip-encoded:
 // about 4 MB instead of 14. Local servers have no such copy or header.
+// The version query gives the runtime files URLs that the host's cache has not
+// stored without a Content-Type; bump it if a cached copy ever goes stale again.
 const local = ['localhost', '127.0.0.1'].includes(self.location.hostname);
-ort.env.wasm.wasmPaths = { wasm: local ? wasmUrl : `${wasmUrl}.gz`, mjs: mjsUrl };
+const RUNTIME_VERSION = '?v=1';
+ort.env.wasm.wasmPaths = {
+  wasm: (local ? wasmUrl : `${wasmUrl}.gz`) + RUNTIME_VERSION,
+  mjs: mjsUrl + RUNTIME_VERSION,
+};
 ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 1) : 1;
 
 let ready: Promise<{ session: ort.InferenceSession; info: ModelInfo }> | null = null;

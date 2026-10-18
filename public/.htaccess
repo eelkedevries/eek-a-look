@@ -1,5 +1,7 @@
-# The host sends no Content-Type for these, which stops browsers from
-# compiling WebAssembly while it downloads.
+# The host sends no Content-Type for these. Browsers refuse to import a module
+# script without a JavaScript type, and cannot compile WebAssembly while it
+# downloads without application/wasm.
+AddType text/javascript .mjs
 AddType application/wasm .wasm
 AddType application/octet-stream .onnx
 
