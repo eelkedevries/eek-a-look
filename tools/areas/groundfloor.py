@@ -5,7 +5,8 @@ For a level pinhole camera at height c over flat ground, a point at height h on
 a vertical façade lies at row y = y_h − (h − c)/c · (y0 − y_h), where y_h is the
 horizon row and y0 the row where that façade meets the ground (Hoiem, Efros &
 Hebert 2008). The horizon is estimated from vanishing points of receding
-horizontal façade edges, assuming no roll.
+horizontal façade edges, assuming no roll; failing that, from the heads of
+people standing on the street (prompt 021b); failing that, the middle row.
 """
 
 import cv2
@@ -59,9 +60,8 @@ def _vanishing_point(seg: np.ndarray, rng: np.random.Generator) -> tuple[np.ndar
     return best, best_inliers
 
 
-def horizon_row(gray: np.ndarray, facade: np.ndarray, seed: int = 0) -> tuple[float, str, int]:
-    """Horizon row in gray's pixels, the method and the number of supporting segments."""
-    h = gray.shape[0]
+def vanishing_row(gray: np.ndarray, facade: np.ndarray, seed: int = 0) -> tuple[float | None, int]:
+    """Horizon row in gray's pixels from receding façade edges (None if too few agree) and the support."""
     seg = _segments(gray, facade)
     rng = np.random.default_rng(seed)
     rows, weights = [], []
@@ -74,11 +74,51 @@ def horizon_row(gray: np.ndarray, facade: np.ndarray, seed: int = 0) -> tuple[fl
         rows.append(v[1])
         weights.append(int(inliers.sum()))
         seg = seg[~inliers]
-    if rows:
-        row = float(np.average(rows, weights=weights))
-        if 0.1 * h <= row <= 0.9 * h:
-            return row, "vanishing-lines", int(sum(weights))
-    return h / 2, "assumed-level", int(sum(weights))
+    return (float(np.average(rows, weights=weights)) if rows else None), int(sum(weights))
+
+
+# Head tops at about 1.75 m, camera at 1.6 m: the horizon lies 0.15/1.75 of a
+# standing person's height below the top of the head.
+HEAD_TO_HORIZON = (1.75 - CAMERA_HEIGHT_M) / 1.75
+MIN_PEOPLE = 3
+
+
+def standing_people_row(categories: np.ndarray, ids: list[str]) -> tuple[float | None, int]:
+    """Horizon row on the category grid from people standing on street surface, and how many were used."""
+    height = categories.shape[0]
+    street = categories == ids.index("street-surface")
+    labels, _ = ndimage.label(categories == ids.index("people"))
+    rows = []
+    for k, sl in enumerate(ndimage.find_objects(labels), start=1):
+        if sl is None:
+            continue
+        top, bottom = sl[0].start, sl[0].stop - 1
+        tall = bottom - top + 1
+        if tall < 0.05 * height or bottom + 1 >= height:
+            continue
+        feet = np.flatnonzero(labels[bottom, sl[1]] == k) + sl[1].start
+        if street[bottom + 1, feet].any():
+            rows.append(top + HEAD_TO_HORIZON * tall)
+    return (float(np.median(rows)) if len(rows) >= MIN_PEOPLE else None), len(rows)
+
+
+def estimate_horizon(gray: np.ndarray, categories: np.ndarray, ids: list[str]) -> tuple[float, str, int]:
+    """Horizon row on the category grid, the method and its support (segments or people).
+
+    Façade vanishing lines first; then standing people; then the middle row.
+    A row outside the middle 80% of the image is not accepted.
+    """
+    height = categories.shape[0]
+    ok = lambda row: row is not None and 0.1 * height <= row <= 0.9 * height
+    row, support = vanishing_row(gray, categories == ids.index("facade"))
+    if row is not None:
+        row = row * height / gray.shape[0]
+    if ok(row):
+        return row, "vanishing-lines", support
+    row, people = standing_people_row(categories, ids)
+    if ok(row):
+        return row, "standing-people", people
+    return height / 2, "assumed-level", support
 
 
 def ground_floor(categories: np.ndarray, ids: list[str], horizon: float,

@@ -32,7 +32,12 @@ Sources: `docs-dev/reference/secondary_background/areas_sources.md`.
      inliers within 1.5°. Assuming no roll, they lie on the horizon. The
      horizon row is their inlier-weighted mean;
    - with fewer than 15 supporting segments, or a row outside the middle 80%,
-     the middle row is used instead (`assumed-level`).
+     the horizon comes from people instead (`standing-people`, prompt 021b).
+     This needs at least 3 people at least 5% of the image tall whose lowest
+     pixels touch street surface. The horizon row is the median of
+     head-top row + 0.086 × the person's height: head tops at about 1.75 m,
+     the camera at 1.6 m;
+   - failing that, the middle row is used (`assumed-level`).
 3. **Ground floor** (`groundfloor.ground_floor`), with camera height
    *c* = 1.6 m and storey height *H* = 4.0 m:
    - in each column, the base *y<sub>0</sub>* is the lowest façade pixel, if
@@ -47,9 +52,14 @@ Sources: `docs-dev/reference/secondary_background/areas_sources.md`.
      line on a vertical façade, for a level camera at eye height (Hoiem,
      Efros & Hebert 2008).
 
+`build.py` keeps the façade elements that `elements.py` added, so the
+categories and the ground floor can be rebuilt without re-running the element
+models.
+
 Known limits:
-- On photos taken looking up at towers, no horizon may be found. The middle
-  row then sits too high, so the ground floor comes out too tall.
+- On photos taken looking up at towers, without enough standing people, no
+  horizon may be found. The middle row then sits too high, so the ground floor
+  comes out too tall.
 - Where every façade base is hidden (a tram, a shelter, crowds), no ground
   floor is found.
 - `build.py` prints a *head offset*: the median top row of standing people

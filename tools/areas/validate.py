@@ -24,7 +24,7 @@ from PIL import Image
 from scipy import ndimage, stats
 
 from common import CATEGORIES, CATEGORY_IDS, HERE, ONEFORMER, ONEFORMER_REVISION, OUT, REPO, OneFormer, decode_rle, device, mask_size, photos
-from groundfloor import CAMERA_HEIGHT_M, STOREY_HEIGHT_M, ground_floor, head_offset, horizon_row
+from groundfloor import CAMERA_HEIGHT_M, STOREY_HEIGHT_M, estimate_horizon, ground_floor, head_offset
 
 MAPPINGS = HERE / "mappings"
 VALIDATION_JSON = OUT / "validation.json"
@@ -61,9 +61,7 @@ def segment(mapping: dict, model: OneFormer) -> list[dict]:
         record = {"name": label_path.stem, "cats": cats,
                   "label": np.asarray(Image.open(label_path).resize(size, Image.NEAREST))}
         if mapping.get("doors"):
-            row, method, _ = horizon_row(np.asarray(image.convert("L")), cats == CATEGORY_IDS.index("facade"))
-            record["horizon"] = row * size[1] / image.height
-            record["method"] = method
+            record["horizon"], record["method"], _ = estimate_horizon(np.asarray(image.convert("L")), cats, CATEGORY_IDS)
             if mapping.get("objects"):
                 record["objects"] = np.asarray(Image.open(mapping["objects"] / label_path.name).resize(size, Image.NEAREST))
         records.append(record)
@@ -228,7 +226,7 @@ def run_all(model: OneFormer) -> dict:
                          "groundFloorShare": round(float(base_share[pid]), 4)})
     result["groundFloor"] = {
         "etrimsDoors": sensitivity[0]["etrimsDoors"],
-        "etrimsHorizonMethods": {m: sum(r["method"] == m for r in etrims) for m in ("vanishing-lines", "assumed-level")},
+        "etrimsHorizonMethods": {m: sum(r["method"] == m for r in etrims) for m in ("vanishing-lines", "standing-people", "assumed-level")},
         "sensitivity": sensitivity,
         "examples": horizons,
     }

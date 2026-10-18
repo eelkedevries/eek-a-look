@@ -120,6 +120,10 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   The horizon came from façade lines on 17 photos; on photos looking up at
   towers the fallback makes the ground floor too tall, and where all bases are
   hidden it is empty)
+- `021b_horizon_from_people.md` (spec 0.12: horizon from standing people when
+  façade lines fail. Now 17 photos use façade lines, 2 people and 5 the middle
+  row; weena-stationsplein's ground floor fell from 34.6% to 3.8% of the
+  photo. eTRIMS door share unchanged at 0.914)
 - `022_area_validation.md` (eTRIMS IoU: façade 0.96, sky 0.98, street surface
   0.92, vehicles 0.93, greenery 0.88; CMP façade 0.84. 91% of eTRIMS door
   pixels lie inside the computed ground floor. Area ratios match measured gaze

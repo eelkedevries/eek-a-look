@@ -14,7 +14,7 @@ import torch
 from PIL import Image, ImageDraw
 
 from common import CACHE, CATEGORIES, CATEGORY_IDS, EXAMPLES, ONEFORMER, ONEFORMER_REVISION, OUT, OneFormer, area_entry, decode_rle, device, mask_size, photos, write_area_file
-from groundfloor import CAMERA_HEIGHT_M, STOREY_HEIGHT_M, ground_floor, head_offset, horizon_row
+from groundfloor import CAMERA_HEIGHT_M, STOREY_HEIGHT_M, estimate_horizon, ground_floor, head_offset
 
 MAX_FILE_BYTES = 150_000
 # Okabe–Ito colours for the check overlays; white and grey for the last two.
@@ -83,9 +83,7 @@ def main() -> int:
         image = Image.open(EXAMPLES / photo["file"]).convert("RGB")
         size = mask_size(image.width, image.height)
         categories = model.categories(image, size)
-        facade = categories == CATEGORY_IDS.index("facade")
-        row, method, support = horizon_row(np.asarray(image.convert("L")), facade)
-        horizon = row * size[1] / image.height
+        horizon, method, support = estimate_horizon(np.asarray(image.convert("L")), categories, CATEGORY_IDS)
         floor = ground_floor(categories, CATEGORY_IDS, horizon)
         head = head_offset(categories, CATEGORY_IDS, horizon)
         if dev.type == "cuda":
@@ -94,6 +92,11 @@ def main() -> int:
 
         areas = [area_entry(cid, CATEGORIES[cid][0], "category", categories == k) for k, cid in enumerate(CATEGORY_IDS)]
         areas.append(area_entry("ground-floor", "Ground floor", "element", floor, model="ground-floor"))
+        # Keep the façade elements that elements.py (prompt 023) added to an earlier file.
+        path = OUT / f"{photo['id']}.json"
+        previous = json.loads(path.read_text()) if path.exists() else {"areas": [], "models": {}}
+        kept = [a for a in previous["areas"] if a["group"] == "element" and a["id"] != "ground-floor"]
+        areas += kept
         data = {
             "photo": photo["id"],
             "width": size[0],
@@ -103,10 +106,10 @@ def main() -> int:
             "models": {
                 "categories": f"{ONEFORMER}@{ONEFORMER_REVISION}",
                 "ground-floor": "geometric rule, tools/areas/groundfloor.py",
+                **{a["id"]: previous["models"][a["id"]] for a in kept if a["id"] in previous["models"]},
             },
             "areas": areas,
         }
-        path = OUT / f"{photo['id']}.json"
         write_area_file(path, data)
         overlay(image, categories, floor, horizon, CACHE / "check" / f"{photo['id']}.png")
         problems = check(path)

@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.11 · **Last updated:** 2026-10-18
+**Version:** 0.12 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -25,7 +25,8 @@ compare with measured eye-tracking data (owner's decision of 2026-10-18, prompt 
 model's match against it (prompt 020). 0.10 adds automatic areas for the
 example photos: nine street categories and the ground floor (prompt 021).
 0.11 adds windows, entrances, balconies and shopfronts, each from the model
-that scored best on human-labelled façades (prompt 023).
+that scored best on human-labelled façades (prompt 023). 0.12 takes the
+horizon from standing people when façade lines fail (prompt 021b).
 
 ## Scope
 
@@ -159,7 +160,7 @@ interface AreaFile {
   photo: string;          // example photo id
   width: number;          // mask size: the photo scaled to 640 px on the long side
   height: number;
-  horizon: { row: number; method: 'vanishing-lines' | 'assumed-level'; support: number };
+  horizon: { row: number; method: 'vanishing-lines' | 'standing-people' | 'assumed-level'; support: number };
   params: { cameraHeightM: number; storeyHeightM: number };
   models: Record<string, string>;   // step → repository@revision or rule
   areas: Array<{
@@ -274,9 +275,14 @@ interface ExamplePhoto {
 - **Ground floor** (an element), with camera height *c* = 1.6 m and storey
   height *H* = 4.0 m:
   - the horizon row *y<sub>h</sub>* comes from vanishing points of receding
-    horizontal façade edges (RANSAC, zero roll). With fewer than 15 supporting
-    segments, or outside the middle 80% of the image, it falls back to the
-    middle row (`assumed-level`);
+    horizontal façade edges (RANSAC, zero roll; `vanishing-lines`), accepted
+    with at least 15 supporting segments and inside the middle 80% of the
+    image;
+  - failing that, from at least 3 people standing on street surface and at
+    least 5% of the image height tall: the median of the head-top row plus
+    0.086 of the person's height (head tops at about 1.75 m, camera at 1.6 m;
+    `standing-people`), inside the middle 80%;
+  - failing that, the middle row (`assumed-level`);
   - per column, the base *y<sub>0</sub>* is the bottom of the lowest façade run
     where it meets street surface; hidden bases are interpolated within the
     façade run;
