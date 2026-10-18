@@ -26,7 +26,12 @@ systems or future prompts.
    - the verdict ("Present", "Absent" or "No consensus");
    - the votes ("7 of 8 present");
    - one evidence sentence.
-   Present the verdicts as text, not traffic-light colours.
+   Present the verdicts as text, not traffic-light colours. For a principle
+   whose `fleissKappa` in `panel.json` is `null` (every member gave the same
+   verdict on every photo), add under it: "The model gave this verdict for
+   every example photo, so it does not tell the photos apart." In the
+   2026-10-18 run that applies to rhythm and variety and to tactile
+   materials.
 3. Add a caption of at most 60 words: eight runs of a vision-language model
    (Qwen3-VL), each asked as a different kind of designer, judged the photo on
    the three principles an HvA expert panel used (Spanjar & Suurenbroek 2020).

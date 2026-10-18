@@ -165,6 +165,7 @@ expected weak spot: no published benchmark covers them.
 | # | Prompt | Notes |
 |---|---|---|
 | 021 | `021_area_categories.md`: `tools/areas/`, street categories and ground floor; masks for the 24 photos | No SAM 3 needed |
+| 021b | `021b_horizon_from_people.md`: horizon from standing people when façade lines fail | Fixes too-tall ground floors on photos looking up |
 | 022 | `022_area_validation.md`: categories against eTRIMS and CMP Facade; ground floor against eTRIMS doors; robustness | Downloads two public datasets |
 | 023 | `023_element_models.md`: fair comparison of element models; the best per element added to the areas | SAM 3 included once approved |
 | 024 | `024_vlm_panel.md`: `tools/vlm-panel/`, eight simulated members, consensus, stability | Laptop GPU |
