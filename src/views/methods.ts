@@ -1,6 +1,6 @@
 import { METHOD_TEXTS } from '../content/methods';
 import { models } from '../models/registry';
-import { drawHeatmap } from '../render/heatmap';
+import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { onResults, type Results } from '../results';
 
 const IMAGE_WIDTH = 640;
@@ -50,9 +50,7 @@ export function mountMethods(section: HTMLElement): void {
       if (cell.drawnFor?.image !== results.image || !photo) {
         photo ??= document.createElement('canvas');
         photo.className = 'photo';
-        photo.width = w;
-        photo.height = h;
-        photo.getContext('2d')!.drawImage(results.image.bitmap, 0, 0, w, h);
+        drawGreyed(photo, results.image.bitmap, w, h);
         cell.frame.prepend(photo);
         cell.layer.hidden = true;
         cell.drawnFor = null;

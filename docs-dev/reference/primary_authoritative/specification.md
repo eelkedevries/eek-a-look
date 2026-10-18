@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.6 · **Last updated:** 2026-10-18
+**Version:** 0.7 · **Last updated:** 2026-10-18
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -16,7 +16,8 @@ secrets to add. 0.4 runs UNISAL on the CPU WebAssembly backend only (prompt 009)
 it takes about 0.1–0.35 s per photo on a desktop CPU, while the WebGPU build would
 add 14 MB (3 MB compressed) of runtime to download. 0.5 changes the heatmap colours to the warm YlOrRd map
 the owner chose (prompt 012). 0.6 adds DeepGaze IIE and DeepGaze MSDB, pre-computed
-on the owner's GPU for the example photos (prompts 013–014).
+on the owner's GPU for the example photos (prompts 013–014). 0.7 switches the
+heatmaps to inferno over a greyed photo after the colour-map research (prompt 017).
 
 ## Scope
 
@@ -237,10 +238,14 @@ interface ExamplePhoto {
 
 **Colour maps**
 
-- Heatmaps use ColorBrewer YlOrRd, a warm sequential map (yellow → orange →
-  red), chosen by the owner on 2026-10-18 from six rendered options. It is
-  colour-blind safe and reads well over photos. The table is indexed from 15 %
-  so faint areas still read as warm; alpha = 0.85·t^0.9.
+- Heatmaps use matplotlib's **inferno** (perceptually uniform, readable with
+  colour blindness, brightest at the peaks), drawn over a **greyed copy of the
+  photo** (Rec. 709 luminance × 0.75), so heatmap colours do not mix with the
+  photo's own (for example red brick). The table is indexed from 0.35 and
+  alpha = 0.9·t^0.8. In the overlay, the grey copy fades with the slider, so at
+  0 % the photo shows in colour. Chosen by the owner on 2026-10-18 (option C),
+  after research: Borland and Taylor (2007); Liu and Heer (CHI 2018); Crameri,
+  Shephard and Heron (Nature Communications, 2020); Reda (IEEE TVCG, 2023).
 - The difference map uses a colour-blind-safe diverging map
   (blue → neutral → orange).
 - No rainbow or "jet" colour maps.

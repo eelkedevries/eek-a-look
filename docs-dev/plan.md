@@ -109,6 +109,13 @@ ends with `npm run deploy`.
 | 014 | `014_deepgaze_in_app.md`: two more models, "unavailable" state, agreement matrix | |
 | 015 | `015_local_live_helper.md`: `npm run local` with a GPU helper | Laptop only |
 
+## Third round (2026-10-18)
+
+| Topic | Decision |
+|---|---|
+| Method explanations | One ~100-word paragraph per method under its heatmap, at the bottom of the page (016) |
+| Colour map | Inferno over a greyed photo (option C), chosen after a short literature review; replaces the warm map (017) |
+
 ## Later
 
 - **Areas of interest:** draw a region (ground floor, façade, sky) and show

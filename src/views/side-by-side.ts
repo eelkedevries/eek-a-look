@@ -1,5 +1,5 @@
 import { models } from '../models/registry';
-import { drawHeatmap } from '../render/heatmap';
+import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { onResults, type Results } from '../results';
 
 const PANEL_WIDTH = 800;
@@ -56,7 +56,10 @@ export function mountSideBySide(panel: HTMLElement): void {
       tag.textContent = 'Predicted';
       const note = document.createElement('span');
       note.className = 'cell-note';
-      frame.append(photoCanvas(results, w, h), layer, tag, note);
+      const greyed = document.createElement('canvas');
+      greyed.className = 'photo';
+      drawGreyed(greyed, results.image.bitmap, w, h);
+      frame.append(greyed, layer, tag, note);
       cells.set(model.id, { layer, note, drawn: false });
       figures.push(figure(model.subtitle ? `${model.name} · ${model.subtitle}` : model.name, frame));
     }

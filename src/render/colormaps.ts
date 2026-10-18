@@ -1,25 +1,25 @@
 /** An RGB lookup table: 256 entries, three bytes each. */
 export type Lut = Uint8ClampedArray;
 
-// ColorBrewer YlOrRd via matplotlib, sampled at 256 points: a warm sequential map
-// (yellow → orange → red), readable with colour blindness and over photos.
-const WARM_HEX =
-  'ffffccfffecbfffec9fffdc8fffdc6fffcc5fffcc4fffbc2fffac1fffac0fff9befff9bdfff8bbfff8bafff7b9fff7b7' +
-  'fff6b6fff5b5fff5b3fff4b2fff4b0fff3affff3aefff2acfff1abfff1a9fff0a8fff0a7ffefa5ffefa4ffeea3ffeda1' +
-  'ffeda0ffec9fffec9dffeb9cffea9bffea99ffe998ffe997ffe895ffe794ffe793ffe691ffe590ffe58fffe48dffe48c' +
-  'fee38bfee289fee288fee187fee085fee084fedf83fede82fede80fedd7ffedd7efedc7cfedb7bfedb7afeda78fed977' +
-  'fed976fed774fed673fed572fed470fed36ffed16efed06cfecf6bfece6afecc68fecb67feca66fec965fec863fec662' +
-  'fec561fec45ffec35efec15dfec05bfebf5afebe59febd57febb56feba55feb953feb852feb651feb54ffeb44efeb34d' +
-  'feb24cfeb04bfeaf4bfeae4afead4afeac49feab49fea948fea848fea747fea647fea546fea446fea245fea145fea044' +
-  'fd9f44fd9e43fd9d43fd9c42fd9a42fd9941fd9841fd9740fd9640fd953ffd933ffd923efd913efd903dfd8f3dfd8e3c' +
-  'fd8c3cfd8a3bfd883bfd863afd8439fd8239fd8038fd7e38fd7c37fd7a37fd7836fd7636fd7435fd7234fd7034fd6e33' +
-  'fc6c33fc6a32fc6832fc6631fc6430fc6330fc612ffc5f2ffc5d2efc5b2efc592dfc572cfc552cfc532bfc512bfc4f2a' +
-  'fc4d2afb4b29fa4a29f94828f84628f84528f74327f64227f54026f43e26f43d25f33b25f23924f13824f13624f03523' +
-  'ef3323ee3122ed3022ed2e21ec2c21eb2b21ea2920e92720e9261fe8241fe7231ee6211ee61f1de51e1de41c1de31a1c' +
-  'e2191ce1191de0181ddf171ddd161ddc151edb141eda141ed9131fd7121fd6111fd51020d41020d30f20d10e21d00d21' +
-  'cf0c21ce0c22cd0b22cb0a22ca0923c90823c80723c70723c50624c40524c30424c20325c10325c00225be0126bd0026' +
-  'bb0026b90026b70026b60026b40026b20026b00026ae0026ac0026aa0026a80026a60026a40026a20026a100269f0026' +
-  '9d00269b00269900269700269500269300269100268f00268d00268b00268a0026880026860026840026820026800026';
+// matplotlib's inferno, sampled at 256 points: perceptually uniform, readable with
+// colour blindness, and brightest at the peaks, so hot spots glow over a greyed photo.
+const INFERNO_HEX =
+  '00000401000501010601010802010a02020c02020e03021004031204031405041706041907051b08051d09061f0a0722' +
+  '0b07240c08260d08290e092b10092d110a30120a32140b34150b37160b39180c3c190c3e1b0c411c0c431e0c451f0c48' +
+  '210c4a230c4c240c4f260c51280b53290b552b0b572d0b592f0a5b310a5c320a5e340a5f3609613809623909633b0964' +
+  '3d09653e0966400a67420a68440a68450a69470b6a490b6a4a0c6b4c0c6b4d0d6c4f0d6c510e6c520e6d540f6d550f6d' +
+  '57106e59106e5a116e5c126e5d126e5f136e61136e62146e64156e65156e67166e69166e6a176e6c186e6d186e6f196e' +
+  '71196e721a6e741a6e751b6e771c6d781c6d7a1d6d7c1d6d7d1e6d7f1e6c801f6c82206c84206b85216b87216b88226a' +
+  '8a226a8c23698d23698f24699025689225689326679526679727669827669a28659b29649d29649f2a63a02a63a22b62' +
+  'a32c61a52c60a62d60a82e5fa92e5eab2f5ead305dae305cb0315bb1325ab3325ab43359b63458b73557b93556ba3655' +
+  'bc3754bd3853bf3952c03a51c13a50c33b4fc43c4ec63d4dc73e4cc83f4bca404acb4149cc4248ce4347cf4446d04545' +
+  'd24644d34743d44842d54a41d74b3fd84c3ed94d3dda4e3cdb503bdd513ade5238df5337e05536e15635e25734e35933' +
+  'e45a31e55c30e65d2fe75e2ee8602de9612bea632aeb6429eb6628ec6726ed6925ee6a24ef6c23ef6e21f06f20f1711f' +
+  'f1731df2741cf3761bf37819f47918f57b17f57d15f67e14f68013f78212f78410f8850ff8870ef8890cf98b0bf98c0a' +
+  'f98e09fa9008fa9207fa9407fb9606fb9706fb9906fb9b06fb9d07fc9f07fca108fca309fca50afca60cfca80dfcaa0f' +
+  'fcac11fcae12fcb014fcb216fcb418fbb61afbb81dfbba1ffbbc21fbbe23fac026fac228fac42afac62df9c72ff9c932' +
+  'f9cb35f8cd37f8cf3af7d13df7d340f6d543f6d746f5d949f5db4cf4dd4ff4df53f4e156f3e35af3e55df2e661f2e865' +
+  'f2ea69f1ec6df1ed71f1ef75f1f179f2f27df2f482f3f586f3f68af4f88ef5f992f6fa96f8fb9af9fc9dfafda1fcffa4';
 
 function fromHex(hex: string): Lut {
   const lut = new Uint8ClampedArray(hex.length / 2);
@@ -40,7 +40,7 @@ function fromStops(stops: string[]): Lut {
   return lut;
 }
 
-export const WARM: Lut = fromHex(WARM_HEX);
+export const INFERNO: Lut = fromHex(INFERNO_HEX);
 
 /** Blue (less) → neutral → orange (more), with luminous ends so both read over a greyed photo; blue and orange stay distinct with red–green colour blindness. */
 export const BLUE_ORANGE: Lut = fromStops(['#2f7fd0', '#5ea3e3', '#a6cbeb', '#ededed', '#f7c27c', '#f0983a', '#dd7a16']);

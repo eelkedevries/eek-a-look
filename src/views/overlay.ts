@@ -1,12 +1,12 @@
 import { models, NEURAL_PREFERENCE } from '../models/registry';
-import { WARM, cssColour } from '../render/colormaps';
-import { drawHeatmap } from '../render/heatmap';
+import { INFERNO, cssColour } from '../render/colormaps';
+import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { getResults, onResults, type Results } from '../results';
 
 const DEFAULT_OPACITY = 100;
 
 export function gradientCss(steps = 8): string {
-  const stops = Array.from({ length: steps + 1 }, (_, i) => cssColour(WARM, 0.15 + (0.85 * i) / steps));
+  const stops = Array.from({ length: steps + 1 }, (_, i) => cssColour(INFERNO, 0.35 + (0.65 * i) / steps));
   return `linear-gradient(90deg, ${stops.join(', ')})`;
 }
 
@@ -53,13 +53,19 @@ export function mountOverlay(controls: HTMLElement, stage: HTMLElement): void {
 
   controls.replaceChildren(selector, sliderLabel, legend, status);
 
+  // The grey copy fades in with the heatmap, so at 0 % the photo is in colour.
+  const greyLayer = document.createElement('canvas');
+  greyLayer.className = 'layer grey';
+  let greyFor: Results['image'] | null = null;
   const layer = document.createElement('canvas');
   layer.className = 'layer heat';
   const tag = document.createElement('span');
   tag.className = 'predicted-tag';
   tag.textContent = 'Predicted';
 
-  const applyOpacity = () => (layer.style.opacity = String(Number(slider.value) / 100));
+  const applyOpacity = () => {
+    layer.style.opacity = greyLayer.style.opacity = String(Number(slider.value) / 100);
+  };
   slider.addEventListener('input', applyOpacity);
   applyOpacity();
 
@@ -82,7 +88,11 @@ export function mountOverlay(controls: HTMLElement, stage: HTMLElement): void {
 
     const frame = stage.querySelector<HTMLElement>('.frame');
     if (!results || !frame) return;
-    if (!frame.contains(layer)) frame.append(layer, tag);
+    if (!frame.contains(layer)) frame.append(greyLayer, layer, tag);
+    if (greyFor !== results.image) {
+      drawGreyed(greyLayer, results.image.bitmap, results.image.width, results.image.height);
+      greyFor = results.image;
+    }
 
     // A model that does not cover this photo hands over to the best one that does.
     const chosen = models.find((m) => m.id === selected)!;
@@ -99,11 +109,11 @@ export function mountOverlay(controls: HTMLElement, stage: HTMLElement): void {
         drawHeatmap(layer, outcome.map, results.image.width, results.image.height);
         drawnFor = { results, model: shownId };
       }
-      layer.hidden = false;
+      layer.hidden = greyLayer.hidden = false;
       tag.textContent = `Predicted · ${model.name}`;
       status.textContent = handover;
     } else {
-      layer.hidden = true;
+      layer.hidden = greyLayer.hidden = true;
       drawnFor = null;
       tag.textContent = 'Predicted';
       status.textContent =

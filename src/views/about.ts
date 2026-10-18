@@ -108,7 +108,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     link('https://github.com/rdroste/unisal', 'Apache-2.0'),
     ', converted for the browser (',
     link(`${base}models/unisal/NOTICE`, 'notice'),
-    '). ONNX Runtime Web (MIT). Fonts Lexend, Spectral and JetBrains Mono (SIL Open Font License). Heatmap colours YlOrRd (ColorBrewer, Apache-2.0). ',
+    '). ONNX Runtime Web (MIT). Fonts Lexend, Spectral and JetBrains Mono (SIL Open Font License). Heatmap colours inferno (matplotlib, CC0). ',
     link('https://github.com/eelkedevries/eek-a-look', 'Source code on GitHub'),
     '.',
   );

@@ -90,3 +90,5 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
   ~100-word explanation from `src/content/methods.ts`, checked by
   `scripts/check-method-texts.mjs`; the helper probe now exists only in
   `npm run local` builds)
+- `017_inferno_greyed_photo.md` (inferno over a greyed photo; each photo is
+  greyed once and cached; the overlay's grey layer fades with the slider)
