@@ -31,15 +31,28 @@ export async function showExample(photo: ExamplePhoto): Promise<void> {
   setImage({ bitmap, width: bitmap.width, height: bitmap.height, source: 'example', exampleId: photo.id });
 }
 
-/** Renders the thumbnails grouped by area; the current photo is marked with aria-pressed. */
+/** Renders (or attaches to) the thumbnails grouped by area; the current photo is marked with aria-pressed. */
 export function renderPicker(
   container: HTMLElement,
   photos: ExamplePhoto[],
   onPick: (photo: ExamplePhoto) => void,
 ): (id: string | undefined) => void {
   const buttons = new Map<string, HTMLButtonElement>();
-  const areas = [...new Set(photos.map((p) => p.area))];
+  const mark = (id: string | undefined) => {
+    for (const [photoId, button] of buttons) button.setAttribute('aria-pressed', String(photoId === id));
+  };
 
+  // The build pre-renders the picker (see vite.config.ts); attach to it if it matches the manifest.
+  const prerendered = [...container.querySelectorAll<HTMLButtonElement>('button.example[data-id]')];
+  if (prerendered.length === photos.length && photos.every((p, i) => prerendered[i].dataset.id === p.id)) {
+    photos.forEach((photo, i) => {
+      buttons.set(photo.id, prerendered[i]);
+      prerendered[i].addEventListener('click', () => onPick(photo));
+    });
+    return mark;
+  }
+
+  const areas = [...new Set(photos.map((p) => p.area))];
   container.replaceChildren(
     ...areas.map((area) => {
       const group = document.createElement('div');
@@ -58,6 +71,7 @@ export function renderPicker(
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'example';
+        button.dataset.id = photo.id;
         button.setAttribute('aria-pressed', 'false');
         const img = document.createElement('img');
         img.src = thumbUrl(photo);
@@ -75,9 +89,7 @@ export function renderPicker(
     }),
   );
 
-  return (id) => {
-    for (const [photoId, button] of buttons) button.setAttribute('aria-pressed', String(photoId === id));
-  };
+  return mark;
 }
 
 /** Fills the credit line with linked author, licence and source. */

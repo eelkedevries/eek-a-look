@@ -11,6 +11,8 @@ export function showOnStage(stage: HTMLElement, image: CurrentImage): HTMLElemen
     photo.setAttribute('role', 'img');
     frame.append(photo);
     stage.replaceChildren(frame);
+    // The pre-rendered placeholder size is no longer needed once a photo sets the height.
+    stage.style.removeProperty('aspect-ratio');
   }
   const photo = frame.querySelector<HTMLCanvasElement>('canvas.photo')!;
   photo.width = image.width;

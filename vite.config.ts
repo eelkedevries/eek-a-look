@@ -1,7 +1,56 @@
-import { defineConfig } from 'vite';
+import { readFileSync } from 'node:fs';
+import { defineConfig, type Plugin } from 'vite';
+
+const BASE = '/eek-a-look/';
+
+interface Photo {
+  id: string;
+  area: string;
+  city: string;
+  title: string;
+  file: string;
+  width: number;
+  height: number;
+}
+
+const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
+
+/**
+ * Renders the example picker into index.html at build time, so the thumbnails
+ * are part of the first paint instead of pushing the page down when the
+ * manifest arrives. src/examples.ts attaches behaviour to this markup and
+ * renders the same structure itself if it is missing.
+ */
+function prerenderPicker(): Plugin {
+  return {
+    name: 'eek-a-look:prerender-picker',
+    transformIndexHtml(html) {
+      const photos: Photo[] = JSON.parse(readFileSync('public/examples/examples.json', 'utf8'));
+      const areas = [...new Set(photos.map((p) => p.area))];
+      const groups = areas
+        .map((area) => {
+          const inArea = photos.filter((p) => p.area === area);
+          const buttons = inArea
+            .map((p) => {
+              const thumb = `${BASE}examples/${p.file.replace(/\.jpg$/, '-thumb.jpg')}`;
+              const h = Math.round((320 * p.height) / p.width);
+              return `<button type="button" class="example" data-id="${escape(p.id)}" aria-pressed="false"><img src="${thumb}" alt="${escape(`${p.title}, ${p.city}`)}" width="320" height="${h}"></button>`;
+            })
+            .join('');
+          return `<div class="example-group"><h3 class="example-area">${escape(area)} <span>${escape(inArea[0].city)}</span></h3><div class="example-list">${buttons}</div></div>`;
+        })
+        .join('');
+      const first = photos[0];
+      return html
+        .replace('<div id="examples" class="examples"></div>', `<div id="examples" class="examples">${groups}</div>`)
+        .replace('<div id="stage" class="stage">', `<div id="stage" class="stage" style="aspect-ratio: ${first.width} / ${first.height}">`);
+    },
+  };
+}
 
 export default defineConfig({
-  base: '/eek-a-look/',
+  base: BASE,
+  plugins: [prerenderPicker()],
   build: {
     sourcemap: false,
   },
