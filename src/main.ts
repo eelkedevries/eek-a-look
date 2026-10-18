@@ -12,6 +12,7 @@ import { onImageChange, setImage } from './state';
 import { showOnStage } from './stage';
 import { renderAbout } from './views/about';
 import { mountAgreement } from './views/agreement';
+import { mountAreas } from './views/areas';
 import { mountMethods } from './views/methods';
 import { mountOverlay } from './views/overlay';
 import { mountSideBySide } from './views/side-by-side';
@@ -29,10 +30,12 @@ const panel = (id: string) => document.querySelector<HTMLElement>(`#panel-${id}`
 mountOverlay(document.querySelector<HTMLElement>('#overlay-controls')!, stage);
 mountSideBySide(panel('side'));
 mountWhatAiAdds(panel('adds'));
+mountAreas(panel('areas'));
 mountTabs(document.querySelector<HTMLElement>('#view-tabs')!, [
   { id: 'overlay', label: 'Overlay', panel: panel('overlay') },
   { id: 'side', label: 'Side by side', panel: panel('side') },
   { id: 'adds', label: 'What AI adds', panel: panel('adds') },
+  { id: 'areas', label: 'Areas', panel: panel('areas') },
 ]);
 mountAgreement(document.querySelector<HTMLElement>('#views')!);
 mountMethods(document.querySelector<HTMLElement>('#methods')!);

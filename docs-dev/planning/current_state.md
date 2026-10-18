@@ -22,6 +22,13 @@ wins and the gap is work still to be done.
   app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
 - Five models: three in the browser, DeepGaze IIE and MSDB pre-computed for the
   examples (`src/models/deepgaze.ts`, `public/precomputed/`).
+- Areas (prompts 021–025): `tools/areas/` pre-computes, on the laptop GPU, nine
+  street categories (OneFormer), the ground floor (a 4 m rule from the horizon)
+  and windows, entrances, balconies and shopfronts (SAM 3, chosen in a measured
+  comparison) into `public/precomputed/areas/`, with checks against eTRIMS and
+  CMP Facade in `validation.json`. The "Areas" tab (`src/views/areas.ts`,
+  `src/maps/areas.ts`) shows outlines and attention ÷ size per area and layer
+  for the example photos only.
 - Measured gaze (prompts 018–020): `tools/measured-gaze/` builds measured maps
   for 12 Zürich photos (Wilming et al. 2017, CC0) into
   `public/precomputed/measured/`. `src/models/measured.ts` is the "Measured
@@ -140,3 +147,5 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   ρ 0.53 with the entrance + shopfront share of the ground floor (exploratory).
   Rhythm and materials were "present" on all 24 photos, so they do not
   discriminate)
+- `025_areas_view.md` (spec 0.13: the Areas tab; its ratios match
+  `validation.json` exactly on zurich-23)

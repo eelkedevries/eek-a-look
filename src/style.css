@@ -453,6 +453,76 @@ main > section {
   width: 160px;
 }
 
+/* Areas tab */
+.area-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.area-switch[hidden],
+.area-legend[hidden] {
+  display: none;
+}
+
+.predicted-tag.areas-tag {
+  color: var(--text);
+}
+
+.area-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 6px;
+  margin: 12px 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.area-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 13px;
+  cursor: default;
+}
+
+.area-legend-item:hover,
+.area-legend-item:focus-visible {
+  border-color: var(--gold);
+}
+
+.area-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+}
+
+.area-percent,
+.areas-share {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.areas-table th[scope='row'] {
+  text-align: left;
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text);
+}
+
+.areas-notes:empty {
+  display: none;
+}
+
 #panel-adds .legend {
   margin-bottom: 14px;
 }

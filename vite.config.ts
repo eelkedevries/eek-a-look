@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { defineConfig, type Plugin } from 'vite';
 
 const BASE = '/eek-a-look/';
@@ -64,10 +64,20 @@ const localApi = {
 // after a deploy, so the page asks for it with a version that changes with its content.
 const examplesVersion = createHash('sha256').update(readFileSync('public/examples/examples.json')).digest('hex').slice(0, 10);
 
+/** One content hash over every file in a public folder, for versioned URLs of pre-computed data. */
+function folderVersion(dir: string): string {
+  const hash = createHash('sha256');
+  for (const name of readdirSync(dir).sort()) hash.update(name).update(readFileSync(`${dir}/${name}`));
+  return hash.digest('hex').slice(0, 10);
+}
+
 export default defineConfig({
   base: BASE,
   plugins: [prerenderPicker()],
-  define: { __EXAMPLES_VERSION__: JSON.stringify(examplesVersion) },
+  define: {
+    __EXAMPLES_VERSION__: JSON.stringify(examplesVersion),
+    __AREAS_VERSION__: JSON.stringify(folderVersion('public/precomputed/areas')),
+  },
   server: { proxy: localApi },
   preview: { proxy: localApi },
   build: {

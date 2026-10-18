@@ -82,10 +82,14 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     'In “What AI adds”, the neural model mostly adds sharp peaks; where it expects less, the change is small and spread out, so the blue is faint.',
   ]) limitList.append(el('li', text));
 
+  const areasHeading = el('h3', 'Automatic areas');
+  const areasText = el('p');
+  const areasCredit = el('li');
+
   const privacy = el('h3', 'Privacy');
   const privacyText = el(
     'p',
-    'Your photo is processed on your own device and is never uploaded or stored. The page sends no requests to other sites and uses no analytics and no cookies. The UNISAL model (6.4 MB) and its runtime (3.7 MB) are downloaded from this site the first time they are needed; the DeepGaze maps for the examples are small files from this site too.',
+    'Your photo is processed on your own device and is never uploaded or stored. The page sends no requests to other sites and uses no analytics and no cookies. The UNISAL model (6.4 MB) and its runtime (3.7 MB) are downloaded from this site the first time they are needed; the DeepGaze maps and the areas for the examples are small files from this site too.',
   );
 
   const credits = el('h3', 'Credits');
@@ -126,7 +130,57 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     link('https://github.com/eelkedevries/eek-a-look', 'Source code on GitHub'),
     '.',
   );
-  creditList.append(software);
+  creditList.append(software, areasCredit);
+  fillAreas(areasText, areasCredit);
 
-  section.replaceChildren(heading, intro, quality, qualityText, table, large, source, limits, limitList, privacy, privacyText, credits, creditList);
+  section.replaceChildren(heading, intro, quality, qualityText, table, large, source, limits, limitList, areasHeading, areasText, privacy, privacyText, credits, creditList);
+}
+
+/** Content hash of public/precomputed/areas/, set by vite.config.ts. */
+declare const __AREAS_VERSION__: string;
+
+interface Validation {
+  categories: { etrims: { categories: Record<string, { iou: number | null }> } };
+  groundFloor: { etrimsDoors: { pixelShareInside: number | null } };
+  elements: {
+    candidates: Record<string, { name: string; licence?: string }>;
+    winners: Record<string, { candidate: string; meanTestIou: number }>;
+  } | null;
+}
+
+/** The "Automatic areas" paragraph and credit, with the checking numbers from validation.json. */
+async function fillAreas(text: HTMLElement, credit: HTMLElement): Promise<void> {
+  const base = import.meta.env.BASE_URL;
+  let v: Validation | null = null;
+  try {
+    const response = await fetch(`${base}precomputed/areas/validation.json?v=${__AREAS_VERSION__}`);
+    if (response.ok) v = await response.json();
+  } catch {
+    v = null;
+  }
+  const winners = v?.elements?.winners ?? {};
+  const used = [...new Set(Object.values(winners).map((w) => w.candidate))].map((key) => v!.elements!.candidates[key]);
+  const elementModels = used.map((c) => c.name).join(' and ') || 'a text-prompted model';
+  const iou = (id: string) => (winners[id] ? two(winners[id].meanTestIou) : '–');
+  const facade = v?.categories.etrims.categories.facade?.iou;
+  const doors = v?.groundFloor.etrimsDoors.pixelShareInside;
+  text.textContent =
+    `For the example photos, a segmentation model (OneFormer) sorts every pixel into street categories such as façade, sky and street surface, and ${elementModels} finds windows, entrances, balconies and shopfronts from those words alone. ` +
+    'The ground floor is the lowest 4 m of each façade, worked out from the horizon and a camera at eye height. ' +
+    (v
+      ? `Checked against hand-drawn labels in other street photos, the façades overlapped by ${facade != null ? two(facade) : '–'} (1 = identical) and ${doors != null ? Math.round(doors * 100) : '–'}% of labelled doors fell inside the ground floor; windows reached ${iou('windows')}, balconies ${iou('balconies')}, entrances ${iou('entrances')} and shopfronts only ${iou('shopfronts')}. `
+      : '') +
+    'A share of pixels is not a share of what people see, and these areas are automatic, not an expert judgement.';
+
+  const sam3 = used.some((c) => c.name.startsWith('SAM 3'));
+  credit.replaceChildren(
+    'Automatic areas: OneFormer (Jain et al., CVPR 2023; ',
+    link('https://huggingface.co/shi-labs/oneformer_ade20k_swin_large', 'MIT'),
+    '), trained on ADE20K (Zhou et al.). ',
+    ...used.map((c) => `${c.name} (${(c.licence ?? 'see its licence').replace(/\s*\(.*\)$/, '')}). `),
+    sam3 ? 'This page acknowledges its use of SAM 3 by Meta (Carion et al., 2025). ' : '',
+    'Checked against the eTRIMS Image Database (Korč and Förstner, 2009) and the ',
+    link('https://cmp.felk.cvut.cz/~tylecr1/facade/', 'CMP Facade Database'),
+    ' (Tyleček and Šára, 2013; CC BY-SA). No model weights or dataset images are published here.',
+  );
 }

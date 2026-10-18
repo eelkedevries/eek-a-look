@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.12 · **Last updated:** 2026-10-19
+**Version:** 0.13 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -26,7 +26,8 @@ model's match against it (prompt 020). 0.10 adds automatic areas for the
 example photos: nine street categories and the ground floor (prompt 021).
 0.11 adds windows, entrances, balconies and shopfronts, each from the model
 that scored best on human-labelled façades (prompt 023). 0.12 takes the
-horizon from standing people when façade lines fail (prompt 021b).
+horizon from standing people when façade lines fail (prompt 021b). 0.13 adds
+the Areas view with attention ÷ size per area (prompt 025).
 
 ## Scope
 
@@ -50,6 +51,8 @@ In scope for v1:
 - **upload** of the visitor's own photo (file picker only; no camera capture);
 - four views: **overlay with opacity slider**, **side by side**,
   **"What AI adds"** map, **agreement scores**;
+- an **Areas** view for the example photos: automatic areas and attention ÷
+  size per area and layer;
 - a short About section covering the models, honesty, privacy and credits.
 
 Out of scope for v1: drawing areas of interest, server-hosted models, languages
@@ -320,6 +323,22 @@ interface ExamplePhoto {
   model does not cover the photo.
 - **Match with measured gaze** (photos with measured data only) = each model's
   Pearson r with the measured map, to two decimals, sorted from high to low.
+- **Areas** (a tab after "What AI adds"; example photos only, uploads get "Areas
+  are computed in advance for the example photos only."):
+  - the greyed photo with the area outlines of one group, either "Street
+    categories" or "Façade elements" (with the ground floor);
+  - colours from the Okabe–Ito palette without black, white for street
+    furniture and grey for "Other"; a legend with % of the photo, where
+    hovering or focusing an item fills that area;
+  - a table with, per area and ready layer (measured gaze first), the
+    **attention ÷ size**: the share of the layer's map inside the area (the
+    map upsampled to the mask size with `resample()`), divided by the area's
+    share of the photo, to one decimal. 1.0× is what the area's size alone
+    predicts;
+  - areas under 0.5% of the photo show "–";
+  - the note "Ground floor estimated assuming a level camera." when the
+    horizon method is `assumed-level`, and "(unreliable: low score in the
+    check)" after a `lowConfidence` element.
 
 **Honesty** (binding on all visitor-facing text)
 
@@ -328,6 +347,9 @@ interface ExamplePhoto {
   prediction.
 - The page states, near the top, that these are predictions, not measured gaze,
   except the "Measured gaze" layer on the Zürich photos.
+- The Areas view carries the label **"Automatic areas · not an expert
+  judgement"** and the caption "Areas are found automatically and can be
+  wrong."
 - Benchmark figures are quoted only with their source and retrieval date. v1
   uses MIT300 figures from <https://saliency.tuebingen.ai/results.html>,
   retrieved 2026-10-18:
