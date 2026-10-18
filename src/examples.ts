@@ -25,12 +25,15 @@ export async function loadExamples(): Promise<ExamplePhoto[]> {
   return response.json();
 }
 
+/** The small text after an area heading: the city, or for the Zürich group (area = city) that gaze was measured. Matches vite.config.ts. */
+const areaNote = (photo: ExamplePhoto) => (photo.measured ? '· measured eye tracking' : photo.city);
+
 const thumbUrl = (photo: ExamplePhoto) => EXAMPLES_URL + photo.file.replace(/\.jpg$/, '-thumb.jpg');
 
 export async function showExample(photo: ExamplePhoto): Promise<void> {
   const response = await fetch(EXAMPLES_URL + photo.file);
   const bitmap = await createImageBitmap(await response.blob());
-  setImage({ bitmap, width: bitmap.width, height: bitmap.height, source: 'example', exampleId: photo.id });
+  setImage({ bitmap, width: bitmap.width, height: bitmap.height, source: 'example', exampleId: photo.id, measured: photo.measured !== undefined });
 }
 
 /** Renders (or attaches to) the thumbnails grouped by area; the current photo is marked with aria-pressed. */
@@ -64,7 +67,7 @@ export function renderPicker(
       const heading = document.createElement('h3');
       heading.className = 'example-area';
       const city = document.createElement('span');
-      city.textContent = inArea[0].city;
+      city.textContent = areaNote(inArea[0]);
       heading.append(`${area} `, city);
 
       const list = document.createElement('div');

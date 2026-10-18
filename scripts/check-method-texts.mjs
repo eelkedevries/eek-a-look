@@ -1,13 +1,17 @@
 #!/usr/bin/env node
-// Checks that every model in the registry has a method paragraph of 90–115
-// words in src/content/methods.ts.
+// Checks that every model in the registry, and the measured-gaze layer, has a
+// method paragraph of 90–115 words in src/content/methods.ts.
 import { readFile } from 'node:fs/promises';
 
 const registry = await readFile('src/models/registry.ts', 'utf8');
 const sources = await Promise.all(
-  ['src/models/centre-bias.ts', 'src/models/classic-salience/index.ts', 'src/models/unisal/index.ts', 'src/models/deepgaze.ts'].map((f) =>
-    readFile(f, 'utf8'),
-  ),
+  [
+    'src/models/measured.ts',
+    'src/models/centre-bias.ts',
+    'src/models/classic-salience/index.ts',
+    'src/models/unisal/index.ts',
+    'src/models/deepgaze.ts',
+  ].map((f) => readFile(f, 'utf8')),
 );
 const ids = [...sources.join('\n').matchAll(/^\s*id: '([a-z-]+)'/gm)].map((m) => m[1]);
 const texts = await readFile('src/content/methods.ts', 'utf8');

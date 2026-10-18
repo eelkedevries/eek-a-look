@@ -2,7 +2,7 @@ import { normalise, resample, type GridSize, type SaliencyMap } from '../maps/sa
 import { localHelper, predictLocally } from './local-helper';
 import { MIT300_RETRIEVED, MIT300_SOURCE, UnavailableError, type ModelSpec } from './types';
 
-interface PrecomputedMap {
+export interface PrecomputedMap {
   model: string;
   photo: string | null;
   grid: GridSize;
@@ -19,7 +19,7 @@ export function decodeMap(payload: PrecomputedMap): SaliencyMap {
   return normalise(payload.grid, values);
 }
 
-const fitGrid = (map: SaliencyMap, grid: GridSize) =>
+export const fitGrid = (map: SaliencyMap, grid: GridSize) =>
   map.width === grid.width && map.height === grid.height ? map : resample(map, grid);
 
 function deepGaze(spec: Omit<ModelSpec, 'predict' | 'runtime' | 'kind' | 'licence'>): ModelSpec {

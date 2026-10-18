@@ -7,6 +7,8 @@ export interface CurrentImage {
   source: ImageSource;
   /** Example photo id; absent for uploads. */
   exampleId?: string;
+  /** True when the example photo has a measured eye-tracking map. */
+  measured?: boolean;
 }
 
 type Listener = (image: CurrentImage) => void;

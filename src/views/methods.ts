@@ -1,5 +1,6 @@
 import { METHOD_TEXTS } from '../content/methods';
 import { models } from '../models/registry';
+import { mapLabel } from '../models/types';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { onResults, type Results } from '../results';
 
@@ -14,18 +15,20 @@ export function mountMethods(section: HTMLElement): void {
 
   const grid = document.createElement('div');
   grid.className = 'methods-grid';
-  const cells = new Map<string, { frame: HTMLElement; layer: HTMLCanvasElement; note: HTMLElement; drawnFor: Results | null }>();
+  const cells = new Map<string, { card: HTMLElement; frame: HTMLElement; layer: HTMLCanvasElement; note: HTMLElement; drawnFor: Results | null }>();
 
   for (const model of models) {
     const card = document.createElement('article');
     card.className = 'method-card';
+    // A layer that covers some photos only (measured gaze) stays hidden until a photo has it.
+    card.hidden = model.covers !== undefined;
     const frame = document.createElement('div');
     frame.className = 'frame';
     const layer = document.createElement('canvas');
     layer.className = 'layer';
     const tag = document.createElement('span');
-    tag.className = 'predicted-tag';
-    tag.textContent = 'Predicted';
+    tag.className = model.kind === 'measured' ? 'predicted-tag measured' : 'predicted-tag';
+    tag.textContent = mapLabel(model);
     const note = document.createElement('span');
     note.className = 'cell-note';
     frame.append(layer, tag, note);
@@ -36,7 +39,7 @@ export function mountMethods(section: HTMLElement): void {
     text.textContent = METHOD_TEXTS[model.id] ?? model.oneLine;
     card.append(frame, title, text);
     grid.append(card);
-    cells.set(model.id, { frame, layer, note, drawnFor: null });
+    cells.set(model.id, { card, frame, layer, note, drawnFor: null });
   }
   section.replaceChildren(heading, grid);
 
@@ -46,6 +49,8 @@ export function mountMethods(section: HTMLElement): void {
     const h = Math.round(results.image.height * scale);
     for (const model of models) {
       const cell = cells.get(model.id)!;
+      cell.card.hidden = !results.status.has(model.id);
+      if (cell.card.hidden) continue;
       let photo = cell.frame.querySelector<HTMLCanvasElement>('canvas.photo');
       if (cell.drawnFor?.image !== results.image || !photo) {
         photo ??= document.createElement('canvas');

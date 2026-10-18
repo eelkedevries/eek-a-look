@@ -273,6 +273,16 @@ main > section {
   pointer-events: none;
 }
 
+/* A layer that a photo does not have (measured gaze) is hidden, even where display is set. */
+.model-button[hidden] {
+  display: none;
+}
+
+/* Measured gaze is labelled in blue, so it never reads as one of the predictions. */
+.predicted-tag.measured {
+  color: var(--iris);
+}
+
 .controls {
   display: flex;
   flex-wrap: wrap;
@@ -505,6 +515,46 @@ main > section {
   margin: 12px 0 0;
   font-size: 13px;
   color: var(--muted);
+}
+
+.match {
+  margin-top: 28px;
+  max-width: 560px;
+}
+
+.match-heading {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--iris);
+}
+
+.match-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.match-row {
+  display: grid;
+  grid-template-columns: minmax(8em, auto) 1fr 3em;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+.match-bar {
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--iris) calc(var(--r) * 100%), var(--surface) 0);
+}
+
+.match-value {
+  font-family: var(--font-mono);
+  text-align: right;
+  color: var(--text-bright);
 }
 
 .model-status {

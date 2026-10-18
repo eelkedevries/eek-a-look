@@ -30,7 +30,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
 
   const intro = el(
     'p',
-    'eek-a-look shows five predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model. How each method works is explained at the bottom of the page.',
+    'eek-a-look shows five predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model. The exception is the Zürich photos: for those, an extra layer, “Measured gaze”, shows where 48 people actually looked, recorded with an eye tracker. How each method works is explained at the bottom of the page.',
     'about-lead',
   );
 
@@ -92,9 +92,23 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
   const creditList = el('ul', undefined, 'about-list about-credits');
   for (const photo of photos) {
     const item = el('li');
-    item.append(`${photo.title}, ${photo.city}: `, link(photo.sourceUrl, photo.author), ', ', link(photo.licenceUrl, photo.licence), ` (${photo.changes.toLowerCase()}).`);
+    const changes = photo.changes.charAt(0).toLowerCase() + photo.changes.slice(1);
+    item.append(`${photo.title}, ${photo.city}: `, link(photo.sourceUrl, photo.author), ', ', link(photo.licenceUrl, photo.licence), ` (${changes}).`);
     creditList.append(item);
   }
+  const dataset = el('li');
+  dataset.append(
+    'Measured gaze and the Zürich photos: Wilming et al. (2017), “An extensive dataset of eye movements during viewing of complex images”, ',
+    link('https://doi.org/10.1038/sdata.2016.126', 'Scientific Data 4, 160126'),
+    '; data and photos ',
+    link('https://creativecommons.org/publicdomain/zero/1.0/', 'CC0 1.0'),
+    ', from ',
+    link('https://doi.org/10.5061/dryad.9pf75', 'Dryad'),
+    '. The eye tracking comes from the study by Onat, Açık, Schumann and König (2014), ',
+    link('https://doi.org/10.1371/journal.pone.0093254', 'PLoS ONE 9, e93254'),
+    '.',
+  );
+  creditList.append(dataset);
   const deepgaze = el('li');
   deepgaze.append(
     'DeepGaze IIE and DeepGaze MSDB by Matthias Kümmerer and colleagues (',

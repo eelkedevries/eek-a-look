@@ -11,6 +11,7 @@ interface Photo {
   file: string;
   width: number;
   height: number;
+  measured?: object;
 }
 
 const escape = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -37,7 +38,8 @@ function prerenderPicker(): Plugin {
               return `<button type="button" class="example" data-id="${escape(p.id)}" aria-pressed="false"><img src="${thumb}" alt="${escape(`${p.title}, ${p.city}`)}" width="320" height="${h}"></button>`;
             })
             .join('');
-          return `<div class="example-group"><h3 class="example-area">${escape(area)} <span>${escape(inArea[0].city)}</span></h3><div class="example-list">${buttons}</div></div>`;
+          const note = inArea[0].measured ? '· measured eye tracking' : inArea[0].city;
+          return `<div class="example-group"><h3 class="example-area">${escape(area)} <span>${escape(note)}</span></h3><div class="example-list">${buttons}</div></div>`;
         })
         .join('');
       const first = photos[0];

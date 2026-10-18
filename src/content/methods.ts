@@ -1,5 +1,7 @@
 /** One plain-language paragraph (about 100 words) per model, shown under its heatmap at the bottom of the page. */
 export const METHOD_TEXTS: Record<string, string> = {
+  measured:
+    'Measured gaze is not a prediction. In a university lab, 48 people, mostly students, looked freely at each of these Zürich photos on a monitor for six seconds while an eye tracker recorded where their eyes paused. Each pause, or fixation, adds one mark; the first is left out, because every viewing began on a cross in the middle of the screen. The marks are blurred by one degree of vision, about the patch the eye sees sharply, and added up into the map. It is the reference the models are scored against here. Mind the limits: these are Swiss streets, not Dutch high-rise, and six seconds on a screen is not a walk.',
   'centre-bias':
     'Centre bias is the simplest prediction: it ignores what the photo shows and assumes people look at the middle. That sounds naive, yet it is hard to beat. Photographers tend to put the subject in the middle, viewers usually start there, and the centre is a good place from which to explore the rest. We use the shape that Clarke and Tatler (2014) derived from ten eye-tracking datasets: an oval that is wider than it is tall, because people’s looks spread further sideways than up and down. Every other method should beat it; on the MIT300 benchmark it already reaches a correlation of 0.45.',
   'classic-salience':

@@ -1,6 +1,6 @@
 import { assertProbability, gridFor, type GridSize, type SaliencyMap } from './maps/saliency-map';
 import { models } from './models/registry';
-import { UnavailableError } from './models/types';
+import { UnavailableError, type ModelSpec } from './models/types';
 import { onImageChange, type CurrentImage } from './state';
 
 export type ModelStatus =
@@ -28,6 +28,11 @@ export function onResults(listener: Listener): void {
   listeners.add(listener);
 }
 
+/** The layers that cover this image, in display order; a layer such as measured gaze is absent on other photos. */
+export function modelsFor(results: Results): ModelSpec[] {
+  return models.filter((m) => results.status.has(m.id));
+}
+
 function emit(results: Results, modelId?: string) {
   if (results !== current) return;
   for (const listener of listeners) listener(results, modelId);
@@ -36,18 +41,20 @@ function emit(results: Results, modelId?: string) {
 /** Runs every model on each new image; results for a superseded image are dropped. */
 onImageChange((image) => {
   const grid = gridFor(image.width, image.height);
-  const results: Results = { image, grid, status: new Map(models.map((m) => [m.id, { state: 'computing' }])) };
+  const context = { exampleId: image.exampleId, measured: image.measured };
+  const active = models.filter((m) => m.covers?.(context) ?? true);
+  const results: Results = { image, grid, status: new Map(active.map((m) => [m.id, { state: 'computing' }])) };
   current = results;
   emit(results);
 
-  for (const model of models) {
+  for (const model of active) {
     const report = (detail: string) => {
       if (results.status.get(model.id)?.state !== 'computing') return;
       results.status.set(model.id, { state: 'computing', detail });
       emit(results, model.id);
     };
     model
-      .predict(image.bitmap, grid, report, { exampleId: image.exampleId })
+      .predict(image.bitmap, grid, report, context)
       .then((map) => {
         if (import.meta.env.DEV) assertProbability(map, model.name);
         results.status.set(model.id, { state: 'ready', map });

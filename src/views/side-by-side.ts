@@ -1,6 +1,6 @@
-import { models } from '../models/registry';
+import { mapLabel } from '../models/types';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
-import { onResults, type Results } from '../results';
+import { modelsFor, onResults, type Results } from '../results';
 
 const PANEL_WIDTH = 800;
 const OPACITY = 1;
@@ -45,15 +45,15 @@ export function mountSideBySide(panel: HTMLElement): void {
     original.append(photoCanvas(results, w, h));
     const figures = [figure('Photo', original)];
 
-    for (const model of models) {
+    for (const model of modelsFor(results)) {
       const frame = document.createElement('div');
       frame.className = 'frame';
       const layer = document.createElement('canvas');
       layer.className = 'layer';
       layer.style.opacity = String(OPACITY);
       const tag = document.createElement('span');
-      tag.className = 'predicted-tag';
-      tag.textContent = 'Predicted';
+      tag.className = model.kind === 'measured' ? 'predicted-tag measured' : 'predicted-tag';
+      tag.textContent = mapLabel(model);
       const note = document.createElement('span');
       note.className = 'cell-note';
       const greyed = document.createElement('canvas');
@@ -69,7 +69,7 @@ export function mountSideBySide(panel: HTMLElement): void {
 
   function update(results: Results) {
     if (built !== results) build(results);
-    for (const model of models) {
+    for (const model of modelsFor(results)) {
       const cell = cells.get(model.id)!;
       const status = results.status.get(model.id);
       if (status?.state === 'ready') {

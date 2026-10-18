@@ -1,4 +1,5 @@
 import { models, NEURAL_PREFERENCE } from '../models/registry';
+import { mapLabel } from '../models/types';
 import { INFERNO, cssColour } from '../render/colormaps';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { getResults, onResults, type Results } from '../results';
@@ -12,7 +13,8 @@ export function gradientCss(steps = 8): string {
 
 /** The overlay view: one model's heatmap on the photo, with a model selector and an opacity slider. */
 export function mountOverlay(controls: HTMLElement, stage: HTMLElement): void {
-  let selected = NEURAL_PREFERENCE.find((id) => models.some((m) => m.id === id)) ?? models[0].id;
+  const defaultId = NEURAL_PREFERENCE.find((id) => models.some((m) => m.id === id)) ?? models[0].id;
+  let selected = defaultId;
 
   const selector = document.createElement('div');
   selector.className = 'model-selector';
@@ -72,9 +74,12 @@ export function mountOverlay(controls: HTMLElement, stage: HTMLElement): void {
   let drawnFor: { results: Results; model: string } | null = null;
 
   function update(results = getResults()) {
+    // A layer such as measured gaze exists for some photos only; elsewhere its button is hidden.
+    if (results && !results.status.has(selected)) selected = defaultId;
     for (const model of models) {
       const button = buttons.get(model.id)!;
       const state = results?.status.get(model.id)?.state;
+      button.hidden = model.covers !== undefined && !results?.status.has(model.id);
       button.setAttribute('aria-pressed', String(model.id === selected));
       button.replaceChildren(model.name);
       if (model.subtitle) {
@@ -110,12 +115,14 @@ export function mountOverlay(controls: HTMLElement, stage: HTMLElement): void {
         drawnFor = { results, model: shownId };
       }
       layer.hidden = greyLayer.hidden = false;
-      tag.textContent = `Predicted · ${model.name}`;
+      tag.textContent = `${mapLabel(model)} · ${model.kind === 'measured' ? model.subtitle : model.name}`;
+      tag.classList.toggle('measured', model.kind === 'measured');
       status.textContent = handover;
     } else {
       layer.hidden = greyLayer.hidden = true;
       drawnFor = null;
-      tag.textContent = 'Predicted';
+      tag.textContent = mapLabel(model);
+      tag.classList.toggle('measured', model.kind === 'measured');
       status.textContent =
         handover +
         (outcome?.state === 'failed'

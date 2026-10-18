@@ -22,6 +22,13 @@ wins and the gap is work still to be done.
   app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
 - Five models: three in the browser, DeepGaze IIE and MSDB pre-computed for the
   examples (`src/models/deepgaze.ts`, `public/precomputed/`).
+- Measured gaze (prompts 018–020): `tools/measured-gaze/` builds measured maps
+  for 12 Zürich photos (Wilming et al. 2017, CC0) into
+  `public/precomputed/measured/`. `src/models/measured.ts` is the "Measured
+  gaze" layer, listed first and labelled "Measured" in blue. It exists only on
+  photos with `measured` in the manifest (`ModelSpec.covers`, `modelsFor()` in
+  `src/results.ts`), and stays out of `NEURAL_PREFERENCE` and the agreement
+  matrix. The agreement view adds "Match with measured gaze".
 - Maps and models: `src/maps/saliency-map.ts` (grid, normalise, resample,
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
   drawing), `src/models/` (types, registry, centre bias, classic salience in a Web Worker
@@ -99,3 +106,6 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
 - `019_deepgaze_measured_photos.md` (`precompute.py --only-missing`; the 24
   Zürich maps were made on the CPU in 7 min 14 s, MSDB about 33 s per photo.
   Mean r with the measured maps: IIE 0.74, MSDB 0.81)
+- `020_measured_gaze_in_app.md` (spec 0.9: the "Measured gaze" layer and "Match
+  with measured gaze" on the Zürich photos; absent on the Dutch photos and on
+  uploads)

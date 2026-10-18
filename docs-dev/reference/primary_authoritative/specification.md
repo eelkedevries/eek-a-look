@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.8 · **Last updated:** 2026-10-18
+**Version:** 0.9 · **Last updated:** 2026-10-18
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -21,6 +21,8 @@ heatmaps to inferno over a greyed photo after the colour-map research (prompt 01
 0.8 adds twelve Zürich street photos with measured eye-tracking maps from the
 openly licensed dataset of Wilming et al. (2017), reversing the decision not to
 compare with measured eye-tracking data (owner's decision of 2026-10-18, prompt 018).
+0.9 shows the measured maps as their own layer, "Measured gaze", with each
+model's match against it (prompt 020).
 
 ## Scope
 
@@ -119,8 +121,9 @@ interface BenchmarkScore {
 interface ModelSpec {
   id: 'centre-bias' | 'classic-salience' | 'unisal' | string;
   name: string;           // visitor-facing, e.g. "Centre bias"
-  kind: 'baseline' | 'classic' | 'neural';
+  kind: 'baseline' | 'classic' | 'neural' | 'measured';
   runtime: 'browser' | 'remote';
+  covers?(context): boolean; // layers for some photos only (measured gaze)
   downloadBytes?: number; // weights + runtime the visitor downloads
   licence: string;        // SPDX id or "own implementation"
   citation: string;       // short reference
@@ -215,6 +218,11 @@ interface ExamplePhoto {
   - a Gaussian blur of σ = 1° = 45.6 px, zero outside the image;
   - summed into 10 × 10 px cells, which is the shared 128 × 96 grid, and
     normalised to sum 1.
+- Shown as the layer **"Measured gaze"** (registry kind `'measured'`, runtime
+  `'precomputed'`, licence CC0 1.0), listed first as the reference, only on
+  photos with measured data. On other photos and on uploads it is left out of
+  every view, with no "unavailable" note. It is never in the neural preference
+  (MSDB, IIE, UNISAL) and never in the agreement matrix.
 
 **Derived views**
 
@@ -227,11 +235,16 @@ interface ExamplePhoto {
   every pair of models, shown as a lower-triangle matrix to two decimals with
   the plain-language scale "0 = unrelated · 1 = same pattern"; "n/a" where a
   model does not cover the photo.
+- **Match with measured gaze** (photos with measured data only) = each model's
+  Pearson r with the measured map, to two decimals, sorted from high to low.
 
 **Honesty** (binding on all visitor-facing text)
 
-- Every heatmap carries the label **"Predicted"**.
-- The page states, near the top, that these are predictions, not measured gaze.
+- Every predicted heatmap carries the label **"Predicted"**. The measured map
+  carries **"Measured"**, in its own colour, and is never presented as a
+  prediction.
+- The page states, near the top, that these are predictions, not measured gaze,
+  except the "Measured gaze" layer on the Zürich photos.
 - Benchmark figures are quoted only with their source and retrieval date. v1
   uses MIT300 figures from <https://saliency.tuebingen.ai/results.html>,
   retrieved 2026-10-18:
@@ -282,7 +295,8 @@ interface ExamplePhoto {
 
 - The product name is always lower case: **eek-a-look**.
 - Visitor-facing model names: "Centre bias", "Classic salience" and "UNISAL"
-  (subtitle "small neural network").
+  (subtitle "small neural network"). The measured layer is "Measured gaze"
+  (subtitle "48 people, eye tracking").
 - Visitor-facing text is British English, plain and short, for a general
   audience. The tool comes first and explanations are brief. Avoid jargon
   ("saliency", "fixation density"): say "where people are likely to look".
