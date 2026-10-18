@@ -38,10 +38,11 @@ and `tools/unisal-export/reference/` from prompt 008.
 5. In dev mode, compare the browser output for the reference example with
    `tools/unisal-export/reference/<id>.json` (Pearson r ≥ 0.98) and log the
    result.
-6. After the deploy, check the live server: `.wasm` must be served as
-   `application/wasm`, and the `.onnx` file must download. If the MIME type is
-   wrong, add `public/.htaccess` with `AddType application/wasm .wasm`, confirm
-   it reaches `dist/`, and redeploy.
+6. After pushing, run `npm run deploy`, then check the live server: `.wasm`
+   must be served as `application/wasm`, and the `.onnx` file must download.
+   If the MIME type is wrong, add `public/.htaccess` with
+   `AddType application/wasm .wasm`, confirm it reaches `dist/`, commit, push
+   and run `npm run deploy` again.
 
 ## Do not implement
 

@@ -18,7 +18,7 @@ Everything runs in the visitor's browser.
 | Topic | Decision |
 |---|---|
 | Repository | Public |
-| Hosting | SiteGround, the same way as my-review-policy: this repository's `deploy-site.yml` rsyncs `dist/` to `/eek-a-look/`, and the website's deploy protects that folder. No GitHub Pages |
+| Hosting | SiteGround. A small workflow in the eelkedevries.com repository, which already has the SSH secrets, builds this public repository and rsyncs it to `/eek-a-look/`. It is started with `npm run deploy`. No secrets to add, no GitHub Pages |
 | Audience | General public: the tool comes first, with short explanations |
 | Language | English (British) only |
 | Deadline | v1 live within one week |
@@ -75,13 +75,14 @@ more again. None of these models were tested on Dutch street photos.
 ## Prompt sequence
 
 The site is deployed early (prompts 002–003), so the SiteGround route is proven
-in the first days.
+in the first days. From prompt 003 onwards, each prompt that changes the page
+ends with `npm run deploy`.
 
 | # | Prompt | Notes |
 |---|---|---|
 | 001 | `001_setup.md`: make the repository public, complete the template scaffold, Vite + TS | |
-| 002 | `002_website_protect_path.md`: protect `/eek-a-look/` in the eelkedevries.com deploy | Pushing to eelkedevries.com `main` deploys the site |
-| 003 | `003_deploy_site.md`: `deploy-site.yml` to SiteGround, deploying the empty shell | **Human:** copy the deploy secrets first |
+| 002 | `002_website_deploy_workflow.md`: in eelkedevries.com, protect `/eek-a-look/` and add `deploy-eek-a-look.yml` | Pushing to eelkedevries.com `main` deploys the site |
+| 003 | `003_deploy_command.md`: `npm run deploy` (start, watch, re-run, live check); first deploy | |
 | 004 | `004_page_shell.md`: layout, site look, self-hosted fonts, photo upload | |
 | 005 | `005_example_photos.md`: 12 Commons photos, credits manifest, picker | |
 | 006 | `006_map_core.md`: map type, colour maps, overlay and slider, model registry, centre bias | |
@@ -112,9 +113,18 @@ in the first days.
   Apache-2.0; 256×256 square input, SALICON domain) through LiteRT.js. That would
   be a superseding prompt (`008b`).
 - **onnxruntime-web WASM is large** (several MB) and needs the correct MIME
-  type on SiteGround. It is lazy-loaded after first paint and checked in 003
-  and 009.
-- **SiteGround intermittently blocks GitHub runners.** A failed deploy is re-run
-  (see the eelkedevries.com README, *Deploy reliability*).
+  type on SiteGround. It is lazy-loaded after first paint and checked in 009.
+- **SiteGround intermittently blocks GitHub runners.** `npm run deploy` re-runs
+  a timed-out deploy itself, up to three times (see the eelkedevries.com
+  README, *Deploy reliability*).
+- **Deploys use the private website repository's Actions minutes**, about 1–2
+  minutes per eek-a-look deploy. Builds in this public repository are free.
+- **A push alone does not deploy.** Deploys come from `npm run deploy` or the
+  *Run workflow* button.
 - **Too few suitable eye-level Commons photos** for an area: use fewer and
   report it.
+
+## What the owner needs to do
+
+Nothing for v1 except giving the go-ahead and approving any permission prompts.
+Optional: take your own photos to replace the Commons examples.

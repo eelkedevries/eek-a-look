@@ -56,6 +56,8 @@ systems or future prompts.
 7. Run `npm install` and commit `package-lock.json`.
 8. Add a short "Running locally" block to `README.md` (`npm ci`, `npm run dev`,
    `npm run check`) under *Development*. Change nothing else in the README.
+9. Add `.claude/worktrees/` to `.gitignore`. Agent sessions create worktrees
+   there, and they must never be committed.
 
 ## Do not implement
 

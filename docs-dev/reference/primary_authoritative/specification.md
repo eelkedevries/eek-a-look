@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.2 · **Last updated:** 2026-10-18
+**Version:** 0.3 · **Last updated:** 2026-10-18
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -10,7 +10,9 @@ bump the version above.
 When the codebase and this document conflict, this document is correct.
 
 Changes: 0.2 records the v1 decisions from the owner Q&A of 2026-10-18
-(see `docs-dev/plan.md`).
+(see `docs-dev/plan.md`). 0.3 moves the deploy into the eelkedevries.com
+repository, which already holds the SiteGround secrets, so the owner has no
+secrets to add.
 
 ## Scope
 
@@ -39,11 +41,16 @@ on the eelkedevries.com Projects page.
 - **Stack:** Vite + TypeScript, no UI framework. Static build in `dist/` with
   the Vite `base` set to `/eek-a-look/`. Scaffolded from `eek-a-template`
   v0.3.0 (`.copier-answers.yml`).
-- **Hosting:** SiteGround. `.github/workflows/deploy-site.yml` builds and
-  rsyncs `dist/` to `${REMOTE_PATH_PRODUCTION}/eek-a-look/`, modelled on
-  `eelkedevries/my-review-policy` and `eelkedevries/roast-a-researcher`. The
-  eelkedevries.com deploy protects `/eek-a-look/***` from its
-  `--delete-after`. GitHub Pages is not used.
+- **Hosting:** SiteGround.
+  - The workflow `deploy-eek-a-look.yml` in `eelkedevries/eelkedevries.com`
+    checks out this public repository, builds it, and rsyncs `dist/` to
+    `<document root>/eek-a-look/`. It reuses that repository's existing
+    secrets and its document-root checks.
+  - It runs on a `look-updated` repository dispatch or `workflow_dispatch`,
+    started by `npm run deploy` with the local `gh` login.
+  - The eelkedevries.com deploy protects `/eek-a-look/***` from its
+    `--delete-after`.
+  - This repository stores no secrets. GitHub Pages is not used.
 - **Model registry** (`src/models/registry.ts`): an array of `ModelSpec` (see
   *Data schemas*). Each model implements
   `predict(image: ImageBitmap, grid: GridSize) => Promise<SaliencyMap>`.
@@ -214,8 +221,8 @@ interface ExamplePhoto {
 
 ## Locked decisions
 
-- Public repository; deployment to SiteGround via `deploy-site.yml`; no GitHub
-  Pages.
+- Public repository. Deployment to SiteGround by the eelkedevries.com workflow
+  `deploy-eek-a-look.yml`. No secrets in this repository; no GitHub Pages.
 - Exactly three models in v1, all in the browser; weights self-hosted.
 - Upload only; no camera capture; no remote processing in v1.
 - English only.

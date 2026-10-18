@@ -46,7 +46,8 @@ Recorded at setup; these override the defaults above where they differ.
 - **Verify command:** `npm run check` (after the scaffold exists).
 - **Testing policy:** no tests unless a prompt asks for them.
 - **Deploy base path:** `/eek-a-look/`
-- **Hosting:** `https://eelkedevries.com/eek-a-look/` on SiteGround, deployed by this repository's `deploy-site.yml` over SSH/rsync. Not GitHub Pages.
+- **Hosting:** `https://eelkedevries.com/eek-a-look/` on SiteGround, deployed by the `deploy-eek-a-look.yml` workflow in `eelkedevries/eelkedevries.com`, which already holds the SSH secrets. Not GitHub Pages. This repository stores no secrets.
+- **Deploy:** a push does not deploy. After pushing a prompt that changes the built site (from 003 onwards), run `npm run deploy` (it re-runs connection time-outs itself) and include the live check in the final report.
 
 ## Supporting guides
 
