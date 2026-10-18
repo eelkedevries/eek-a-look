@@ -4,11 +4,12 @@ const LOCAL_HOSTS = ['localhost', '127.0.0.1'];
 const API = `${import.meta.env.BASE_URL}local-api`;
 
 /**
- * Whether the DeepGaze GPU helper of `npm run local` answers. Only probed when
- * the page itself is served from this computer, so the public site never
- * contacts it.
+ * Whether the DeepGaze GPU helper of `npm run local` answers. Only builds made
+ * by `npm run local` (VITE_LOCAL_HELPER=1) probe, and only when the page is
+ * served from this computer, so the public site never contacts it.
  */
-export const localHelper: Promise<boolean> = LOCAL_HOSTS.includes(location.hostname)
+export const localHelper: Promise<boolean> =
+  import.meta.env.VITE_LOCAL_HELPER === '1' && LOCAL_HOSTS.includes(location.hostname)
   ? fetch(`${API}/health`, { signal: AbortSignal.timeout(3000) })
       .then((response) => response.ok)
       .catch(() => false)

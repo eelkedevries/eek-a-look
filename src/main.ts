@@ -12,6 +12,7 @@ import { onImageChange, setImage } from './state';
 import { showOnStage } from './stage';
 import { renderAbout } from './views/about';
 import { mountAgreement } from './views/agreement';
+import { mountMethods } from './views/methods';
 import { mountOverlay } from './views/overlay';
 import { mountSideBySide } from './views/side-by-side';
 import { mountTabs } from './views/tabs';
@@ -34,6 +35,7 @@ mountTabs(document.querySelector<HTMLElement>('#view-tabs')!, [
   { id: 'adds', label: 'What AI adds', panel: panel('adds') },
 ]);
 mountAgreement(document.querySelector<HTMLElement>('#views')!);
+mountMethods(document.querySelector<HTMLElement>('#methods')!);
 
 const photosById = new Map<string, ExamplePhoto>();
 let markSelected: (id: string | undefined) => void = () => {};

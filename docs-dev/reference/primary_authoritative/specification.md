@@ -69,7 +69,8 @@ on the eelkedevries.com Projects page.
   to the best available neural model (MSDB, IIE, UNISAL). With `npm run local`
   on the owner's laptop, a GPU helper (`tools/deepgaze-local/serve.py`, bound
   to 127.0.0.1) runs both models live; the page reaches it only through
-  `/eek-a-look/local-api/` and only when served from localhost.
+  `/eek-a-look/local-api/`, only in builds made by `npm run local`
+  (`VITE_LOCAL_HELPER=1`) and only when served from localhost.
 - **Workers:** classic salience and UNISAL each run in a Web Worker, so the page
   stays responsive. Centre bias runs on the main thread.
 - **Shared grid:** every model's output is resampled to one grid per image. Its

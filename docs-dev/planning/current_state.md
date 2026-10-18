@@ -86,3 +86,7 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
   DeepGaze runs live on any photo on the laptop; the public site never probes it).
   Live checks after round two: Lighthouse mobile 99 / 100 / 100, CLS 0.003, no
   third-party or local-api requests, no console errors.
+- `016_method_explanations.md` (bottom section: per method, its heatmap and a
+  ~100-word explanation from `src/content/methods.ts`, checked by
+  `scripts/check-method-texts.mjs`; the helper probe now exists only in
+  `npm run local` builds)

@@ -625,6 +625,55 @@ main > section {
   color: var(--muted);
 }
 
+main > section.methods {
+  padding-top: 8px;
+}
+
+.methods-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 28px 22px;
+}
+
+@media (min-width: 720px) {
+  .methods-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1080px) {
+  .methods-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.method-card .frame {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--stage);
+}
+
+.method-card canvas.photo {
+  width: 100%;
+  max-height: none;
+}
+
+.method-card h3 {
+  margin: 12px 0 6px;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 20px;
+  color: var(--text-bright);
+}
+
+.method-card p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+  color: rgba(234, 231, 225, 0.88);
+}
+
 .footer {
   margin-top: 24px;
   padding: 24px 0 40px;

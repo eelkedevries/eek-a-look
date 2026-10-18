@@ -30,21 +30,9 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
 
   const intro = el(
     'p',
-    'eek-a-look shows five predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model.',
+    'eek-a-look shows five predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model. How each method works is explained at the bottom of the page.',
     'about-lead',
   );
-
-  const modelList = el('dl', undefined, 'about-models');
-  for (const model of models) {
-    const term = el('dt', model.subtitle ? `${model.name} · ${model.subtitle}` : model.name);
-    const description = el('dd');
-    const licence =
-      model.licence === 'own implementation' ? 'our own implementation'
-      : model.runtime === 'precomputed' ? model.licence
-      : `${model.licence} licence`;
-    description.append(`${model.oneLine} `, el('span', `${model.citation}; ${licence}.`, 'muted'));
-    modelList.append(term, description);
-  }
 
   const quality = el('h3', 'How good are they?');
   const qualityText = el(
@@ -126,5 +114,5 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
   );
   creditList.append(software);
 
-  section.replaceChildren(heading, intro, modelList, quality, qualityText, table, large, source, limits, limitList, privacy, privacyText, credits, creditList);
+  section.replaceChildren(heading, intro, quality, qualityText, table, large, source, limits, limitList, privacy, privacyText, credits, creditList);
 }
