@@ -22,6 +22,10 @@ wins and the gap is work still to be done.
   drawing), `src/models/` (types, registry, centre bias, classic salience in a Web Worker
   at `src/models/classic-salience/`), `src/results.ts` (runs
   every model per image) and `src/views/overlay.ts` (model selector, slider).
+- UNISAL conversion: `tools/unisal-export/` (`uv run export.py`) writes
+  `public/models/unisal/` (ONNX fp16, 6.4 MB, dynamic input size; the Gaussian
+  priors are a second input built from `model.json`). Verified against PyTorch on
+  all 12 photos: r = 1.00000 (fp32), ≥ 0.99999 (fp16).
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
@@ -42,7 +46,7 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Next: `008_unisal_export.md`.
+Next: `009_unisal_browser.md`.
 
 ## Prompts run
 
@@ -54,3 +58,5 @@ Next: `008_unisal_export.md`.
 - `006_map_core.md`
 - `007_classic_salience.md` (about 50–70 ms per photo in Chrome; it favours
   large contrasts such as sky gaps and foliage over small signs)
+- `008_unisal_export.md` (MIT1003 fine-tuned weights, SALICON domain, as UNISAL
+  uses for MIT300)

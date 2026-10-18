@@ -37,3 +37,7 @@ docs-dev/reference/customer/
 
 # agent worktrees
 .claude/worktrees/
+
+# UNISAL export: cloned source and intermediate files
+tools/unisal-export/.cache/
+tools/unisal-export/.venv/

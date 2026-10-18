@@ -1,0 +1,7 @@
+UNISAL — Unified Image and Video Saliency Modeling
+Copyright Richard Droste, Jianbo Jiao and J. Alison Noble.
+Droste, R., Jiao, J., & Noble, J. A. (2020). Unified Image and Video Saliency Modeling. ECCV.
+Source: https://github.com/rdroste/unisal.git (commit 7f8ca1a7ecb3dbc1bf7fca837cb6186a85ac27d9), licensed under the Apache License 2.0 (see LICENSE).
+
+Converted to ONNX fp16 by eek-a-look from weights_ft_mit1003.pth; no retraining. The Gaussian prior maps
+are supplied as a second input, built from the model's own learned parameters (model.json).

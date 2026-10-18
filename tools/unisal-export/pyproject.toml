@@ -1,0 +1,25 @@
+[project]
+name = "unisal-export"
+version = "0.1.0"
+description = "Converts the pretrained UNISAL saliency model to ONNX for eek-a-look."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "torch>=2.4",
+  "numpy",
+  "pillow",
+  "onnx",
+  "onnxscript",
+  "onnxruntime",
+  "onnxconverter-common",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
