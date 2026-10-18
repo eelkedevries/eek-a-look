@@ -16,16 +16,23 @@ wins and the gap is work still to be done.
 
 - Vite + TypeScript scaffold (placeholder page) under base `/eek-a-look/`,
   completed from `eek-a-template` v0.3.0. CI: `check-build.yml`.
+- Deploy: `deploy-eek-a-look.yml` in `eelkedevries/eelkedevries.com` builds this
+  repository and rsyncs it to `/eek-a-look/`. The site deploy protects that folder.
 
 ## Key decisions
 
 The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
-`specification.md` (version 0.2).
+`specification.md` (version 0.3).
+
+- `deploy-eek-a-look.yml` uses its own concurrency group (`eek-a-look-deploy`),
+  not `eelkedevries-site-deploy`. A shared group would let a queued eek-a-look
+  run cancel a pending site deploy, and the two never write to the same folder.
 
 ## In progress / next
 
-Next: `002_website_deploy_workflow.md`.
+Next: `003_deploy_command.md`.
 
 ## Prompts run
 
 - `001_setup.md`
+- `002_website_deploy_workflow.md` (eelkedevries.com commit `52007f8`)
