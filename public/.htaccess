@@ -1,0 +1,13 @@
+# The host sends no Content-Type for these, which stops browsers from
+# compiling WebAssembly while it downloads and keeps the files uncompressed.
+AddType application/wasm .wasm
+AddType application/octet-stream .onnx
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE application/wasm application/octet-stream application/json
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType application/wasm "access plus 30 days"
+</IfModule>
