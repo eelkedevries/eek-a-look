@@ -149,3 +149,5 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   discriminate)
 - `025_areas_view.md` (spec 0.13: the Areas tab; its ratios match
   `validation.json` exactly on zurich-23)
+- `026_vlm_panel_in_app.md` (spec 0.14: the simulated panel's verdicts under
+  the Areas table, with notes on rhythm and materials, which did not vary)

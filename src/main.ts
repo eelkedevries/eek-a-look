@@ -13,6 +13,7 @@ import { showOnStage } from './stage';
 import { renderAbout } from './views/about';
 import { mountAgreement } from './views/agreement';
 import { mountAreas } from './views/areas';
+import { mountPanel } from './views/panel';
 import { mountMethods } from './views/methods';
 import { mountOverlay } from './views/overlay';
 import { mountSideBySide } from './views/side-by-side';
@@ -31,6 +32,7 @@ mountOverlay(document.querySelector<HTMLElement>('#overlay-controls')!, stage);
 mountSideBySide(panel('side'));
 mountWhatAiAdds(panel('adds'));
 mountAreas(panel('areas'));
+mountPanel(document.querySelector<HTMLElement>('#areas-panel')!);
 mountTabs(document.querySelector<HTMLElement>('#view-tabs')!, [
   { id: 'overlay', label: 'Overlay', panel: panel('overlay') },
   { id: 'side', label: 'Side by side', panel: panel('side') },

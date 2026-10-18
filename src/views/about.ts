@@ -1,4 +1,5 @@
 import type { ExamplePhoto } from '../examples';
+import { loadPanel } from './panel';
 import { models } from '../models/registry';
 import { MIT300_RETRIEVED, MIT300_SOURCE } from '../models/types';
 
@@ -85,6 +86,9 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
   const areasHeading = el('h3', 'Automatic areas');
   const areasText = el('p');
   const areasCredit = el('li');
+  const panelHeading = el('h3', 'Simulated panel');
+  const panelText = el('p');
+  const panelCredit = el('li');
 
   const privacy = el('h3', 'Privacy');
   const privacyText = el(
@@ -130,10 +134,39 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     link('https://github.com/eelkedevries/eek-a-look', 'Source code on GitHub'),
     '.',
   );
-  creditList.append(software, areasCredit);
+  creditList.append(software, areasCredit, panelCredit);
   fillAreas(areasText, areasCredit);
+  fillPanel(panelText, panelCredit);
 
-  section.replaceChildren(heading, intro, quality, qualityText, table, large, source, limits, limitList, areasHeading, areasText, privacy, privacyText, credits, creditList);
+  section.replaceChildren(
+    heading, intro, quality, qualityText, table, large, source, limits, limitList,
+    areasHeading, areasText, panelHeading, panelText, privacy, privacyText, credits, creditList,
+  );
+}
+
+const SHORT_NAMES: Record<string, string> = { rhythm: 'rhythm and variety', groundFloor: 'the ground floor', materials: 'materials' };
+
+/** The "Simulated panel" paragraph and credit, with the agreement and stability figures from panel.json. */
+async function fillPanel(text: HTMLElement, credit: HTMLElement): Promise<void> {
+  const panel = await loadPanel();
+  const intro =
+    'For each example photo, a vision-language model (Qwen3-VL) was asked eight times, as an architect, landscape architect, urban designer or planner, to judge the three principles an HvA expert panel used: rhythm and variety, an active ground floor and tactile materials. A verdict needs six of eight to agree. ';
+  const outro = 'Such models favour European and North American views of cities (Zhao et al. 2026). An AI judgement, not validated against experts.';
+  if (!panel) {
+    text.textContent = intro + outro;
+    return;
+  }
+  const keys = Object.keys(panel.fleissKappa);
+  const agreed = keys.filter((k) => panel.fleissKappa[k] !== null).map((k) => `${SHORT_NAMES[k] ?? k} (kappa ${two(panel.fleissKappa[k]!)})`);
+  const flat = keys.filter((k) => panel.fleissKappa[k] === null).map((k) => SHORT_NAMES[k] ?? k);
+  const join = (items: string[]) => items.join(' and ');
+  text.textContent =
+    intro +
+    (agreed.length ? `Runs agreed closely on ${join(agreed)} and ` : '') +
+    `${Math.round(panel.stability.sameConsensus * 100)}% of verdicts held on a rerun` +
+    (flat.length ? `, but every photo got the same verdict for ${join(flat)}. ` : '. ') +
+    outro;
+  credit.textContent = `Simulated panel: ${panel.model.split('@')[0]} by the Qwen team (${panel.licence}), run locally (${panel.quantisation}).`;
 }
 
 /** Content hash of public/precomputed/areas/, set by vite.config.ts. */

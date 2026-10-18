@@ -523,6 +523,64 @@ main > section {
   display: none;
 }
 
+/* Simulated panel, under the Areas table */
+.areas-panel {
+  margin-top: 28px;
+  max-width: 70ch;
+}
+
+.areas-panel:empty {
+  display: none;
+}
+
+.panel-heading {
+  margin: 0 0 12px;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--text);
+}
+
+.panel-verdicts {
+  margin: 0;
+}
+
+.panel-verdicts dt {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.panel-verdicts dd {
+  margin: 2px 0 0;
+  font-size: 14px;
+}
+
+.panel-verdict {
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.panel-votes {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.panel-evidence,
+.panel-note {
+  display: block;
+  margin-top: 2px;
+  color: var(--text);
+}
+
+.panel-note {
+  font-size: 13px;
+  color: var(--gold);
+}
+
 #panel-adds .legend {
   margin-bottom: 14px;
 }

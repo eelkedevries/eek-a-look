@@ -77,6 +77,7 @@ export default defineConfig({
   define: {
     __EXAMPLES_VERSION__: JSON.stringify(examplesVersion),
     __AREAS_VERSION__: JSON.stringify(folderVersion('public/precomputed/areas')),
+    __PANEL_VERSION__: JSON.stringify(folderVersion('public/precomputed/vlm-panel')),
   },
   server: { proxy: localApi },
   preview: { proxy: localApi },

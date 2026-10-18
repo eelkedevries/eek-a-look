@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.13 · **Last updated:** 2026-10-19
+**Version:** 0.14 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -27,7 +27,8 @@ example photos: nine street categories and the ground floor (prompt 021).
 0.11 adds windows, entrances, balconies and shopfronts, each from the model
 that scored best on human-labelled façades (prompt 023). 0.12 takes the
 horizon from standing people when façade lines fail (prompt 021b). 0.13 adds
-the Areas view with attention ÷ size per area (prompt 025).
+the Areas view with attention ÷ size per area (prompt 025). 0.14 adds the
+simulated panel's verdicts under the Areas table (prompt 026).
 
 ## Scope
 
@@ -339,6 +340,18 @@ interface ExamplePhoto {
   - the note "Ground floor estimated assuming a level camera." when the
     horizon method is `assumed-level`, and "(unreliable: low score in the
     check)" after a `lowConfidence` element.
+- **Simulated panel** (under the Areas table; example photos only, nothing on
+  uploads), from `public/precomputed/vlm-panel/panel.json` (`tools/vlm-panel/`):
+  - the verdict on each of the three principles of Spanjar & Suurenbroek
+    (2020): horizontal–vertical rhythm and variety, active ground floor,
+    tactile materials;
+  - eight members (four designer roles × two seeds) of one local
+    vision-language model (Qwen3-VL). A verdict is "Present" or "Absent" when
+    at least 6 of 8 agree, otherwise "No consensus";
+  - shown as text with the votes and one evidence sentence, not as colours;
+  - a principle whose Fleiss' kappa is `null` (the same verdict on every
+    photo) carries the note "The model gave this verdict for every example
+    photo, so it does not tell the photos apart."
 
 **Honesty** (binding on all visitor-facing text)
 
@@ -350,6 +363,9 @@ interface ExamplePhoto {
 - The Areas view carries the label **"Automatic areas · not an expert
   judgement"** and the caption "Areas are found automatically and can be
   wrong."
+- The simulated panel is headed **"Simulated panel · AI judgement, not
+  experts"**, and its caption says that no experts judged these photos, so it
+  is not validated. Its verdicts are never combined with gaze statistics.
 - Benchmark figures are quoted only with their source and retrieval date. v1
   uses MIT300 figures from <https://saliency.tuebingen.ai/results.html>,
   retrieved 2026-10-18:
@@ -402,6 +418,8 @@ interface ExamplePhoto {
 - Visitor-facing model names: "Centre bias", "Classic salience" and "UNISAL"
   (subtitle "small neural network"). The measured layer is "Measured gaze"
   (subtitle "48 people, eye tracking").
+- A vision-language model's verdict is called an **"AI judgement"**, never an
+  expert judgement or an assessment.
 - Visitor-facing text is British English, plain and short, for a general
   audience. The tool comes first and explanations are brief. Avoid jargon
   ("saliency", "fixation density"): say "where people are likely to look".
