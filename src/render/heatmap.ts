@@ -54,7 +54,7 @@ export function drawDifference(target: HTMLCanvasElement, field: SignedField, wi
     rgba[i * 4] = lut[k];
     rgba[i * 4 + 1] = lut[k + 1];
     rgba[i * 4 + 2] = lut[k + 2];
-    rgba[i * 4 + 3] = Math.round(235 * Math.pow(Math.abs(t), 0.7));
+    rgba[i * 4 + 3] = Math.round(235 * Math.pow(Math.abs(t), 0.5));
   }
   paint(target, width, height, rgba, field.width, field.height);
 }

@@ -30,15 +30,20 @@
           </div>
         </section>
 
-        <section class="stage-section" aria-label="Photo and predicted heatmap">
-          <div id="overlay-controls" class="controls"></div>
-          <div id="stage" class="stage">
-            <p class="stage-empty">No photo yet.</p>
+        <section class="stage-section" aria-label="Photo and predicted heatmaps">
+          <div id="view-tabs" class="view-tabs" role="tablist" aria-label="View"></div>
+          <div id="panel-overlay" class="panel" role="tabpanel" aria-labelledby="tab-overlay">
+            <div id="overlay-controls" class="controls"></div>
+            <div id="stage" class="stage">
+              <p class="stage-empty">No photo yet.</p>
+            </div>
           </div>
+          <div id="panel-side" class="panel" role="tabpanel" aria-labelledby="tab-side" hidden></div>
+          <div id="panel-adds" class="panel" role="tabpanel" aria-labelledby="tab-adds" hidden></div>
           <p id="credit" class="credit"></p>
         </section>
 
-        <section id="views" class="views" aria-label="Views"></section>
+        <section id="views" class="views" aria-labelledby="agreement-heading"></section>
 
         <section id="about" class="about" aria-labelledby="about-heading">
           <h2 id="about-heading" class="section-label">About</h2>

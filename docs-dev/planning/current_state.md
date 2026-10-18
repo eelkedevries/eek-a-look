@@ -21,7 +21,8 @@ wins and the gap is work still to be done.
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
   drawing), `src/models/` (types, registry, centre bias, classic salience in a Web Worker
   at `src/models/classic-salience/`), `src/results.ts` (runs
-  every model per image) and `src/views/overlay.ts` (model selector, slider).
+  every model per image) and `src/views/` (tabs; overlay with model selector and slider; side by side;
+  "What AI adds" = UNISAL − centre bias; agreement = Pearson r per pair).
 - UNISAL in the browser: `src/models/unisal/` (onnxruntime-web 1.30.0, CPU
   WASM in a Web Worker; about 0.1–0.35 s per photo on a desktop). Dev check
   `?check=unisal` compares with the export's reference output (r = 0.9937).
@@ -49,7 +50,7 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Next: `010_comparison_views.md`.
+Next: `011_about_and_copy.md`.
 
 ## Prompts run
 
@@ -63,4 +64,7 @@ Next: `010_comparison_views.md`.
   large contrasts such as sky gaps and foliage over small signs)
 - `008_unisal_export.md` (MIT1003 fine-tuned weights, SALICON domain, as UNISAL
   uses for MIT300)
-- `009_unisal_browser.md` (CPU WASM only, see spec 0.4)
+- `009_unisal_browser.md` (CPU WASM only, see spec 0.4). Follow-up fixes:
+  `public/.htaccess` sets types for .mjs/.wasm/.onnx, and the live site loads a
+  gzip copy of the 14 MB runtime (3.7 MB) because the host does not compress it.
+- `010_comparison_views.md`

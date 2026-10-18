@@ -356,12 +356,149 @@ main > section {
   border-radius: 3px;
 }
 
+.view-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.view-tab {
+  min-height: 44px;
+  margin-bottom: -1px;
+  padding: 8px 16px;
+  border: 1px solid transparent;
+  border-bottom: 2px solid transparent;
+  background: none;
+  color: var(--muted);
+  font: inherit;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.view-tab:hover {
+  color: var(--text);
+}
+
+.view-tab[aria-selected='true'] {
+  border-bottom-color: var(--gold);
+  color: var(--text-bright);
+}
+
+.side-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 720px) {
+  .side-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.side-cell {
+  margin: 0;
+}
+
+.side-cell .frame {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--stage);
+}
+
+.side-cell canvas.photo {
+  max-height: none;
+  width: 100%;
+}
+
+.side-cell figcaption {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+.cell-note {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gold);
+}
+
+.cell-note:empty {
+  display: none;
+}
+
+.legend-bar-wide {
+  width: 160px;
+}
+
+#panel-adds .legend {
+  margin-bottom: 14px;
+}
+
+.adds-caption {
+  margin: 10px 0 0;
+  max-width: 70ch;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.agreement {
+  display: grid;
+  gap: 10px;
+  max-width: 640px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agreement li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px 3.5em;
+  align-items: center;
+  gap: 12px;
+}
+
+.agreement-meter {
+  height: 8px;
+  border-radius: 4px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.agreement-meter span {
+  display: block;
+  height: 100%;
+  background: var(--gold);
+}
+
+.agreement-value {
+  font-family: var(--font-mono);
+  text-align: right;
+  color: var(--text-bright);
+}
+
+.agreement-caption {
+  margin: 12px 0 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 .model-status {
   flex-basis: 100%;
   min-height: 1.4em;
   margin: 0;
   font-size: 13px;
   color: var(--muted);
+}
+
+.stage:has(.frame) {
+  min-height: 0;
 }
 
 .stage-empty {

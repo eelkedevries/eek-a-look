@@ -41,8 +41,8 @@ function fromStops(stops: string[]): Lut {
 
 export const MAGMA: Lut = fromHex(MAGMA_HEX);
 
-/** Blue (less) → neutral → orange (more); ColorBrewer stops, distinguishable with red–green colour blindness. */
-export const BLUE_ORANGE: Lut = fromStops(['#2166ac', '#4393c3', '#92c5de', '#ededed', '#fdb863', '#e08214', '#b35806']);
+/** Blue (less) → neutral → orange (more), with luminous ends so both read over a greyed photo; blue and orange stay distinct with red–green colour blindness. */
+export const BLUE_ORANGE: Lut = fromStops(['#2f7fd0', '#5ea3e3', '#a6cbeb', '#ededed', '#f7c27c', '#f0983a', '#dd7a16']);
 
 export function cssColour(lut: Lut, t: number): string {
   const i = Math.round(Math.min(Math.max(t, 0), 1) * 255) * 3;

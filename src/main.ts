@@ -10,7 +10,11 @@ import { loadExamples, renderCredit, renderPicker, showExample, type ExamplePhot
 import { decodeUpload, ImageInputError } from './image-input';
 import { onImageChange, setImage } from './state';
 import { showOnStage } from './stage';
+import { mountAgreement } from './views/agreement';
 import { mountOverlay } from './views/overlay';
+import { mountSideBySide } from './views/side-by-side';
+import { mountTabs } from './views/tabs';
+import { mountWhatAiAdds } from './views/what-ai-adds';
 
 const stage = document.querySelector<HTMLElement>('#stage')!;
 const credit = document.querySelector<HTMLElement>('#credit')!;
@@ -19,7 +23,16 @@ const uploadButton = document.querySelector<HTMLButtonElement>('#upload-button')
 const uploadInput = document.querySelector<HTMLInputElement>('#upload-input')!;
 const uploadMessage = document.querySelector<HTMLElement>('#upload-message')!;
 
+const panel = (id: string) => document.querySelector<HTMLElement>(`#panel-${id}`)!;
 mountOverlay(document.querySelector<HTMLElement>('#overlay-controls')!, stage);
+mountSideBySide(panel('side'));
+mountWhatAiAdds(panel('adds'));
+mountTabs(document.querySelector<HTMLElement>('#view-tabs')!, [
+  { id: 'overlay', label: 'Overlay', panel: panel('overlay') },
+  { id: 'side', label: 'Side by side', panel: panel('side') },
+  { id: 'adds', label: 'What AI adds', panel: panel('adds') },
+]);
+mountAgreement(document.querySelector<HTMLElement>('#views')!);
 
 const photosById = new Map<string, ExamplePhoto>();
 let markSelected: (id: string | undefined) => void = () => {};
