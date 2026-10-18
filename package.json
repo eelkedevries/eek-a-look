@@ -8,7 +8,8 @@
     "build": "tsc && vite build && node scripts/precompress.mjs",
     "preview": "vite preview",
     "check": "tsc --noEmit && node scripts/validate-examples.mjs && vite build && node scripts/precompress.mjs && bash scripts/check-public-build.sh dist && bash scripts/validate-prompts.sh",
-    "deploy": "bash scripts/deploy.sh"
+    "deploy": "bash scripts/deploy.sh",
+    "local": "npm run build && node scripts/local.mjs"
   },
   "devDependencies": {
     "sharp": "^0.35.5",

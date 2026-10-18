@@ -55,7 +55,7 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-v1 is complete; second round in progress (prompts 012–015). Later work is listed in `docs-dev/plan.md` (*Later*): areas of
+v1 and the second round (prompts 012–015) are complete. Later work is listed in `docs-dev/plan.md` (*Later*): areas of
 interest (v1.1), large models via Hugging Face, and the owner's own photos.
 
 ## Prompts run
@@ -82,3 +82,5 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
   about 1 s per photo on the RTX 4070, peak 3.1 GB; 24 maps, 0.69 MB)
 - `014_deepgaze_in_app.md` (five models; MSDB is the default overlay, with a
   fallback to UNISAL for uploads; agreement is now a matrix)
+- `015_local_live_helper.md` (`npm run local`: GPU helper plus preview server;
+  DeepGaze runs live on any photo on the laptop; the public site never probes it)

@@ -43,4 +43,5 @@ npm ci          # install exact dependencies from the lockfile
 npm run dev     # development server at http://localhost:5173/eek-a-look/
 npm run check   # type-check, build and safety checks
 npm run deploy  # publish what is on GitHub (see docs/deployment.md)
+npm run local   # site plus live DeepGaze on this laptop's GPU (see docs/local.md)
 ```

@@ -1,4 +1,5 @@
 import { normalise, resample, type GridSize, type SaliencyMap } from '../maps/saliency-map';
+import { localHelper, predictLocally } from './local-helper';
 import { MIT300_RETRIEVED, MIT300_SOURCE, UnavailableError, type ModelSpec } from './types';
 
 interface PrecomputedMap {
@@ -18,20 +19,37 @@ export function decodeMap(payload: PrecomputedMap): SaliencyMap {
   return normalise(payload.grid, values);
 }
 
+const fitGrid = (map: SaliencyMap, grid: GridSize) =>
+  map.width === grid.width && map.height === grid.height ? map : resample(map, grid);
+
 function deepGaze(spec: Omit<ModelSpec, 'predict' | 'runtime' | 'kind' | 'licence'>): ModelSpec {
-  return {
+  const model: ModelSpec = {
     ...spec,
     kind: 'neural',
     runtime: 'precomputed',
     licence: 'maps only; DeepGaze code and weights are not redistributed',
-    async predict(_image, grid, _report, context) {
-      if (!context?.exampleId) throw new UnavailableError('Computed in advance for the example photos only.');
-      const response = await fetch(`${import.meta.env.BASE_URL}precomputed/${spec.id}/${context.exampleId}.json`);
-      if (!response.ok) throw new UnavailableError('No pre-computed map for this photo.');
-      const map = decodeMap(await response.json());
-      return map.width === grid.width && map.height === grid.height ? map : resample(map, grid);
+    async predict(image, grid, report, context) {
+      // Copy before the first await: the app closes a photo's bitmap when the next one arrives.
+      const copy = context?.exampleId ? null : createImageBitmap(image);
+      if (context?.exampleId) {
+        const response = await fetch(`${import.meta.env.BASE_URL}precomputed/${spec.id}/${context.exampleId}.json`);
+        if (response.ok) return fitGrid(decodeMap(await response.json()), grid);
+      }
+      // Photos without a pre-computed map need the GPU helper of `npm run local`.
+      if (!(await localHelper)) throw new UnavailableError('Computed in advance for the example photos only.');
+      report?.('Running on this computer’s GPU…');
+      const bitmap = await (copy ?? createImageBitmap(image));
+      try {
+        return fitGrid(decodeMap((await predictLocally(spec.id, bitmap, grid)) as PrecomputedMap), grid);
+      } finally {
+        bitmap.close();
+      }
     },
   };
+  localHelper.then((available) => {
+    if (available) model.subtitle = 'large model, running on this computer’s GPU';
+  });
+  return model;
 }
 
 export const deepGazeIIE = deepGaze({

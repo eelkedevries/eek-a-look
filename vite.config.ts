@@ -48,9 +48,20 @@ function prerenderPicker(): Plugin {
   };
 }
 
+// `npm run local` only: the browser reaches the DeepGaze GPU helper through its
+// own origin. The public site has no such path.
+const localApi = {
+  [`${BASE}local-api`]: {
+    target: 'http://127.0.0.1:8765',
+    rewrite: (path: string) => path.slice(`${BASE}local-api`.length),
+  },
+};
+
 export default defineConfig({
   base: BASE,
   plugins: [prerenderPicker()],
+  server: { proxy: localApi },
+  preview: { proxy: localApi },
   build: {
     sourcemap: false,
   },

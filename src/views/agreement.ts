@@ -46,10 +46,11 @@ export function mountAgreement(section: HTMLElement): void {
           const sb = results.status.get(b.id);
           if (sa?.state === 'ready' && sb?.state === 'ready') {
             const r = pearson(sa.map, sb.map);
-            td.textContent = r.toFixed(2);
+            const text = r.toFixed(2).replace(/^-(0\.00)$/, '$1');
+            td.textContent = text;
             td.style.setProperty('--r', String(Math.max(0, r)));
             td.className = 'agreement-cell';
-            td.setAttribute('aria-label', `${a.name} and ${b.name}: ${r.toFixed(2)}`);
+            td.setAttribute('aria-label', `${a.name} and ${b.name}: ${text}`);
           } else {
             const missing = [sa, sb].some((s) => s?.state === 'failed' || s?.state === 'unavailable');
             td.textContent = missing ? 'n/a' : '…';
