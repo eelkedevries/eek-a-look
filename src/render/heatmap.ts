@@ -23,19 +23,22 @@ function paint(target: HTMLCanvasElement, width: number, height: number, rgba: U
 
 /**
  * Draws a probability map as a heatmap at the given pixel size. Values are scaled
- * by the map's 99th percentile, so one hot spot does not wash out the rest, and
- * the alpha follows the value, so low areas leave the photo visible.
+ * from the map's minimum to its 99th percentile, so one hot spot does not wash
+ * out the rest and a flat map is not painted over the whole photo; the alpha
+ * rises with the value, so low areas leave the photo visible.
  */
 export function drawHeatmap(target: HTMLCanvasElement, map: SaliencyMap, width: number, height: number, lut: Lut = MAGMA): void {
-  const top = percentile(map.data, 0.99) || 1;
+  let bottom = Infinity;
+  for (const v of map.data) bottom = Math.min(bottom, v);
+  const span = percentile(map.data, 0.99) - bottom || 1;
   const rgba = new Uint8ClampedArray(map.width * map.height * 4);
   for (let i = 0; i < map.data.length; i++) {
-    const t = Math.min(map.data[i] / top, 1);
+    const t = Math.max(0, Math.min((map.data[i] - bottom) / span, 1));
     const k = Math.round(t * 255) * 3;
     rgba[i * 4] = lut[k];
     rgba[i * 4 + 1] = lut[k + 1];
     rgba[i * 4 + 2] = lut[k + 2];
-    rgba[i * 4 + 3] = Math.round(255 * Math.pow(t, 0.75));
+    rgba[i * 4 + 3] = Math.round(240 * Math.pow(t, 1.4));
   }
   paint(target, width, height, rgba, map.width, map.height);
 }

@@ -19,7 +19,8 @@ wins and the gap is work still to be done.
   app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
 - Maps and models: `src/maps/saliency-map.ts` (grid, normalise, resample,
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
-  drawing), `src/models/` (types, registry, centre bias), `src/results.ts` (runs
+  drawing), `src/models/` (types, registry, centre bias, classic salience in a Web Worker
+  at `src/models/classic-salience/`), `src/results.ts` (runs
   every model per image) and `src/views/overlay.ts` (model selector, slider).
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
@@ -41,7 +42,7 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Next: `007_classic_salience.md`.
+Next: `008_unisal_export.md`.
 
 ## Prompts run
 
@@ -51,3 +52,5 @@ Next: `007_classic_salience.md`.
 - `004_page_shell.md`
 - `005_example_photos.md`
 - `006_map_core.md`
+- `007_classic_salience.md` (about 50–70 ms per photo in Chrome; it favours
+  large contrasts such as sky gaps and foliage over small signs)
