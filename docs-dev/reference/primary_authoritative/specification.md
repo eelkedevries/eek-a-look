@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.4 · **Last updated:** 2026-10-18
+**Version:** 0.5 · **Last updated:** 2026-10-18
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -14,7 +14,8 @@ Changes: 0.2 records the v1 decisions from the owner Q&A of 2026-10-18
 repository, which already holds the SiteGround secrets, so the owner has no
 secrets to add. 0.4 runs UNISAL on the CPU WebAssembly backend only (prompt 009):
 it takes about 0.1–0.35 s per photo on a desktop CPU, while the WebGPU build would
-add 14 MB (3 MB compressed) of runtime to download.
+add 14 MB (3 MB compressed) of runtime to download. 0.5 changes the heatmap colours to the warm YlOrRd map
+the owner chose (prompt 012).
 
 ## Scope
 
@@ -203,8 +204,10 @@ interface ExamplePhoto {
 
 **Colour maps**
 
-- Heatmaps use a perceptually uniform sequential map (magma), with an alpha ramp
-  for the overlay.
+- Heatmaps use ColorBrewer YlOrRd, a warm sequential map (yellow → orange →
+  red), chosen by the owner on 2026-10-18 from six rendered options. It is
+  colour-blind safe and reads well over photos. The table is indexed from 15 %
+  so faint areas still read as warm; alpha = 0.85·t^0.9.
 - The difference map uses a colour-blind-safe diverging map
   (blue → neutral → orange).
 - No rainbow or "jet" colour maps.

@@ -1,24 +1,25 @@
 /** An RGB lookup table: 256 entries, three bytes each. */
 export type Lut = Uint8ClampedArray;
 
-// matplotlib's magma, sampled at 256 points (perceptually uniform, colour-blind safe).
-const MAGMA_HEX =
-  '00000401000501010601010802010902020b02020d03030f03031204041405041606051806051a07061c08071e090720' +
-  '0a08220b09240c09260d0a290e0b2b100b2d110c2f120d31130d34140e36150e38160f3b180f3d19103f1a10421c1044' +
-  '1d11471e114920114b21114e22115024125325125527125829115a2a115c2c115f2d11612f1163311165331067341069' +
-  '36106b38106c390f6e3b0f703d0f713f0f72400f74420f75440f764510774710784910784a10794c117a4e117b4f127b' +
-  '51127c52137c54137d56147d57157e59157e5a167e5c167f5d177f5f187f601880621980641a80651a80671b80681c81' +
-  '6a1c816b1d816d1d816e1e81701f81721f817320817521817621817822817922827b23827c23827e2482802582812581' +
-  '8326818426818627818827818928818b29818c29818e2a81902a81912b81932b80942c80962c80982d80992d809b2e7f' +
-  '9c2e7f9e2f7fa02f7fa1307ea3307ea5317ea6317da8327daa337dab337cad347cae347bb0357bb2357bb3367ab5367a' +
-  'b73779b83779ba3878bc3978bd3977bf3a77c03a76c23b75c43c75c53c74c73d73c83e73ca3e72cc3f71cd4071cf4070' +
-  'd0416fd2426fd3436ed5446dd6456cd8456cd9466bdb476adc4869de4968df4a68e04c67e24d66e34e65e44f64e55064' +
-  'e75263e85362e95462ea5661eb5760ec5860ed5a5fee5b5eef5d5ef05f5ef1605df2625df2645cf3655cf4675cf4695c' +
-  'f56b5cf66c5cf66e5cf7705cf7725cf8745cf8765cf9785df9795df97b5dfa7d5efa7f5efa815ffb835ffb8560fb8761' +
-  'fc8961fc8a62fc8c63fc8e64fc9065fd9266fd9467fd9668fd9869fd9a6afd9b6bfe9d6cfe9f6dfea16efea36ffea571' +
-  'fea772fea973feaa74feac76feae77feb078feb27afeb47bfeb67cfeb77efeb97ffebb81febd82febf84fec185fec287' +
-  'fec488fec68afec88cfeca8dfecc8ffecd90fecf92fed194fed395fed597fed799fed89afdda9cfddc9efddea0fde0a1' +
-  'fde2a3fde3a5fde5a7fde7a9fde9aafdebacfcecaefceeb0fcf0b2fcf2b4fcf4b6fcf6b8fcf7b9fcf9bbfcfbbdfcfdbf';
+// ColorBrewer YlOrRd via matplotlib, sampled at 256 points: a warm sequential map
+// (yellow → orange → red), readable with colour blindness and over photos.
+const WARM_HEX =
+  'ffffccfffecbfffec9fffdc8fffdc6fffcc5fffcc4fffbc2fffac1fffac0fff9befff9bdfff8bbfff8bafff7b9fff7b7' +
+  'fff6b6fff5b5fff5b3fff4b2fff4b0fff3affff3aefff2acfff1abfff1a9fff0a8fff0a7ffefa5ffefa4ffeea3ffeda1' +
+  'ffeda0ffec9fffec9dffeb9cffea9bffea99ffe998ffe997ffe895ffe794ffe793ffe691ffe590ffe58fffe48dffe48c' +
+  'fee38bfee289fee288fee187fee085fee084fedf83fede82fede80fedd7ffedd7efedc7cfedb7bfedb7afeda78fed977' +
+  'fed976fed774fed673fed572fed470fed36ffed16efed06cfecf6bfece6afecc68fecb67feca66fec965fec863fec662' +
+  'fec561fec45ffec35efec15dfec05bfebf5afebe59febd57febb56feba55feb953feb852feb651feb54ffeb44efeb34d' +
+  'feb24cfeb04bfeaf4bfeae4afead4afeac49feab49fea948fea848fea747fea647fea546fea446fea245fea145fea044' +
+  'fd9f44fd9e43fd9d43fd9c42fd9a42fd9941fd9841fd9740fd9640fd953ffd933ffd923efd913efd903dfd8f3dfd8e3c' +
+  'fd8c3cfd8a3bfd883bfd863afd8439fd8239fd8038fd7e38fd7c37fd7a37fd7836fd7636fd7435fd7234fd7034fd6e33' +
+  'fc6c33fc6a32fc6832fc6631fc6430fc6330fc612ffc5f2ffc5d2efc5b2efc592dfc572cfc552cfc532bfc512bfc4f2a' +
+  'fc4d2afb4b29fa4a29f94828f84628f84528f74327f64227f54026f43e26f43d25f33b25f23924f13824f13624f03523' +
+  'ef3323ee3122ed3022ed2e21ec2c21eb2b21ea2920e92720e9261fe8241fe7231ee6211ee61f1de51e1de41c1de31a1c' +
+  'e2191ce1191de0181ddf171ddd161ddc151edb141eda141ed9131fd7121fd6111fd51020d41020d30f20d10e21d00d21' +
+  'cf0c21ce0c22cd0b22cb0a22ca0923c90823c80723c70723c50624c40524c30424c20325c10325c00225be0126bd0026' +
+  'bb0026b90026b70026b60026b40026b20026b00026ae0026ac0026aa0026a80026a60026a40026a20026a100269f0026' +
+  '9d00269b00269900269700269500269300269100268f00268d00268b00268a0026880026860026840026820026800026';
 
 function fromHex(hex: string): Lut {
   const lut = new Uint8ClampedArray(hex.length / 2);
@@ -39,7 +40,7 @@ function fromStops(stops: string[]): Lut {
   return lut;
 }
 
-export const MAGMA: Lut = fromHex(MAGMA_HEX);
+export const WARM: Lut = fromHex(WARM_HEX);
 
 /** Blue (less) → neutral → orange (more), with luminous ends so both read over a greyed photo; blue and orange stay distinct with red–green colour blindness. */
 export const BLUE_ORANGE: Lut = fromStops(['#2f7fd0', '#5ea3e3', '#a6cbeb', '#ededed', '#f7c27c', '#f0983a', '#dd7a16']);

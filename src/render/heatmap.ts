@@ -1,5 +1,5 @@
 import type { SaliencyMap, SignedField } from '../maps/saliency-map';
-import { MAGMA, BLUE_ORANGE, type Lut } from './colormaps';
+import { BLUE_ORANGE, WARM, type Lut } from './colormaps';
 
 function percentile(values: Float32Array, p: number): number {
   const sorted = Float32Array.from(values).sort();
@@ -24,21 +24,22 @@ function paint(target: HTMLCanvasElement, width: number, height: number, rgba: U
 /**
  * Draws a probability map as a heatmap at the given pixel size. Values are scaled
  * from the map's minimum to its 99th percentile, so one hot spot does not wash
- * out the rest and a flat map is not painted over the whole photo; the alpha
+ * out the rest and a flat map is not painted over the whole photo. The palest
+ * 15 % of the table is skipped so faint areas still read as warm, and the alpha
  * rises with the value, so low areas leave the photo visible.
  */
-export function drawHeatmap(target: HTMLCanvasElement, map: SaliencyMap, width: number, height: number, lut: Lut = MAGMA): void {
+export function drawHeatmap(target: HTMLCanvasElement, map: SaliencyMap, width: number, height: number, lut: Lut = WARM): void {
   let bottom = Infinity;
   for (const v of map.data) bottom = Math.min(bottom, v);
   const span = percentile(map.data, 0.99) - bottom || 1;
   const rgba = new Uint8ClampedArray(map.width * map.height * 4);
   for (let i = 0; i < map.data.length; i++) {
     const t = Math.max(0, Math.min((map.data[i] - bottom) / span, 1));
-    const k = Math.round(t * 255) * 3;
+    const k = Math.round((0.15 + 0.85 * t) * 255) * 3;
     rgba[i * 4] = lut[k];
     rgba[i * 4 + 1] = lut[k + 1];
     rgba[i * 4 + 2] = lut[k + 2];
-    rgba[i * 4 + 3] = Math.round(240 * Math.pow(t, 1.4));
+    rgba[i * 4 + 3] = Math.round(255 * 0.85 * Math.pow(t, 0.9));
   }
   paint(target, width, height, rgba, map.width, map.height);
 }

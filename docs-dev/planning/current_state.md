@@ -53,7 +53,7 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-v1 is complete. Later work is listed in `docs-dev/plan.md` (*Later*): areas of
+v1 is complete; second round in progress (prompts 012–015). Later work is listed in `docs-dev/plan.md` (*Later*): areas of
 interest (v1.1), large models via Hugging Face, and the owner's own photos.
 
 ## Prompts run
@@ -75,3 +75,4 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
 - `011_about_and_copy.md` (live checks on 2026-10-18: Lighthouse mobile
   performance 98, accessibility 100, best practices 100, CLS 0.003; no
   third-party requests; no console errors; UNISAL ready about 1.5 s after load)
+- `012_warm_heatmap.md` (YlOrRd; overlay slider now defaults to 100 %)

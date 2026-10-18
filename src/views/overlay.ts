@@ -1,12 +1,12 @@
 import { models } from '../models/registry';
-import { MAGMA, cssColour } from '../render/colormaps';
+import { WARM, cssColour } from '../render/colormaps';
 import { drawHeatmap } from '../render/heatmap';
 import { getResults, onResults, type Results } from '../results';
 
-const DEFAULT_OPACITY = 60;
+const DEFAULT_OPACITY = 100;
 
 export function gradientCss(steps = 8): string {
-  const stops = Array.from({ length: steps + 1 }, (_, i) => cssColour(MAGMA, i / steps));
+  const stops = Array.from({ length: steps + 1 }, (_, i) => cssColour(WARM, 0.15 + (0.85 * i) / steps));
   return `linear-gradient(90deg, ${stops.join(', ')})`;
 }
 

@@ -3,7 +3,7 @@ import { drawHeatmap } from '../render/heatmap';
 import { onResults, type Results } from '../results';
 
 const PANEL_WIDTH = 800;
-const OPACITY = 0.6;
+const OPACITY = 1;
 
 function photoCanvas(results: Results, width: number, height: number): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
