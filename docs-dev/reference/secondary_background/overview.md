@@ -9,12 +9,17 @@ simple baselines, running entirely in your browser.
 
 ## Why
 
-Eye-tracking studies of Dutch high-rise streetscapes, such as those by the AUAS
-(HvA) *Sensing Streetscapes* and *Building for Well-being* projects, often
-summarise gaze with aggregated heatmaps, or use commercial gaze-prediction
-software without validation. eek-a-look puts open models next to two simple
-baselines, so it is visible how much each model adds, and states plainly that
-the maps are predictions.
+Eye-tracking studies of Dutch high-rise streetscapes, such as those of the AUAS
+(HvA) *Sensing Streetscapes* and *Building for Well-being* projects, record real
+gaze in the lab and summarise it as aggregated heatmaps. Spanjar and
+Suurenbroek (2020) used a Tobii X2-30 eye tracker and iMotions 8.1, which their
+paper calls "Visual Attention Software". Elsewhere in the field, commercial
+*prediction* tools such as 3M Visual Attention Software (3M VAS) are used to
+estimate attention without measuring gaze, for example in the work of Hollander
+and Sussman, editors of the volume in which the AUAS team published (*Urban
+Experience and Design*, Routledge 2020). eek-a-look puts open prediction models
+next to two simple baselines, so it is visible how much each model adds, and
+states plainly that the maps are predictions.
 
 ## Stack
 
