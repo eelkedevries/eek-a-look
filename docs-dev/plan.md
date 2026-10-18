@@ -138,8 +138,7 @@ ends with `npm run deploy`.
 - **Own photos** to replace the Commons examples (eye level, landscape, the same
   camera height throughout).
 - Possibly MSI-Net (MIT licence, TF.js) as a second browser model.
-- Not planned: comparison with real eye-tracking data, or a card on the Projects
-  page (both can be revisited).
+- Not planned: a card on the Projects page (can be revisited).
 
 ## Risks
 

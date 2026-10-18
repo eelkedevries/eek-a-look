@@ -92,3 +92,7 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
   `npm run local` builds)
 - `017_inferno_greyed_photo.md` (inferno over a greyed photo; each photo is
   greyed once and cached; the overlay's grey layer fades with the slider)
+- `018_measured_gaze_data.md` (spec 0.8: measured eye tracking allowed from open
+  datasets. `tools/measured-gaze/` adds 12 Zürich photos from Wilming et al.
+  (2017, CC0) and their measured maps in `public/precomputed/measured/`; 48
+  observers and 805–929 fixations per photo)

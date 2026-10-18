@@ -2,8 +2,8 @@ import { setImage } from './state';
 
 export interface ExamplePhoto {
   id: string;
-  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier';
-  city: 'Amsterdam' | 'Rotterdam' | 'The Hague';
+  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich';
+  city: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich';
   title: string;
   file: string;
   width: number;
@@ -13,6 +13,8 @@ export interface ExamplePhoto {
   licenceUrl: string;
   sourceUrl: string;
   changes: string;
+  /** Only for photos with measured eye tracking. */
+  measured?: { observers: number; fixations: number; viewingSeconds: number; citation: string };
 }
 
 const EXAMPLES_URL = `${import.meta.env.BASE_URL}examples/`;
@@ -106,6 +108,7 @@ export function renderCredit(element: HTMLElement, photo: ExamplePhoto): void {
     link(photo.sourceUrl, photo.author),
     ', ',
     link(photo.licenceUrl, photo.licence),
-    `, via Wikimedia Commons. ${photo.changes}.`,
+    photo.sourceUrl.startsWith('https://commons.wikimedia.org/') ? ', via Wikimedia Commons. ' : '. ',
+    `${photo.changes}.`,
   );
 }

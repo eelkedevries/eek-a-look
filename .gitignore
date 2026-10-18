@@ -45,3 +45,7 @@ tools/unisal-export/.venv/
 # DeepGaze local tool: downloaded weights and caches
 tools/deepgaze-local/.cache/
 tools/deepgaze-local/.venv/
+
+# Measured gaze: downloaded dataset, photos and check overlays
+tools/measured-gaze/.cache/
+tools/measured-gaze/.venv/

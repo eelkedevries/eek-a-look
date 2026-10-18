@@ -1,0 +1,14 @@
+[project]
+name = "measured-gaze"
+version = "0.1.0"
+description = "Builds measured eye-tracking maps for eek-a-look from the Osnabrück–Hamburg eye-tracking database."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "h5py",
+  "numpy",
+  "scipy",
+  "pillow",
+]
+
+[tool.uv]
+package = false

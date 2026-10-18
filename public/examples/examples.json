@@ -166,5 +166,245 @@
     "licenceUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
     "sourceUrl": "https://commons.wikimedia.org/wiki/File:Juliana_van_Stolberglaan_The_Hague.jpg",
     "changes": "Resized and recompressed"
+  },
+  {
+    "id": "zurich-18",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Shopping lane with people walking",
+    "file": "zurich-18.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 805,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-19",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Junction with bicycles and a tram stop",
+    "file": "zurich-19.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 870,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-22",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Street with a crane and an ornate corner building",
+    "file": "zurich-22.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 899,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-23",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Paradeplatz with a tram and its shelter",
+    "file": "zurich-23.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 883,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-24",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Tram street with old apartment blocks",
+    "file": "zurich-24.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 870,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-27",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Side street with parked cars",
+    "file": "zurich-27.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 857,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-30",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Main station entrance with a tram",
+    "file": "zurich-30.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 929,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-33",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Residential tower blocks",
+    "file": "zurich-33.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 887,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-42",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Street corner with parked bicycles",
+    "file": "zurich-42.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 850,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-46",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Office building behind a playground",
+    "file": "zurich-46.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 862,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-51",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Zebra crossing at a junction",
+    "file": "zurich-51.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 871,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
+  },
+  {
+    "id": "zurich-53",
+    "area": "Zürich",
+    "city": "Zürich",
+    "title": "Empty walkway along an office building",
+    "file": "zurich-53.jpg",
+    "width": 1280,
+    "height": 960,
+    "author": "Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
+    "licence": "CC0 1.0",
+    "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
+    "changes": "Converted from PNG to JPEG",
+    "measured": {
+      "observers": 48,
+      "fixations": 825,
+      "viewingSeconds": 6,
+      "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
+    }
   }
 ]

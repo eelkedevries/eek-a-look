@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.7 · **Last updated:** 2026-10-18
+**Version:** 0.8 · **Last updated:** 2026-10-18
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -18,6 +18,9 @@ add 14 MB (3 MB compressed) of runtime to download. 0.5 changes the heatmap colo
 the owner chose (prompt 012). 0.6 adds DeepGaze IIE and DeepGaze MSDB, pre-computed
 on the owner's GPU for the example photos (prompts 013–014). 0.7 switches the
 heatmaps to inferno over a greyed photo after the colour-map research (prompt 017).
+0.8 adds twelve Zürich street photos with measured eye-tracking maps from the
+openly licensed dataset of Wilming et al. (2017), reversing the decision not to
+compare with measured eye-tracking data (owner's decision of 2026-10-18, prompt 018).
 
 ## Scope
 
@@ -35,12 +38,15 @@ In scope for v1:
   example photos only;
 - twelve example photos of Dutch high-rise streets (Zuidas, Weena,
   Wilhelminapier, Beatrixkwartier), openly licensed, with credits;
+- twelve Zürich street photos from the eye-tracking dataset of Wilming et al.
+  (2017, CC0 1.0), each with a **measured** eye-tracking map
+  (`tools/measured-gaze/`);
 - **upload** of the visitor's own photo (file picker only; no camera capture);
 - four views: **overlay with opacity slider**, **side by side**,
   **"What AI adds"** map, **agreement scores**;
 - a short About section covering the models, honesty, privacy and credits.
 
-Out of scope for v1: drawing areas of interest, server-hosted models, comparison with measured eye-tracking data (not planned), languages
+Out of scope for v1: drawing areas of interest, server-hosted models, languages
 other than English, analytics, accounts, saving or sharing results, and a card
 on the eelkedevries.com Projects page.
 
@@ -128,7 +134,7 @@ A pre-computed map, `public/precomputed/<model-id>/<photo-id>.json`:
 
 ```ts
 interface PrecomputedMap {
-  model: string;          // 'deepgaze-iie' | 'deepgaze-msdb'
+  model: string;          // 'deepgaze-iie' | 'deepgaze-msdb' | 'measured'
   photo: string | null;   // example photo id
   grid: GridSize;         // the shared grid for that photo
   encoding: 'uint16-base64';
@@ -141,8 +147,8 @@ The example photo manifest is `public/examples/examples.json`, an array of:
 ```ts
 interface ExamplePhoto {
   id: string;             // kebab-case, unique
-  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier';
-  city: 'Amsterdam' | 'Rotterdam' | 'The Hague';
+  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich';
+  city: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich';
   title: string;          // short caption
   file: string;           // path relative to public/examples/
   width: number;
@@ -150,8 +156,14 @@ interface ExamplePhoto {
   author: string;
   licence: string;        // e.g. "CC BY-SA 4.0"
   licenceUrl: string;
-  sourceUrl: string;      // Commons file page
+  sourceUrl: string;      // Commons file page, or the dataset's DOI
   changes: string;        // e.g. "Resized and recompressed"
+  measured?: {            // only for photos with measured eye tracking
+    observers: number;
+    fixations: number;    // fixations in the measured map
+    viewingSeconds: number;
+    citation: string;
+  };
 }
 ```
 
@@ -187,6 +199,22 @@ interface ExamplePhoto {
     licence file, so their code and weights are never published, only maps;
   - photos resized to 1024 px on the long side, with the MIT1003 centre-bias
     template; MSDB at 35 px per degree with its MIT1003 parameters.
+
+**Measured gaze**
+
+- Source: Wilming et al. (2017, *Scientific Data* 4, 160126), CC0 1.0, study
+  `Baseline` (Onat, Açık, Schumann & König, 2014, *PLoS ONE*): 48 observers,
+  free viewing for 6 s, EyeLink II, 45.6 px per degree, photos of 1280 × 960
+  shown full-screen. Built by `tools/measured-gaze/` into
+  `public/precomputed/measured/<photo-id>.json` (model `'measured'`).
+- Recipe, per photo:
+  - the fixations of category 8 and that file number, without the first
+    fixation of each trial (it starts on the central fixation cross);
+  - 1-based pixels converted to 0-based; points outside the image dropped;
+  - one count per fixation, not weighted by duration;
+  - a Gaussian blur of σ = 1° = 45.6 px, zero outside the image;
+  - summed into 10 × 10 px cells, which is the shared 128 × 96 grid, and
+    normalised to sum 1.
 
 **Derived views**
 
@@ -272,6 +300,7 @@ interface ExamplePhoto {
   locally for the example photos. Nothing is processed on a server.
 - Upload only; no camera capture; no remote processing in v1.
 - English only.
-- No comparison with measured eye-tracking data.
+- Measured eye tracking comes only from openly licensed datasets, and is always
+  labelled as measured, never mixed with predictions.
 - Not listed on the eelkedevries.com Projects page.
 - Prompt files live in `docs-dev/agent/prompts/`.

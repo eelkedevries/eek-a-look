@@ -5,7 +5,8 @@ import { readFile, access } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const DIR = 'public/examples';
-const AREAS = { Zuidas: 'Amsterdam', Weena: 'Rotterdam', Wilhelminapier: 'Rotterdam', Beatrixkwartier: 'The Hague' };
+const AREAS = { Zuidas: 'Amsterdam', Weena: 'Rotterdam', Wilhelminapier: 'Rotterdam', Beatrixkwartier: 'The Hague', Zürich: 'Zürich' };
+const isCount = (n) => Number.isInteger(n) && n > 0;
 const LICENCES = /^(CC0 1\.0|Public domain|CC BY(-SA)? [0-9.]+)$/;
 const FIELDS = ['id', 'area', 'city', 'title', 'file', 'width', 'height', 'author', 'licence', 'licenceUrl', 'sourceUrl', 'changes'];
 
@@ -26,6 +27,13 @@ for (const [index, photo] of photos.entries()) {
   if (!LICENCES.test(photo.licence)) errors.push(`${where}: licence "${photo.licence}" is not allowed`);
   if (!/^https:\/\//.test(photo.sourceUrl)) errors.push(`${where}: sourceUrl is not https`);
   if (Math.max(photo.width, photo.height) > 1600) errors.push(`${where}: larger than 1600 px`);
+  if (photo.measured !== undefined) {
+    const { observers, fixations, viewingSeconds, citation } = photo.measured;
+    if (!isCount(observers)) errors.push(`${where}: measured.observers is not a positive integer`);
+    if (!isCount(fixations)) errors.push(`${where}: measured.fixations is not a positive integer`);
+    if (!(typeof viewingSeconds === 'number' && viewingSeconds > 0)) errors.push(`${where}: measured.viewingSeconds is not positive`);
+    if (typeof citation !== 'string' || citation === '') errors.push(`${where}: measured.citation is missing`);
+  }
   for (const file of [photo.file, photo.file.replace(/\.jpg$/, '-thumb.jpg')]) {
     try {
       await access(join(DIR, file));
