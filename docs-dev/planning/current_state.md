@@ -83,4 +83,6 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
 - `014_deepgaze_in_app.md` (five models; MSDB is the default overlay, with a
   fallback to UNISAL for uploads; agreement is now a matrix)
 - `015_local_live_helper.md` (`npm run local`: GPU helper plus preview server;
-  DeepGaze runs live on any photo on the laptop; the public site never probes it)
+  DeepGaze runs live on any photo on the laptop; the public site never probes it).
+  Live checks after round two: Lighthouse mobile 99 / 100 / 100, CLS 0.003, no
+  third-party or local-api requests, no console errors.
