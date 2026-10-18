@@ -2,12 +2,54 @@
 <html lang="en-GB">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>eek-a-look</title>
+    <meta
+      name="description"
+      content="Where are people likely to look in a street? Predicted gaze heatmaps for streetscape photos, running entirely in your browser."
+    />
+    <meta name="theme-color" content="#0a0a0f" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   </head>
   <body>
-    <div id="app"></div>
+    <div class="page">
+      <header class="masthead">
+        <h1 class="title">eek-a-look</h1>
+        <p class="tagline">Where are people likely to look in a street?</p>
+        <p class="notice">These maps are predictions, not measured gaze.</p>
+      </header>
+
+      <main>
+        <section class="picker" aria-labelledby="picker-heading">
+          <h2 id="picker-heading" class="section-label">Choose a photo</h2>
+          <div id="examples" class="examples"></div>
+          <div class="upload">
+            <button type="button" id="upload-button" class="button">Use your own photo</button>
+            <input type="file" id="upload-input" accept="image/*" hidden />
+            <p id="upload-message" class="upload-message" role="status" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <section class="stage-section" aria-label="Photo">
+          <div id="stage" class="stage">
+            <p class="stage-empty">No photo yet.</p>
+          </div>
+          <p id="credit" class="credit"></p>
+        </section>
+
+        <section id="views" class="views" aria-label="Views"></section>
+
+        <section id="about" class="about" aria-labelledby="about-heading">
+          <h2 id="about-heading" class="section-label">About</h2>
+          <p class="muted">More about the models follows soon.</p>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <p>Photos stay on your device. No analytics, no cookies.</p>
+        <p><a href="https://eelkedevries.com/">eelkedevries.com</a></p>
+      </footer>
+    </div>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>

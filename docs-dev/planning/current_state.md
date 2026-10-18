@@ -14,7 +14,10 @@ wins and the gap is work still to be done.
 
 ## Systems
 
-- Vite + TypeScript scaffold (placeholder page) under base `/eek-a-look/`,
+- Page shell (`index.html`, `src/style.css`): site look, self-hosted fonts
+  (`@fontsource`, Latin subsets), local-only upload (`src/image-input.ts`),
+  app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
+- Vite + TypeScript scaffold under base `/eek-a-look/`,
   completed from `eek-a-template` v0.3.0. CI: `check-build.yml`.
 - Deploy: `deploy-eek-a-look.yml` in `eelkedevries/eelkedevries.com` builds this
   repository and rsyncs it to `/eek-a-look/`. The site deploy protects that folder.
@@ -31,10 +34,11 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Next: `004_page_shell.md`.
+Next: `005_example_photos.md`.
 
 ## Prompts run
 
 - `001_setup.md`
 - `002_website_deploy_workflow.md` (eelkedevries.com commit `52007f8`)
 - `003_deploy_command.md`
+- `004_page_shell.md`
