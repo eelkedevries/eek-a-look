@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 // Writes a gzip copy next to each WebAssembly file in dist/assets. The host
-// does not compress .wasm itself; public/.htaccess serves these copies to
-// browsers that accept gzip (all current ones), cutting the 14 MB runtime to
-// about 4 MB.
+// does not compress .wasm itself; the UNISAL worker requests these copies on
+// the live site and public/.htaccess serves them gzip-encoded, cutting the
+// 14 MB runtime to about 4 MB.
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { gzipSync } from 'node:zlib';

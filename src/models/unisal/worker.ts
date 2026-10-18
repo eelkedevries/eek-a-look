@@ -22,9 +22,11 @@ export type UnisalMessage =
 
 const BASE = `${import.meta.env.BASE_URL}models/unisal/`;
 
-// The query only changes the URL: the host's cache held a copy served without
-// a Content-Type before public/.htaccess existed. Bump it if that recurs.
-ort.env.wasm.wasmPaths = { wasm: `${wasmUrl}?v=2`, mjs: mjsUrl };
+// On the live host the runtime is fetched as the gzip copy the build writes
+// (scripts/precompress.mjs), which public/.htaccess serves gzip-encoded:
+// about 4 MB instead of 14. Local servers have no such copy or header.
+const local = ['localhost', '127.0.0.1'].includes(self.location.hostname);
+ort.env.wasm.wasmPaths = { wasm: local ? wasmUrl : `${wasmUrl}.gz`, mjs: mjsUrl };
 ort.env.wasm.numThreads = self.crossOriginIsolated ? Math.min(4, navigator.hardwareConcurrency || 1) : 1;
 
 let ready: Promise<{ session: ort.InferenceSession; info: ModelInfo }> | null = null;

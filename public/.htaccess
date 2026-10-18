@@ -4,19 +4,12 @@ AddType application/wasm .wasm
 AddType application/octet-stream .onnx
 
 # The host does not compress WebAssembly, so the build ships a gzip copy
-# (scripts/precompress.mjs) that is served to browsers accepting gzip.
-<IfModule mod_rewrite.c>
-  RewriteEngine On
-  RewriteCond %{HTTP:Accept-Encoding} gzip
-  RewriteCond %{REQUEST_FILENAME}.gz -f
-  RewriteRule ^(.+\.wasm)$ $1.gz [L]
-</IfModule>
-
+# (scripts/precompress.mjs) that the page requests directly. Serving it as
+# gzip-encoded WebAssembly lets the browser decompress it transparently.
 <FilesMatch "\.wasm\.gz$">
   ForceType application/wasm
   <IfModule mod_headers.c>
     Header set Content-Encoding gzip
-    Header append Vary Accept-Encoding
   </IfModule>
   SetEnv no-gzip 1
 </FilesMatch>
