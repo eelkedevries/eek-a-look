@@ -1,0 +1,24 @@
+[project]
+name = "deepgaze-local"
+version = "0.1.0"
+description = "Runs DeepGaze IIE and DeepGaze MSDB on the local GPU for eek-a-look."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "torch>=2.4",
+  "torchvision",
+  "numpy",
+  "scipy",
+  "pillow",
+  "ftfy",
+  "regex",
+  "tqdm",
+  "fastapi",
+  "uvicorn",
+  # DeepGaze has no licence file: installed from GitHub, never copied into this repository.
+  "deepgaze_pytorch @ git+https://github.com/matthias-k/DeepGaze.git@c7db17e2d1d7ea6468ffdee2cfaddf141095dcff",
+  "clip @ git+https://github.com/openai/CLIP.git@d05afc436d78f1c48dc0dbf8e5980a9d471f35f6",
+  "einops>=0.8.2",
+]
+
+[tool.uv]
+package = false

@@ -41,3 +41,7 @@ docs-dev/reference/customer/
 # UNISAL export: cloned source and intermediate files
 tools/unisal-export/.cache/
 tools/unisal-export/.venv/
+
+# DeepGaze local tool: downloaded weights and caches
+tools/deepgaze-local/.cache/
+tools/deepgaze-local/.venv/

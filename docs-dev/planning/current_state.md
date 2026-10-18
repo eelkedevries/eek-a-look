@@ -76,3 +76,5 @@ interest (v1.1), large models via Hugging Face, and the owner's own photos.
   performance 98, accessibility 100, best practices 100, CLS 0.003; no
   third-party requests; no console errors; UNISAL ready about 1.5 s after load)
 - `012_warm_heatmap.md` (YlOrRd; overlay slider now defaults to 100 %)
+- `013_deepgaze_precompute.md` (`tools/deepgaze-local/`; IIE about 0.4 s and MSDB
+  about 1 s per photo on the RTX 4070, peak 3.1 GB; 24 maps, 0.69 MB)

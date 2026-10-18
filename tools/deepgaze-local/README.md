@@ -1,0 +1,42 @@
+# deepgaze-local
+
+Runs the two strongest open gaze-prediction models,
+[DeepGaze IIE](https://openaccess.thecvf.com/content/ICCV2021/html/Linardos_DeepGaze_IIE_Calibrated_Prediction_in_and_Out-of-Domain_for_State-of-the-Art_Saliency_ICCV_2021_paper.html)
+(Linardos et al., ICCV 2021) and
+[DeepGaze MSDB](https://arxiv.org/abs/2505.10169) (Kümmerer, Khanuja and
+Bethge, ICCV 2025), on this laptop's GPU. They are too large to run in a
+browser.
+
+## Licence position
+
+The [DeepGaze repository](https://github.com/matthias-k/DeepGaze) has no
+licence file. Its code is therefore installed from GitHub (pinned commit) into
+this tool's environment, and its weights are downloaded into the local caches.
+Neither is copied into this repository or published. eek-a-look publishes only
+the resulting maps.
+
+## Pre-compute maps for the example photos
+
+```bash
+cd tools/deepgaze-local
+uv run precompute.py
+```
+
+This writes `public/precomputed/<model>/<photo>.json` for every photo in
+`public/examples/examples.json`: a probability map on the app's 128-cell grid,
+stored as little-endian uint16 (scaled to the maximum) in base64. Re-run it
+after adding or replacing example photos.
+
+The first run downloads about 2 GB of weights: CLIP RN50x64 from OpenAI,
+DINOv2 ViT-B/14 from Meta, ImageNet backbones from PyTorch and DeepGaze's own
+read-out weights from its GitHub releases. Later runs take about 20 seconds.
+On an RTX 4070 Laptop GPU, IIE takes about 0.4 s and MSDB about 1 s per
+photo, using at most 3.1 GB of GPU memory.
+
+## Settings
+
+These match the MIT300 benchmark entries quoted on the site:
+
+- photos are resized to 1024 px on the long side (MIT1003's scale);
+- DeepGaze's MIT1003 centre-bias template (release v1.0.0) is used;
+- MSDB uses 35 pixels per degree and its MIT1003 parameters.
