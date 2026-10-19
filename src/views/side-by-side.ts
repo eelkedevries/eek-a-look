@@ -1,7 +1,8 @@
 import { pearson } from '../maps/saliency-map';
 import { mapLabel, type ModelSpec } from '../models/types';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
-import { bestModel, modelsFor, onResults, type Results } from '../results';
+import { modelsFor, onResults, referenceModel, type Results } from '../results';
+import { getViewState, onViewState } from '../view-state';
 
 const PANEL_WIDTH = 800;
 
@@ -26,14 +27,9 @@ function photoCanvas(results: Results, width: number, height: number): HTMLCanva
   return canvas;
 }
 
-/** The map every other one is scored against: measured gaze where the photo has it, otherwise the best neural model. */
-function referenceFor(results: Results): string | undefined {
-  return results.status.has('measured') ? 'measured' : bestModel(results);
-}
-
 /**
  * The side-by-side view: the photo and one panel per model, each with its heatmap and its match with
- * the reference map. A ring follows the pointer in every panel at once, so one spot can be compared
+ * the reference map, at the strength set in the inspector. A ring follows the pointer in every panel at once, so one spot can be compared
  * across all maps.
  */
 export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: string) => void): void {
@@ -52,6 +48,9 @@ export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: s
     grid.classList.add('probing');
   });
   grid.addEventListener('pointerleave', () => grid.classList.remove('probing'));
+  const applyOpacity = () => grid.style.setProperty('--heat-opacity', String(getViewState().opacity / 100));
+  onViewState(applyOpacity);
+  applyOpacity();
 
   let built: Results | null = null;
   let w = 0;
@@ -118,11 +117,11 @@ export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: s
 
   function update(results: Results) {
     if (built !== results) build(results);
-    const refId = referenceFor(results);
+    const refId = referenceModel(results);
     const ref = refId ? results.status.get(refId) : undefined;
     const refModel = refId ? cells.get(refId)?.model : undefined;
     caption.textContent = refModel
-      ? `Move the pointer over any map to mark the same spot in all of them. r = match with ${refModel.name} (0 = unrelated · 1 = same pattern).`
+      ? `Move the pointer over any map to mark the same spot in all of them. r = match with ${refModel.name} (0 = unrelated · 1 = same pattern); “Contrast” opens a map against it.`
       : 'Move the pointer over any map to mark the same spot in all of them.';
 
     for (const cell of cells.values()) {

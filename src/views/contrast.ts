@@ -66,21 +66,26 @@ function heatFigure(results: Results, model: ModelSpec, map: Parameters<typeof d
   return figure;
 }
 
-/** The contrast view: one map minus another, by default against the best model, with both maps beneath. */
-export function mountContrast(panel: HTMLElement): void {
-  const controls = document.createElement('div');
-  controls.className = 'contrast-controls';
+/**
+ * The contrast view: one map minus another, by default against the best model, with both maps beneath.
+ * The selectors go in `controls`, the inspector's Contrast section.
+ */
+export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
+  controls.classList.add('contrast-controls');
   const pickA = select('Map');
   const pickB = select('Against');
   const swap = document.createElement('button');
   swap.type = 'button';
   swap.className = 'contrast-swap';
-  swap.textContent = '⇄';
   swap.setAttribute('aria-label', 'Swap the two maps');
-  swap.title = 'Swap';
+  swap.textContent = '⇄ Swap';
+  const reset = document.createElement('button');
+  reset.type = 'button';
+  reset.className = 'link-button';
+  reset.textContent = 'Reset to the best model';
+  controls.append(pickA.wrap, swap, pickB.wrap, reset);
   const score = document.createElement('span');
   score.className = 'contrast-score';
-  controls.append(pickA.wrap, swap, pickB.wrap, score);
 
   const legend = document.createElement('div');
   legend.className = 'legend contrast-legend';
@@ -89,7 +94,7 @@ export function mountContrast(panel: HTMLElement): void {
   const bar = document.createElement('span');
   bar.className = 'legend-bar legend-bar-wide';
   bar.style.background = `linear-gradient(90deg, ${[0, 0.25, 0.5, 0.75, 1].map((t) => cssColour(BLUE_ORANGE, t)).join(', ')})`;
-  legend.append(less, bar, more);
+  legend.append(less, bar, more, score);
 
   const stage = document.createElement('div');
   stage.className = 'stage';
@@ -100,7 +105,7 @@ export function mountContrast(panel: HTMLElement): void {
   caption.className = 'contrast-caption';
   const pair = document.createElement('div');
   pair.className = 'contrast-pair';
-  panel.replaceChildren(controls, legend, stage, caption, pair);
+  panel.replaceChildren(legend, stage, caption, pair);
 
   let drawnKey = '';
   let drawnFor: Results | null = null;
@@ -211,6 +216,11 @@ export function mountContrast(panel: HTMLElement): void {
   pickB.select.addEventListener('change', choose);
   swap.addEventListener('click', () => {
     chosen = [pickB.select.value, pickA.select.value];
+    update();
+  });
+
+  reset.addEventListener('click', () => {
+    chosen = null;
     update();
   });
 

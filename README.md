@@ -21,8 +21,11 @@ page shows up to five predictions of where people would look:
   browser, so their maps were computed in advance on a laptop GPU and cover
   the example photos only.
 
-You can view them as an overlay, side by side, as a contrast of any two maps
-(by default against the best model), and as agreement scores between the models.
+The page is a workspace: a photo library on the left, the views in the middle
+(one map, all maps side by side, a contrast of any two maps — by default
+against the best model — and automatic areas) and an inspector on the right
+with the layers, display settings and each layer's match with the reference.
+Agreement scores between the models follow below.
 
 These are **predictions, not measured gaze**. The models were trained and
 tested on lab data, not on Dutch street photos.

@@ -29,7 +29,7 @@ export async function loadExamples(): Promise<ExamplePhoto[]> {
 }
 
 /** The small text after an area heading: the city, or for the Zürich group (area = city) that gaze was measured. Matches vite.config.ts. */
-const areaNote = (photo: ExamplePhoto) => (photo.measured ? '· measured eye tracking' : photo.city);
+const areaNote = (photo: ExamplePhoto) => (photo.measured ? 'measured eye tracking' : photo.city);
 
 const thumbUrl = (photo: ExamplePhoto) => EXAMPLES_URL + photo.file.replace(/\.jpg$/, '-thumb.jpg');
 
@@ -80,6 +80,8 @@ export function renderPicker(
         button.type = 'button';
         button.className = 'example';
         button.dataset.id = photo.id;
+        if (photo.measured) button.dataset.measured = '';
+        button.title = photo.title;
         button.setAttribute('aria-pressed', 'false');
         const img = document.createElement('img');
         img.src = thumbUrl(photo);
@@ -98,6 +100,57 @@ export function renderPicker(
   );
 
   return mark;
+}
+
+type Filter = 'all' | 'measured' | 'dutch';
+const FILTERS: [Filter, string][] = [
+  ['all', 'All'],
+  ['measured', 'Measured gaze'],
+  ['dutch', 'Dutch high-rise'],
+];
+
+/** Search and filter buttons for the library: hides thumbnails (and empty groups) that do not match. */
+export function mountLibraryFilter(container: HTMLElement, photos: ExamplePhoto[], search: HTMLInputElement, filterGroup: HTMLElement, count: HTMLElement): void {
+  let filter: Filter = 'all';
+  const byId = new Map(photos.map((p) => [p.id, p]));
+  const haystack = (p: ExamplePhoto) => `${p.title} ${p.area} ${p.city}`.toLocaleLowerCase('en-GB');
+
+  const buttons = FILTERS.map(([id, label]) => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'filter';
+    button.textContent = label;
+    button.addEventListener('click', () => {
+      filter = id;
+      apply();
+    });
+    return button;
+  });
+  filterGroup.replaceChildren(...buttons);
+
+  function apply() {
+    FILTERS.forEach(([id], i) => buttons[i].setAttribute('aria-pressed', String(id === filter)));
+    const query = search.value.trim().toLocaleLowerCase('en-GB');
+    let shown = 0;
+    for (const group of container.querySelectorAll<HTMLElement>('.example-group')) {
+      let any = false;
+      for (const button of group.querySelectorAll<HTMLButtonElement>('button.example')) {
+        const photo = byId.get(button.dataset.id ?? '');
+        const match =
+          !!photo &&
+          (filter === 'all' || (filter === 'measured') === !!photo.measured) &&
+          (!query || haystack(photo).includes(query));
+        button.hidden = !match;
+        if (match) shown++;
+        any ||= match;
+      }
+      group.hidden = !any;
+    }
+    count.textContent = shown === photos.length ? `${photos.length} photos` : `${shown} of ${photos.length}`;
+  }
+
+  search.addEventListener('input', apply);
+  apply();
 }
 
 /** Fills the credit line with linked author, licence and source. */

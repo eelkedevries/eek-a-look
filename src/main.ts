@@ -6,44 +6,56 @@ import '@fontsource/spectral/latin-500.css';
 import '@fontsource/jetbrains-mono/latin-400.css';
 import './style.css';
 
-import { loadExamples, renderCredit, renderPicker, showExample, type ExamplePhoto } from './examples';
+import { loadExamples, mountLibraryFilter, renderCredit, renderPicker, showExample, type ExamplePhoto } from './examples';
 import { decodeUpload, ImageInputError } from './image-input';
+import { modelsFor, onResults } from './results';
 import { onImageChange, setImage } from './state';
 import { showOnStage } from './stage';
+import { setViewState } from './view-state';
 import { renderAbout } from './views/about';
 import { mountAgreement } from './views/agreement';
 import { mountAreas } from './views/areas';
 import { contrastWith, mountContrast } from './views/contrast';
+import { mountInspector } from './views/inspector';
 import { mountPanel } from './views/panel';
 import { mountMethods } from './views/methods';
 import { mountOverlay } from './views/overlay';
 import { mountSideBySide } from './views/side-by-side';
 import { mountTabs } from './views/tabs';
 
-const stage = document.querySelector<HTMLElement>('#stage')!;
-const credit = document.querySelector<HTMLElement>('#credit')!;
-const examples = document.querySelector<HTMLElement>('#examples')!;
+const $ = (selector: string) => document.querySelector<HTMLElement>(selector)!;
+const stage = $('#stage');
+const credit = $('#credit');
+const examples = $('#examples');
 const uploadButton = document.querySelector<HTMLButtonElement>('#upload-button')!;
 const uploadInput = document.querySelector<HTMLInputElement>('#upload-input')!;
-const uploadMessage = document.querySelector<HTMLElement>('#upload-message')!;
+const uploadMessage = $('#upload-message');
+const photoTitle = $('#photo-title');
+const photoPlace = $('#photo-place');
+const statusLine = $('#status-line');
 
-const panel = (id: string) => document.querySelector<HTMLElement>(`#panel-${id}`)!;
-mountOverlay(document.querySelector<HTMLElement>('#overlay-controls')!, stage);
+const panel = (id: string) => $(`#panel-${id}`);
+const showTab = mountTabs(
+  $('#view-tabs'),
+  [
+    { id: 'overlay', label: 'Single map', panel: panel('overlay') },
+    { id: 'side', label: 'Side by side', panel: panel('side') },
+    { id: 'contrast', label: 'Contrast', panel: panel('contrast') },
+    { id: 'areas', label: 'Areas', panel: panel('areas') },
+  ],
+  (view) => setViewState({ view }),
+);
+const contrastControls = mountInspector($('#inspector'), showTab);
+mountOverlay(stage, $('#model-status'));
 mountSideBySide(panel('side'), (a, b) => {
   contrastWith(a, b);
   showTab('contrast');
 });
-mountContrast(panel('contrast'));
+mountContrast(panel('contrast'), contrastControls);
 mountAreas(panel('areas'));
-mountPanel(document.querySelector<HTMLElement>('#areas-panel')!);
-const showTab = mountTabs(document.querySelector<HTMLElement>('#view-tabs')!, [
-  { id: 'overlay', label: 'Overlay', panel: panel('overlay') },
-  { id: 'side', label: 'Side by side', panel: panel('side') },
-  { id: 'contrast', label: 'Contrast', panel: panel('contrast') },
-  { id: 'areas', label: 'Areas', panel: panel('areas') },
-]);
-mountAgreement(document.querySelector<HTMLElement>('#views')!);
-mountMethods(document.querySelector<HTMLElement>('#methods')!);
+mountPanel($('#areas-panel'));
+mountAgreement($('#views'));
+mountMethods($('#methods'));
 
 const photosById = new Map<string, ExamplePhoto>();
 let markSelected: (id: string | undefined) => void = () => {};
@@ -52,8 +64,22 @@ onImageChange((image) => {
   showOnStage(stage, image);
   markSelected(image.exampleId);
   const photo = image.exampleId ? photosById.get(image.exampleId) : undefined;
-  if (photo) renderCredit(credit, photo);
-  else credit.textContent = 'Your photo (stays on this device)';
+  if (photo) {
+    renderCredit(credit, photo);
+    photoTitle.textContent = photo.title;
+    photoPlace.textContent = photo.measured ? `${photo.city} · measured eye tracking` : `${photo.area} · ${photo.city}`;
+  } else {
+    credit.textContent = 'Your photo (stays on this device)';
+    photoTitle.textContent = 'Your photo';
+    photoPlace.textContent = 'Upload · stays on this device';
+  }
+});
+
+onResults((results) => {
+  const layers = modelsFor(results);
+  const ready = layers.filter((m) => results.status.get(m.id)?.state === 'ready').length;
+  const covered = layers.filter((m) => results.status.get(m.id)?.state !== 'unavailable').length;
+  statusLine.textContent = `${ready} of ${covered} layers ready · ${results.image.width} × ${results.image.height} px`;
 });
 
 async function pick(photo: ExamplePhoto): Promise<void> {
@@ -87,12 +113,13 @@ if (import.meta.env.DEV && new URLSearchParams(location.search).get('check') ===
   import('./dev/unisal-reference').then((m) => m.checkUnisalReference());
 }
 
-const about = document.querySelector<HTMLElement>('#about')!;
+const about = $('#about');
 
 loadExamples()
   .then((photos) => {
     for (const photo of photos) photosById.set(photo.id, photo);
     markSelected = renderPicker(examples, photos, pick);
+    mountLibraryFilter(examples, photos, document.querySelector<HTMLInputElement>('#photo-search')!, $('#photo-filters'), $('#library-count'));
     renderAbout(about, photos);
     if (photos.length) return pick(photos[0]);
   })

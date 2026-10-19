@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.15 · **Last updated:** 2026-10-19
+**Version:** 0.16 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -31,7 +31,10 @@ the Areas view with attention ÷ size per area (prompt 025). 0.14 adds the
 simulated panel's verdicts under the Areas table (prompt 026). 0.15 replaces
 "What AI adds" with a Contrast view of any two maps, by default against the
 best model, and adds match scores and a shared pointer ring to the side-by-side
-view (prompt 027, owner's request of 2026-10-19).
+view (prompt 027, owner's request of 2026-10-19). 0.16 lays the page out as a
+workspace: a photo library, the views and an inspector with the layers, the
+contrast selectors, the heatmap strength and each layer's match with the
+reference (prompt 028, from the owner-approved mock-up of 2026-10-19).
 
 ## Scope
 
@@ -327,7 +330,8 @@ interface ExamplePhoto {
   chooses (with a swap button). By default *b* is the best model and *a* is
   measured gaze where the photo has it, otherwise the next model below *b*
   in display order. It is drawn with a diverging colour map symmetric around
-  zero, with both names in the legend and the caption ("Orange: *a* expects
+  zero, with both names in the legend and the caption, the selectors in the
+  inspector ("Orange: *a* expects
   more looking here than *b*. Blue: less."), their Pearson r, and both
   heatmaps beneath. A difference involving measured gaze is labelled
   "Measured vs predicted".
@@ -335,8 +339,23 @@ interface ExamplePhoto {
   every pair of models, shown as a lower-triangle matrix to two decimals with
   the plain-language scale "0 = unrelated · 1 = same pattern"; "n/a" where a
   model does not cover the photo.
-- **Match with measured gaze** (photos with measured data only) = each model's
-  Pearson r with the measured map, to two decimals, sorted from high to low.
+- **Match with the reference** (in the inspector) = each layer's Pearson r
+  with the reference map (measured gaze where the photo has it, otherwise the
+  best model), to two decimals, sorted from high to low.
+- **Layout**: a top bar (name, section links, "Runs on this device", "Use
+  your own photo"), the honesty notice, then three panes that stack on a
+  phone:
+  - a photo library with search, the filters "All", "Measured gaze" and
+    "Dutch high-rise", thumbnails grouped by area and a blue dot on photos
+    with measured gaze (one scrolling row on a phone);
+  - the workspace: the photo's title and place, and the views "Single map",
+    "Side by side", "Contrast" and "Areas";
+  - an inspector: the layers (choosing one opens it in "Single map"), the
+    Contrast selectors with "Reset to the best model", the heatmap strength
+    (also applied in "Side by side") with its legend, the match with the
+    reference, and a short note on the open view.
+  The agreement matrix, About and the methods follow below; a status bar
+  shows how many layers are ready.
 - **Areas** (a tab after "Contrast"; example photos only, uploads get "Areas
   are computed in advance for the example photos only."):
   - the greyed photo with the area outlines of one group, either "Street

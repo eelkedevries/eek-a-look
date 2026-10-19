@@ -17,7 +17,11 @@ wins and the gap is work still to be done.
 - v1 is live at https://eelkedevries.com/eek-a-look/ (prompts 001–011).
 - About section (`src/views/about.ts`): models from the registry, MIT300 table
   (re-checked 2026-10-18), limitations, privacy and credits from the manifest.
-- Page shell (`index.html`, `src/style.css`): site look, self-hosted fonts
+- Page shell (`index.html`, `src/style.css`): since prompt 028 a workspace —
+  top bar, photo library (`mountLibraryFilter()` in `src/examples.ts`),
+  views, inspector (`src/views/inspector.ts`) and status bar; the shared
+  choices (open view, single-map layer, heatmap strength) live in
+  `src/view-state.ts`. Site look, self-hosted fonts
   (`@fontsource`, Latin subsets), local-only upload (`src/image-input.ts`),
   app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
 - Five models: three in the browser, DeepGaze IIE and MSDB pre-computed for the

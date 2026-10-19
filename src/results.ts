@@ -38,6 +38,11 @@ export function bestModel(results: Results): string | undefined {
   return NEURAL_PREFERENCE.find((id) => !['unavailable', 'failed'].includes(results.status.get(id)?.state ?? 'unavailable'));
 }
 
+/** The map others are scored against: measured gaze where the photo has it, otherwise the best neural model. */
+export function referenceModel(results: Results): string | undefined {
+  return results.status.has('measured') ? 'measured' : bestModel(results);
+}
+
 function emit(results: Results, modelId?: string) {
   if (results !== current) return;
   for (const listener of listeners) listener(results, modelId);
