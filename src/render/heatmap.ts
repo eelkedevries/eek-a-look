@@ -21,17 +21,34 @@ function paint(target: HTMLCanvasElement, width: number, height: number, rgba: U
   context.drawImage(small, 0, 0, width, height);
 }
 
+export interface HeatRange {
+  bottom: number;
+  top: number;
+}
+
+/** One scale for several maps, so their colours compare: the lowest value of any to the 99th percentile of all. */
+export function sharedRange(maps: SaliencyMap[]): HeatRange {
+  const all = new Float32Array(maps.reduce((n, m) => n + m.data.length, 0));
+  let offset = 0;
+  let bottom = Infinity;
+  for (const m of maps) {
+    all.set(m.data, offset);
+    offset += m.data.length;
+    for (const v of m.data) bottom = Math.min(bottom, v);
+  }
+  return { bottom, top: percentile(all, 0.99) };
+}
+
 /**
  * Draws a probability map as a heatmap at the given pixel size. Values are scaled
- * from the map's minimum to its 99th percentile, so one hot spot does not wash
- * out the rest and a flat map is not painted over the whole photo. The darkest
- * 35 % of the table is skipped so faint areas still read against a greyed
+ * from the map's minimum to its 99th percentile (or over a shared range), so one hot
+ * spot does not wash out the rest and a flat map is not painted over the whole photo.
+ * The darkest 35 % of the table is skipped so faint areas still read against a greyed
  * photo, and the alpha rises with the value, so low areas leave it visible.
  */
-export function drawHeatmap(target: HTMLCanvasElement, map: SaliencyMap, width: number, height: number, lut: Lut = INFERNO): void {
-  let bottom = Infinity;
-  for (const v of map.data) bottom = Math.min(bottom, v);
-  const span = percentile(map.data, 0.99) - bottom || 1;
+export function drawHeatmap(target: HTMLCanvasElement, map: SaliencyMap, width: number, height: number, lut: Lut = INFERNO, range?: HeatRange): void {
+  const { bottom, top } = range ?? sharedRange([map]);
+  const span = top - bottom || 1;
   const rgba = new Uint8ClampedArray(map.width * map.height * 4);
   for (let i = 0; i < map.data.length; i++) {
     const t = Math.max(0, Math.min((map.data[i] - bottom) / span, 1));
@@ -45,11 +62,12 @@ export function drawHeatmap(target: HTMLCanvasElement, map: SaliencyMap, width: 
 }
 
 /**
- * Draws a signed field on a scale symmetric around zero; alpha follows the magnitude. The pale middle
+ * Draws a signed field on a scale symmetric around zero and returns that scale's end (the 99th
+ * percentile of the magnitudes); alpha follows the magnitude. The pale middle
  * of the table is skipped, so small differences tint the photo blue or orange instead of veiling it
  * in white, which made the zero lines read as dark rings.
  */
-export function drawDifference(target: HTMLCanvasElement, field: SignedField, width: number, height: number, lut: Lut = BLUE_ORANGE): void {
+export function drawDifference(target: HTMLCanvasElement, field: SignedField, width: number, height: number, lut: Lut = BLUE_ORANGE): number {
   const magnitudes = field.data.map(Math.abs);
   const top = percentile(magnitudes, 0.99) || 1;
   const rgba = new Uint8ClampedArray(field.width * field.height * 4);
@@ -63,6 +81,7 @@ export function drawDifference(target: HTMLCanvasElement, field: SignedField, wi
     rgba[i * 4 + 3] = Math.round(235 * Math.pow(Math.abs(t), 0.75));
   }
   paint(target, width, height, rgba, field.width, field.height);
+  return top;
 }
 
 /** Draws the photo in grey (Rec. 709 luminance, dimmed), so heatmap colours do not mix with the photo's own. */

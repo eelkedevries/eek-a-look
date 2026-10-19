@@ -76,12 +76,15 @@ Choose a view above the photo; the inspector on the right changes with it.
 **Example** in the top bar opens three illustrations: a coloured entrance
 surround, low planting along a building base, and opaque against transparent
 ground-floor windows, each on a Zürich photo edited with AI image editing.
-Choose one to see its question, background, conditions, two possible
-outcomes and what the models predict for the manipulated area. Images A and
-B and the difference between them appear side by side, for any model; "Highlight
-manipulated area" outlines the area the table measures.
-Measured gaze appears only on the untouched original photos. The links under
-the table open either image in the workspace.
+Choose one to see its question, background, conditions and two possible
+outcomes. Images A and B and the difference between them appear side by side
+for the model you choose, with colour bars; A and B share one colour scale.
+"Highlight manipulated area" outlines the area that is measured. For the
+chosen model, the predicted attention in that area is summed into one value
+for A and one for B, and the contrast B − A shows the direction of the effect.
+The table lists the same numbers for every model. All maps here are
+predictions; measured gaze for the untouched originals is in the workspace.
+The links under the table open either image there.
 
 The About section explains the models, their scores on a standard lab test,
 and what the maps cannot tell you.

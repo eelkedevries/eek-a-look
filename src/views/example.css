@@ -155,15 +155,6 @@
   margin: 0 0 10px;
 }
 
-.comparison-result span {
-  display: block;
-  margin-bottom: 4px;
-}
-
-.comparison-result span:first-child {
-  color: var(--text-bright);
-}
-
 .comparison-controls {
   display: flex;
   flex-wrap: wrap;
@@ -213,6 +204,34 @@
   display: none;
 }
 
+.comparison-colourbar {
+  margin-top: 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.comparison-colourbar[hidden] {
+  display: none;
+}
+
+.comparison-colourbar-bar {
+  display: block;
+  height: 10px;
+  border-radius: 3px;
+}
+
+.comparison-colourbar-ticks {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 3px;
+}
+
+.comparison-colourbar-title {
+  margin-top: 2px;
+}
+
 .comparison-figure figcaption {
   margin-top: 6px;
   font-family: var(--font-mono);
@@ -246,4 +265,42 @@
 .comparison-figure .cell-note {
   left: 10px;
   text-align: right;
+}
+
+.comparison-result-head {
+  color: var(--text-bright);
+}
+
+.comparison-sums {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  gap: 2px 16px;
+  margin: 6px 0;
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+.comparison-sums dt {
+  color: var(--muted);
+}
+
+.comparison-sums dd {
+  margin: 0;
+  color: var(--text-bright);
+}
+
+.comparison-facts dd p.comparison-direction {
+  margin-bottom: 4px;
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.comparison-sums dt {
+  line-height: 1.6;
+}
+
+.comparison-table tr.selected th,
+.comparison-table tr.selected td {
+  color: var(--text-bright);
+  background: var(--border);
 }

@@ -115,4 +115,4 @@ export const COMPARISON_CAVEAT =
   'The possible outcomes are hypotheses, not results; the numbers show what the models actually predict, even when the difference is small or matches neither outcome. A change in predicted attention does not show a change in wellbeing, preference or actual use. The image editing also made small unintended changes elsewhere, such as sign lettering.';
 
 export const MEASURED_NOTE =
-  'Measured gaze exists only for the untouched original photographs: 48 people, six seconds of free viewing (Wilming et al. 2017). The edited images have predictions only.';
+  'All maps here are predictions. Measured gaze (48 people, six seconds of free viewing; Wilming et al. 2017) exists only for the untouched original photographs, so it cannot show the effect of an edit and is left out; the originals’ measured gaze can be seen in the workspace.';

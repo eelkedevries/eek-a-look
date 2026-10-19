@@ -74,8 +74,11 @@ wins and the gap is work still to be done.
   headless Chromium and the manipulated areas by `tools/comparisons/`. Since
   prompt 067 each comparison shows A, B and the difference B − A side by side
   and measures one manipulated area only (entrance: the door and its
-  recoloured surround). Measured gaze only on untouched originals. The edited
-  images have no SAM 3 façade elements yet (gated model; laptop step).
+  recoloured surround). Since prompt 068: colour bars, A and B on one
+  colour scale (`sharedRange()` in `src/render/heatmap.ts`), the selected
+  model's Σ A, Σ B and B − A with its direction, and no measured gaze in the
+  section. The edited images have no SAM 3 façade elements yet (gated model;
+  laptop step).
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
@@ -280,6 +283,9 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   side, the manipulated area only, a "Highlight manipulated area" checkbox;
   the entrance area is now the door and its recoloured surround, 1.0% of the
   image instead of 1.4%)
+- `068_example_effect_per_model.md` (spec 0.43: colour bars, one colour scale
+  for A and B, the selected model's sums over the manipulated area and their
+  contrast, measured gaze left out of the section)
 - `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational
   symmetry S against held-out labels; balanced accuracy on odd CMP A 0.781, R 0.776,
   S 0.613, and R's precision lower, so A is kept and no quality file changed. A

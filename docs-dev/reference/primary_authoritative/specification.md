@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.42 · **Last updated:** 2026-10-19
+**Version:** 0.43 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -91,7 +91,10 @@ and two possible outcomes (prompt 066, owner's request of 2026-10-19).
 0.42 shows A, B and their difference side by side, measures only the
 manipulated area, with a "Highlight manipulated area" checkbox, and makes the
 entrance area the door and its recoloured surround (prompt 067, owner's
-request of 2026-10-19).
+request of 2026-10-19). 0.43 adds colour bars, draws A and B on one colour
+scale, reports only the selected model as Σ A, Σ B and the contrast B − A
+with its direction, and leaves measured gaze out of the Example section
+(prompt 068, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -822,22 +825,34 @@ was run on the photos.
 - Each comparison is described in a fixed format (prompt 066): **Question**
   (one short sentence), **Background** (only what the question needs),
   **Conditions** (A, B and what is manipulated) and **Possible outcomes**
-  (two that can be contrasted), followed by "What the models predict".
-- Per measure and layer: the share of attention in A and in B, B − A in
-  percentage points and the Pearson r between the two maps. The sentence
-  "What the models predict" is generated from these numbers: a change below
-  0.05 points counts as none. The possible outcomes are labelled as
-  hypotheses; a result that matches neither is shown as it is.
-- Measured gaze appears only for an untouched original: as image A in the
-  entrance and greenery comparisons, and for glazing only in a note on the
-  untouched original. An edited image never shows a measured layer or
-  fixation points, and its place line reads "edited for the Example section,
+  (two that can be contrasted), followed by "What the selected model
+  predicts".
+- **Effect** (prompt 068), for the selected model only: its predicted map is
+  a gaze density summing to 1 over the image; summed over the manipulated
+  area it gives one value per condition, Σ A and Σ B (the share of all
+  predicted attention in the area). The contrast B − A, in percentage
+  points, gives the direction of the effect: positive = more predicted
+  attention in B, negative = less, below 0.05 points = no change. The page
+  states this computation. A table lists Σ A, Σ B, B − A and the Pearson r
+  between the two maps for every model, the selected one highlighted. The
+  possible outcomes are labelled as hypotheses; a result that matches
+  neither is shown as it is.
+- No measured gaze in the Example section (prompt 068): it exists only for
+  the untouched originals, so it cannot show an edit's effect; a note says
+  so. An edited image never shows a measured layer or fixation points
+  anywhere, and its place line reads "edited for the Example section,
   predictions only".
 - View (prompt 067): A, B and the difference B − A of the chosen predicted
   map (blue–orange, as in Contrast, over B) side by side; one column at phone
   width. A "Highlight manipulated area" checkbox, on by default, outlines the
   manipulated area on all three. Each image opens in the workspace, where
   every view works on it.
+- Colour bars (prompt 068) under each image. A and B are drawn on one scale,
+  from the lower minimum of the two maps to the 99th percentile of both
+  (values above it saturate), so their colours compare; the difference on a
+  scale symmetric around zero to the 99th percentile of its magnitude. Ticks
+  are densities as multiples of the image average (1 / number of grid
+  cells).
 
 **Rating page** (prompt 059)
 
