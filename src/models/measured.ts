@@ -1,6 +1,31 @@
 import { decodeMap, fitGrid, type PrecomputedMap } from './deepgaze';
 import { UnavailableError, type ModelSpec } from './types';
 
+/** The fixations a measured map was built from, in 0-based photo pixels. */
+export interface Fixations {
+  photo: string;
+  width: number;
+  height: number;
+  observers: number;
+  points: [number, number][];
+}
+
+const fixations = new Map<string, Promise<Fixations>>();
+
+/** Loads a photo's fixations once; a failed load is forgotten so it can be tried again. */
+export function loadFixations(exampleId: string): Promise<Fixations> {
+  let pending = fixations.get(exampleId);
+  if (!pending) {
+    pending = fetch(`${import.meta.env.BASE_URL}precomputed/measured/${exampleId}.points.json`).then((response) => {
+      if (!response.ok) throw new Error(`The fixations could not be loaded (HTTP ${response.status}).`);
+      return response.json() as Promise<Fixations>;
+    });
+    fixations.set(exampleId, pending);
+    pending.catch(() => fixations.delete(exampleId));
+  }
+  return pending;
+}
+
 /**
  * Measured gaze: where 48 people looked at the Zürich photos, from the eye-tracking
  * dataset of Wilming et al. (2017). Built by tools/measured-gaze/; only those

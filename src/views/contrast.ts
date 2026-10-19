@@ -2,8 +2,10 @@ import { difference, pearson } from '../maps/saliency-map';
 import { models } from '../models/registry';
 import { mapLabel, type ModelSpec } from '../models/types';
 import { BLUE_ORANGE, cssColour } from '../render/colormaps';
+import { fixationLayer, syncFixations } from '../render/fixations';
 import { drawDifference, drawGreyed, drawHeatmap } from '../render/heatmap';
 import { bestModel, getResults, modelsFor, onResults, type Results } from '../results';
+import { onViewState } from '../view-state';
 
 const WIDTH = 1200;
 const PAIR_WIDTH = 600;
@@ -45,7 +47,14 @@ function select(label: string): { wrap: HTMLLabelElement; select: HTMLSelectElem
   return { wrap, select };
 }
 
-function heatFigure(results: Results, model: ModelSpec, map: Parameters<typeof drawHeatmap>[1], w: number, h: number): HTMLElement {
+/** One of the two maps beneath the contrast; the measured map also gets the canvas for its fixation points. */
+function heatFigure(
+  results: Results,
+  model: ModelSpec,
+  map: Parameters<typeof drawHeatmap>[1],
+  w: number,
+  h: number,
+): { figure: HTMLElement; dots?: HTMLCanvasElement } {
   const figure = document.createElement('figure');
   figure.className = 'contrast-map';
   const frame = document.createElement('div');
@@ -59,11 +68,12 @@ function heatFigure(results: Results, model: ModelSpec, map: Parameters<typeof d
   const tag = document.createElement('span');
   tag.className = model.kind === 'measured' ? 'predicted-tag measured' : 'predicted-tag';
   tag.textContent = mapLabel(model);
-  frame.append(greyed, layer, tag);
+  const dots = model.kind === 'measured' ? fixationLayer() : undefined;
+  frame.append(...[greyed, layer, dots, tag].filter((node) => node !== undefined));
   const caption = document.createElement('figcaption');
   caption.textContent = model.name;
   figure.append(frame, caption);
-  return figure;
+  return { figure, dots };
 }
 
 /**
@@ -109,6 +119,8 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
 
   let drawnKey = '';
   let drawnFor: Results | null = null;
+  let dots: { canvas: HTMLCanvasElement; results: Results; w: number; h: number } | null = null;
+  const syncDots = () => dots && syncFixations(dots.canvas, dots.results.image, true, dots.w, dots.h);
 
   function current(results: Results): [string, string] | undefined {
     if (chosen && chosen.every((id) => usable(results, id))) return chosen;
@@ -135,6 +147,7 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
       note.textContent = 'No neural model could run, so there is nothing to contrast.';
       stage.replaceChildren(note);
       pair.replaceChildren();
+      dots = null;
       caption.textContent = score.textContent = '';
       drawnKey = '';
       return;
@@ -157,6 +170,7 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
       note.textContent = 'Choose two different maps.';
       stage.replaceChildren(note);
       pair.replaceChildren();
+      dots = null;
       score.textContent = '';
       drawnKey = '';
       return;
@@ -168,6 +182,7 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
       note.textContent = `Waiting for ${sa?.state === 'ready' ? b.name : a.name}…`;
       stage.replaceChildren(note);
       pair.replaceChildren();
+      dots = null;
       score.textContent = '';
       drawnKey = '';
       return;
@@ -205,7 +220,11 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
     const ps = Math.min(1, PAIR_WIDTH / results.image.width);
     const pw = Math.round(results.image.width * ps);
     const ph = Math.round(results.image.height * ps);
-    pair.replaceChildren(heatFigure(results, a, sa.map, pw, ph), heatFigure(results, b, sb.map, pw, ph));
+    const figures = [heatFigure(results, a, sa.map, pw, ph), heatFigure(results, b, sb.map, pw, ph)];
+    pair.replaceChildren(...figures.map((f) => f.figure));
+    const canvas = figures.find((f) => f.dots)?.dots;
+    dots = canvas ? { canvas, results, w: pw, h: ph } : null;
+    syncDots();
   }
 
   const choose = () => {
@@ -226,4 +245,5 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
 
   redraw = () => update();
   onResults((results) => update(results));
+  onViewState(syncDots);
 }

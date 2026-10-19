@@ -9,6 +9,8 @@ export interface CurrentImage {
   exampleId?: string;
   /** True when the example photo has a measured eye-tracking map. */
   measured?: boolean;
+  /** The observers and fixations behind the measured map, on photos that have one. */
+  measuredCounts?: { observers: number; fixations: number };
 }
 
 type Listener = (image: CurrentImage) => void;

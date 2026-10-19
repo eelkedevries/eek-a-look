@@ -37,6 +37,10 @@ Choose a view above the photo; the inspector on the right changes with it.
   choose any two maps in the inspector, swap them, or reset to the best model.
   Orange marks where the first map expects more looking, blue where the second
   does. Both maps are shown underneath.
+- **Show fixations (raw data):** on the Zürich photos, this checkbox in the
+  inspector draws every fixation the measured map was built from as a cyan
+  dot over the **Measured gaze** map, in all three views above. The dots are
+  never drawn over a model's map.
 - **Areas:** automatic areas for the example photos, with how much of each
   map's attention falls inside them relative to their size.
 - **Match with …** (inspector): each layer's correlation with the reference,

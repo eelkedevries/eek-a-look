@@ -3,7 +3,8 @@
 ## Goal
 
 On the photos with eye tracking, let visitors show the individual fixations
-that the measured map was built from as points over any heat map.
+that the measured map was built from as points over the "Measured gaze"
+layer.
 
 ## Scope
 
@@ -29,10 +30,13 @@ systems or future prompts.
    off by default.
 3. In the inspector, on a photo with measured data only, add a checkbox
    "Show fixations (raw data)" with the note "<n> fixations from <observers>
-   people". It stays available whichever layer or view is chosen.
-4. When it is on, draw the points over every heat map shown on the photo:
-   the single-map view, each panel side by side, and the maps in the
-   contrast view (including the difference). Use small filled dots in one
+   people · on the Measured gaze layer". It is shown in the single-map, side
+   by side and contrast views (owner's decision of 2026-10-19: the points
+   go over the measured layer only, never over a model's map).
+4. When it is on, draw the points over the "Measured gaze" map wherever it
+   is shown: the single-map view when that layer is chosen, its panel side
+   by side, and its map under the contrast view when it is one of the two.
+   Not over model maps or the difference. Use small filled dots in one
    colour that stays visible on both the greyed photo and the inferno scale
    (for example cyan with a thin dark edge), sized relative to the displayed
    photo, on their own layer above the heat map. The heatmap strength slider
@@ -43,6 +47,7 @@ systems or future prompts.
 ## Do not implement
 
 Do not implement:
+- points over model maps or the difference map;
 - points on uploads or on photos without measured data;
 - per-observer selection, fixation order, durations or scanpaths;
 - any change to how the maps themselves are computed or drawn;
@@ -52,8 +57,8 @@ Do not implement:
 
 The task is complete when:
 - on a Zürich photo the checkbox appears, is off by default, and when
-  switched on shows the points over the heat map in the single-map, side by
-  side and contrast views, for any chosen layer;
+  switched on shows the points over the "Measured gaze" map in the
+  single-map, side by side and contrast views, and over no other map;
 - the points coincide with the fixations in the tool's check overlays
   (`tools/measured-gaze/.cache/check/`);
 - on the Dutch photos and on uploads the checkbox does not appear;

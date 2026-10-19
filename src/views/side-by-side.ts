@@ -1,5 +1,6 @@
 import { pearson } from '../maps/saliency-map';
 import { mapLabel, type ModelSpec } from '../models/types';
+import { fixationLayer, syncFixations } from '../render/fixations';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { modelsFor, onResults, referenceModel, type Results } from '../results';
 import { getViewState, onViewState } from '../view-state';
@@ -16,6 +17,8 @@ interface Cell {
   score: HTMLElement;
   contrast: HTMLButtonElement;
   drawn: boolean;
+  /** Only on the measured map. */
+  dots?: HTMLCanvasElement;
 }
 
 function photoCanvas(results: Results, width: number, height: number): HTMLCanvasElement {
@@ -49,7 +52,10 @@ export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: s
   });
   grid.addEventListener('pointerleave', () => grid.classList.remove('probing'));
   const applyOpacity = () => grid.style.setProperty('--heat-opacity', String(getViewState().opacity / 100));
-  onViewState(applyOpacity);
+  onViewState(() => {
+    applyOpacity();
+    if (built) syncDots(built);
+  });
   applyOpacity();
 
   let built: Results | null = null;
@@ -94,7 +100,8 @@ export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: s
       tag.textContent = mapLabel(model);
       const note = document.createElement('span');
       note.className = 'cell-note';
-      frame.append(greyed, layer, tag, note);
+      const dots = model.kind === 'measured' ? fixationLayer() : undefined;
+      frame.append(...[greyed, layer, dots, tag, note].filter((node) => node !== undefined));
 
       const name = document.createElement('span');
       name.className = 'cell-name';
@@ -108,11 +115,17 @@ export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: s
       contrast.textContent = 'Contrast';
       contrast.hidden = true;
 
-      cells.set(model.id, { model, layer, note, score, contrast, drawn: false });
+      cells.set(model.id, { model, layer, note, score, contrast, drawn: false, dots });
       figures.push(figure(frame, name, score, contrast));
     }
     grid.replaceChildren(...figures);
     built = results;
+  }
+
+  function syncDots(results: Results) {
+    for (const cell of cells.values()) {
+      if (cell.dots) syncFixations(cell.dots, results.image, cell.drawn, w, h);
+    }
   }
 
   function update(results: Results) {
@@ -150,6 +163,7 @@ export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: s
       cell.contrast.setAttribute('aria-label', refModel ? `Contrast ${model.name} with ${refModel.name}` : 'Contrast');
       cell.contrast.title = refModel ? `Contrast with ${short(refModel)}` : '';
     }
+    syncDots(results);
   }
 
   onResults((results) => update(results));

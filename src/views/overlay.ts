@@ -1,6 +1,7 @@
 import { models, NEURAL_PREFERENCE } from '../models/registry';
 import { mapLabel } from '../models/types';
 import { INFERNO, cssColour } from '../render/colormaps';
+import { fixationLayer, syncFixations } from '../render/fixations';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { getResults, onResults, type Results } from '../results';
 import { getViewState, onViewState } from '../view-state';
@@ -18,6 +19,7 @@ export function mountOverlay(stage: HTMLElement, status: HTMLElement): void {
   let greyFor: Results['image'] | null = null;
   const layer = document.createElement('canvas');
   layer.className = 'layer heat';
+  const dots = fixationLayer();
   const tag = document.createElement('span');
   tag.className = 'predicted-tag';
   tag.textContent = 'Predicted';
@@ -30,7 +32,7 @@ export function mountOverlay(stage: HTMLElement, status: HTMLElement): void {
 
     const frame = stage.querySelector<HTMLElement>('.frame');
     if (!results || !frame) return;
-    if (!frame.contains(layer)) frame.append(greyLayer, layer, tag);
+    if (!frame.contains(layer)) frame.append(greyLayer, layer, dots, tag);
     if (greyFor !== results.image) {
       drawGreyed(greyLayer, results.image.bitmap, results.image.width, results.image.height);
       greyFor = results.image;
@@ -47,6 +49,7 @@ export function mountOverlay(stage: HTMLElement, status: HTMLElement): void {
     const outcome = results.status.get(shownId);
     const handover = shownId !== wanted ? `${chosen.name} is computed in advance for the example photos only; showing ${model.name}. ` : '';
     tag.classList.toggle('measured', model.kind === 'measured');
+    syncFixations(dots, results.image, outcome?.state === 'ready' && model.kind === 'measured', results.image.width, results.image.height);
     if (outcome?.state === 'ready') {
       if (drawnFor?.results !== results || drawnFor.model !== shownId) {
         drawHeatmap(layer, outcome.map, results.image.width, results.image.height);

@@ -106,6 +106,17 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
   legend.append('less likely', bar, 'more likely');
   display.section.append(strength, legend);
 
+  const gaze = section('Eye tracking');
+  gaze.section.classList.add('measured');
+  const fixationToggle = el('label', 'toggle');
+  const fixationBox = el('input');
+  fixationBox.type = 'checkbox';
+  fixationBox.checked = getViewState().fixations;
+  fixationBox.addEventListener('change', () => setViewState({ fixations: fixationBox.checked }));
+  fixationToggle.append(fixationBox, el('span', undefined, 'Show fixations (raw data)'));
+  const fixationNote = el('p', 'inspector-note');
+  gaze.section.append(fixationToggle, fixationNote);
+
   const match = section('Match');
   const matchNote = el('p', 'inspector-note', 'Correlation for this photo: 0 = unrelated · 1 = same pattern.');
   const matchList = el('ol', 'match-list');
@@ -116,9 +127,18 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
   const helpText = el('p');
   help.append(helpTitle, helpText);
 
-  aside.replaceChildren(layers.section, contrast.section, display.section, match.section, help);
+  aside.replaceChildren(layers.section, contrast.section, display.section, gaze.section, match.section, help);
+
+  function renderGaze(results = getResults()) {
+    const counts = results?.image.measured ? results.image.measuredCounts : undefined;
+    gaze.section.hidden = !counts || !['overlay', 'side', 'contrast'].includes(getViewState().view);
+    fixationNote.textContent = counts
+      ? `${counts.fixations} fixations from ${counts.observers} people · on the Measured gaze layer`
+      : '';
+  }
 
   function renderScores(results = getResults()) {
+    renderGaze(results);
     if (!results) return;
     const refId = referenceModel(results);
     const ref = models.find((m) => m.id === refId);

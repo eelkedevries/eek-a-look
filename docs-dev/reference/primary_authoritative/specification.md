@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.20 · **Last updated:** 2026-10-19
+**Version:** 0.21 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -45,6 +45,9 @@ measure for horizontal–vertical rhythm and variety: the spacing of window and
 balcony instances in local windows, calibrated on CMP Facade, and colour zones
 for variety (prompt 041; the window size, the items and the reference were
 corrected on the calibration images before the measure ran on the photos).
+0.21 lets visitors show the measured fixations as points over the "Measured
+gaze" layer, never over a model's map (prompt 030, owner's decision of
+2026-10-19).
 
 ## Scope
 
@@ -302,6 +305,12 @@ interface ExamplePhoto {
   photos with measured data. On other photos and on uploads it is left out of
   every view, with no "unavailable" note. It is never in the neural preference
   (MSDB, IIE, UNISAL) and never in the agreement matrix.
+- **Fixation points:** the fixations behind each map (after steps 1–2 of the
+  recipe) are also written to `<photo-id>.points.json`. An inspector checkbox
+  "Show fixations (raw data)", off by default and present only on photos with
+  measured data, draws them as cyan dots over the "Measured gaze" map in
+  "Single map", "Side by side" and "Contrast", and over no other map. The
+  heatmap strength does not dim them.
 
 **Automatic areas**
 
@@ -484,7 +493,8 @@ was run on the photos.
     "Side by side", "Contrast" and "Areas";
   - an inspector: the layers (choosing one opens it in "Single map"), the
     Contrast selectors with "Reset to the best model", the heatmap strength
-    (also applied in "Side by side") with its legend, the match with the
+    (also applied in "Side by side") with its legend, on photos with measured
+    gaze the "Show fixations (raw data)" checkbox, the match with the
     reference, and a short note on the open view.
   The agreement matrix, About and the methods follow below; a status bar
   shows how many layers are ready.

@@ -10,6 +10,8 @@ Açık, Schumann & König, 2014; free viewing for 6 s):
   blurred with a Gaussian of 1 degree (45.6 px), summed into 10 × 10 px cells
   (the shared 128 × 96 grid) and normalised to sum 1;
 - writes public/precomputed/measured/<id>.json in the PrecomputedMap format;
+- writes public/precomputed/measured/<id>.points.json with the fixations the
+  map was built from, for the optional points over the measured layer;
 - adds the photos to public/examples/examples.json, after the Dutch ones;
 - writes a check overlay per photo to .cache/check/.
 
@@ -161,6 +163,8 @@ def main() -> int:
             "data": encode(probability),
         }
         (OUT / f"{pid}.json").write_text(json.dumps(data))
+        points = {"photo": pid, "width": WIDTH, "height": HEIGHT, "observers": observers, "points": np.stack([x, y], axis=1).tolist()}
+        (OUT / f"{pid}.points.json").write_text(json.dumps(points, separators=(",", ":")))
         check_overlay(Image.open(photos_dir / f"{pid}.png").convert("RGB"), probability, x, y, check_dir / f"{pid}.png")
         decoded = decode(data["data"], gw, gh)
         print(f"{pid:10} {observers:9d} {len(x):9d} {decoded.sum():10.6f}")

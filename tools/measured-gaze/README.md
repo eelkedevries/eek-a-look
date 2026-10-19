@@ -48,7 +48,10 @@ For each photo:
 
 The map is written to `public/precomputed/measured/zurich-<n>.json` in the
 `PrecomputedMap` format (model `'measured'`, uint16 base64, as the DeepGaze
-maps). The photo is copied to `.cache/photos/zurich-<n>.png` and prepared by
+maps). The fixations from steps 1–2 are also written, as 0-based pixel
+pairs, to `public/precomputed/measured/zurich-<n>.points.json`
+(`{photo, width, height, observers, points: [[x, y], …]}`); the site can show
+them as points over the "Measured gaze" layer. The photo is copied to `.cache/photos/zurich-<n>.png` and prepared by
 `scripts/prepare-photos.mjs` (JPEG, metadata stripped, still 1280 × 960, plus
 a thumbnail). The photos are added to `public/examples/examples.json` after
 the Dutch ones, with the observer and fixation counts under `measured`.

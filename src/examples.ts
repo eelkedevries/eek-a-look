@@ -36,7 +36,15 @@ const thumbUrl = (photo: ExamplePhoto) => EXAMPLES_URL + photo.file.replace(/\.j
 export async function showExample(photo: ExamplePhoto): Promise<void> {
   const response = await fetch(EXAMPLES_URL + photo.file);
   const bitmap = await createImageBitmap(await response.blob());
-  setImage({ bitmap, width: bitmap.width, height: bitmap.height, source: 'example', exampleId: photo.id, measured: photo.measured !== undefined });
+  setImage({
+    bitmap,
+    width: bitmap.width,
+    height: bitmap.height,
+    source: 'example',
+    exampleId: photo.id,
+    measured: photo.measured !== undefined,
+    measuredCounts: photo.measured && { observers: photo.measured.observers, fixations: photo.measured.fixations },
+  });
 }
 
 /** Renders (or attaches to) the thumbnails grouped by area; the current photo is marked with aria-pressed. */

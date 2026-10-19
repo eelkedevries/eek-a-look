@@ -44,7 +44,9 @@ wins and the gap is work still to be done.
   gaze" layer, listed first and labelled "Measured" in blue. It exists only on
   photos with `measured` in the manifest (`ModelSpec.covers`, `modelsFor()` in
   `src/results.ts`), and stays out of `NEURAL_PREFERENCE` and the agreement
-  matrix. The agreement view adds "Match with measured gaze".
+  matrix. The agreement view adds "Match with measured gaze". Since prompt
+  030 the inspector's "Show fixations (raw data)" draws the fixations
+  (`<id>.points.json`, `src/render/fixations.ts`) over the measured map only.
 - Maps and models: `src/maps/saliency-map.ts` (grid, normalise, resample,
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
   drawing), `src/models/` (types, registry, centre bias, classic salience in a Web Worker

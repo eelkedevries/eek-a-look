@@ -1205,6 +1205,10 @@ a:hover {
   opacity: var(--heat-opacity, 1);
 }
 
+.side-grid canvas.layer.fixations {
+  opacity: 1;
+}
+
 /* Inspector */
 .inspector {
   display: flex;
@@ -1342,6 +1346,21 @@ a:hover {
 .strength input {
   width: 100%;
   accent-color: var(--gold);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-soft);
+  cursor: pointer;
+}
+
+.toggle input {
+  margin: 0;
+  accent-color: var(--iris);
 }
 
 .inspector .legend {
