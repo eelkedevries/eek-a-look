@@ -382,14 +382,6 @@ a:hover {
 }
 
 /* Areas tab */
-.area-switch {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-
-.area-switch[hidden],
 .area-legend[hidden] {
   display: none;
 }
@@ -425,6 +417,35 @@ a:hover {
 .area-legend-item:hover,
 .area-legend-item:focus-visible {
   border-color: var(--gold);
+}
+
+.area-legend-heading {
+  flex: 1 1 100%;
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.area-legend-heading:first-child {
+  margin-top: 0;
+}
+
+.areas-group-row th {
+  padding-top: 14px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.area-swatch.dashed {
+  background: none !important;
+  border: 2px dashed currentColor;
 }
 
 .area-swatch {

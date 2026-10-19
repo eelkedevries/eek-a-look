@@ -57,7 +57,7 @@ function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
   return node;
 }
 
-/** Outline (and optionally fill) the areas on a canvas at twice the mask size. */
+/** Outline (and optionally fill) the areas on a canvas at twice the mask size; façade elements dashed. */
 function drawAreas(canvas: HTMLCanvasElement, areas: Area[], width: number, height: number, filled?: string): void {
   const scale = 2;
   canvas.width = width * scale;
@@ -84,7 +84,8 @@ function drawAreas(canvas: HTMLCanvasElement, areas: Area[], width: number, heig
         const i = y * width + x;
         if (!m[i]) continue;
         const edge = x === 0 || y === 0 || x === width - 1 || y === height - 1 || !m[i - 1] || !m[i + 1] || !m[i - width] || !m[i + width];
-        if (edge) paint(x, y, rgb, 255);
+        // Façade elements are dashed, so they read apart from the street categories they lie on.
+        if (edge && (area.group === 'category' || (x + y) % 6 < 4)) paint(x, y, rgb, 255);
         else if (area.id === filled) paint(x, y, rgb, 110);
       }
     }
@@ -92,25 +93,10 @@ function drawAreas(canvas: HTMLCanvasElement, areas: Area[], width: number, heig
   canvas.getContext('2d')!.putImageData(image, 0, 0);
 }
 
-/** The Areas view: automatic areas on the greyed photo and attention ÷ size per area and layer. */
+/** The Areas view: street categories and façade elements on the greyed photo, and attention ÷ size per area and layer. */
 export function mountAreas(panel: HTMLElement): void {
-  let group: Group = 'category';
   let current: { results: Results; file: AreaFile; areas: Area[] } | null = null;
   const shareCache = new Map<string, Map<string, number>>();
-
-  const switcher = el('div', 'area-switch');
-  switcher.setAttribute('role', 'group');
-  switcher.setAttribute('aria-label', 'Areas to show');
-  const switchButtons = GROUPS.map(({ id, label }) => {
-    const button = el('button', 'model-button', label);
-    button.type = 'button';
-    button.addEventListener('click', () => {
-      group = id;
-      render();
-    });
-    switcher.append(button);
-    return button;
-  });
 
   const stage = el('div', 'stage');
   const frame = el('div', 'frame');
@@ -131,13 +117,14 @@ export function mountAreas(panel: HTMLElement): void {
   const notes = el('p', 'agreement-caption areas-notes');
   const panelBlock = el('div', 'areas-panel');
   panelBlock.id = 'areas-panel';
-  panel.replaceChildren(switcher, stage, legend, tableWrap, caption, notes, panelBlock);
+  panel.replaceChildren(stage, legend, tableWrap, caption, notes, panelBlock);
 
   let highlighted: string | undefined;
 
+  /** Every area: street categories first, then façade elements, each from large to small. */
   function visibleAreas(): Area[] {
     if (!current) return [];
-    return current.areas.filter((a) => a.group === group).sort((a, b) => b.share - a.share);
+    return GROUPS.flatMap(({ id }) => current!.areas.filter((a) => a.group === id).sort((a, b) => b.share - a.share));
   }
 
   function drawStage() {
@@ -169,7 +156,7 @@ export function mountAreas(panel: HTMLElement): void {
       th.title = m.name;
       head.append(th);
     }
-    const rows = visibleAreas().map((area) => {
+    const rows = visibleAreas().flatMap((area, i, all) => {
       const tr = el('tr');
       const name = el('th', undefined, area.label + (area.lowConfidence ? lowNote : ''));
       name.scope = 'row';
@@ -193,20 +180,26 @@ export function mountAreas(panel: HTMLElement): void {
         }
         tr.append(td);
       }
-      return tr;
+      if (i > 0 && all[i - 1].group === area.group) return [tr];
+      const groupRow = el('tr', 'areas-group-row');
+      const groupCell = el('th', undefined, GROUPS.find((g) => g.id === area.group)!.label);
+      groupCell.colSpan = layers.length + 2;
+      groupCell.scope = 'colgroup';
+      groupRow.append(groupCell);
+      return [groupRow, tr];
     });
     table.replaceChildren(head, ...rows);
   }
 
   function renderLegend() {
     legend.replaceChildren(
-      ...visibleAreas().map((area) => {
+      ...visibleAreas().flatMap((area, i, all) => {
         const item = el('li');
         const button = el('button', 'area-legend-item');
         button.type = 'button';
         button.setAttribute('aria-pressed', String(area.id === highlighted));
-        const swatch = el('span', 'area-swatch');
-        swatch.style.background = COLOURS[area.id] ?? '#FFFFFF';
+        const swatch = el('span', area.group === 'element' ? 'area-swatch dashed' : 'area-swatch');
+        swatch.style.background = swatch.style.color = COLOURS[area.id] ?? '#FFFFFF';
         button.append(swatch, `${area.label}${area.lowConfidence ? lowNote : ''} `, el('span', 'area-percent', percent(area.share)));
         const show = (on: boolean) => {
           highlighted = on ? area.id : undefined;
@@ -217,13 +210,14 @@ export function mountAreas(panel: HTMLElement): void {
         button.addEventListener('focus', () => show(true));
         button.addEventListener('blur', () => show(false));
         item.append(button);
-        return item;
+        if (i > 0 && all[i - 1].group === area.group) return [item];
+        const heading = el('li', 'area-legend-heading', GROUPS.find((g) => g.id === area.group)!.label + (area.group === 'element' ? ' · dashed' : ''));
+        return [heading, item];
       }),
     );
   }
 
   function render() {
-    switchButtons.forEach((b, i) => b.setAttribute('aria-pressed', String(GROUPS[i].id === group)));
     if (!current) return;
     drawStage();
     renderLegend();
@@ -239,7 +233,7 @@ export function mountAreas(panel: HTMLElement): void {
     legend.replaceChildren();
     table.replaceChildren();
     notes.textContent = '';
-    for (const node of [switcher, legend, tableWrap, caption]) node.hidden = true;
+    for (const node of [legend, tableWrap, caption]) node.hidden = true;
   }
 
   let requested: Results | null = null;
@@ -262,7 +256,7 @@ export function mountAreas(panel: HTMLElement): void {
       showEmpty('Areas could not be loaded for this photo.');
       return;
     }
-    for (const node of [switcher, legend, tableWrap, caption]) node.hidden = false;
+    for (const node of [legend, tableWrap, caption]) node.hidden = false;
     current = { results, file, areas: decodeAreas(file) };
     highlighted = undefined;
     render();

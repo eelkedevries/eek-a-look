@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.16 · **Last updated:** 2026-10-19
+**Version:** 0.17 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -34,7 +34,9 @@ best model, and adds match scores and a shared pointer ring to the side-by-side
 view (prompt 027, owner's request of 2026-10-19). 0.16 lays the page out as a
 workspace: a photo library, the views and an inspector with the layers, the
 contrast selectors, the heatmap strength and each layer's match with the
-reference (prompt 028, from the owner-approved mock-up of 2026-10-19).
+reference (prompt 028, from the owner-approved mock-up of 2026-10-19). 0.17 shows street categories and façade elements
+together in the Areas view instead of as two switchable groups (prompt 029,
+owner's request of 2026-10-19).
 
 ## Scope
 
@@ -358,12 +360,15 @@ interface ExamplePhoto {
   shows how many layers are ready.
 - **Areas** (a tab after "Contrast"; example photos only, uploads get "Areas
   are computed in advance for the example photos only."):
-  - the greyed photo with the area outlines of one group, either "Street
-    categories" or "Façade elements" (with the ground floor);
+  - the greyed photo with the outlines of all areas at once: street
+    categories as solid lines, façade elements (with the ground floor) as
+    dashed lines; no switch between the two groups;
   - colours from the Okabe–Ito palette without black, white for street
-    furniture and grey for "Other"; a legend with % of the photo, where
+    furniture and grey for "Other"; one legend with % of the photo, in two
+    labelled parts ("Street categories", "Façade elements · dashed"), where
     hovering or focusing an item fills that area;
-  - a table with, per area and ready layer (measured gaze first), the
+  - one table, with a row heading for each of the two groups, with, per
+    area and ready layer (measured gaze first), the
     **attention ÷ size**: the share of the layer's map inside the area (the
     map upsampled to the mask size with `resample()`), divided by the area's
     share of the photo, to one decimal. 1.0× is what the area's size alone
