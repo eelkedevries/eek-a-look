@@ -162,10 +162,12 @@ Repository: <https://github.com/apple/ml-dms-dataset>.
 
 ## Vision-language models with boxes
 
-- Qwen3-VL (Apache-2.0) can return bounding boxes for things it names; the
-  Qwen3-VL model card describes grounding with relative coordinates. The exact
-  coordinate convention is to be confirmed on one probe photo before the run
-  (prompt 044) and is **not verified** here.
+- Qwen3-VL (Apache-2.0) can return bounding boxes for things it names. The
+  model card does not give the convention; the official cookbook does:
+  "Qwen3-VL's default coordinate system has been changed from the absolute
+  coordinates used in Qwen2.5-VL to relative coordinates ranging from 0 to
+  1000" (`cookbooks/2d_grounding.ipynb`, QwenLM/Qwen3-VL@9658872, checked
+  2026-10-19), with boxes as `bbox_2d`.
 - A graded scale (0–4) instead of present/absent is a change of measurement
   design, fixed before the run, to see whether the model separates photos at
   all. It is not tuned to reach a wanted result.

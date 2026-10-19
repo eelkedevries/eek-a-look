@@ -203,3 +203,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   model, which the inspector now marks as shown)
 - `050_fixation_toggle.md` (spec 0.27: fixation dots at 65% opacity; the
   checkbox also sits under the image, in step with the inspector's)
+- `044_vlm_panel_graded.md` (spec 0.28: the panel rated 0–4 with evidence
+  boxes, `panel-graded.json`. Alpha 0.95 / 0.81 / 0.67; rhythm still 3–4 on
+  every photo, ground floor 1–3, materials 2–3; 70/72 medians stable; boxes
+  64–83% inside the matching region)

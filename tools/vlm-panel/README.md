@@ -48,6 +48,41 @@ photo: the model did not tell the photos apart on that principle at all.
 That happened for rhythm and variety and for tactile materials in the
 2026-10-18 run: "present" on all 24 photos.
 
+## Graded run (prompt 044)
+
+Because the present/absent run said "present" for rhythm and materials on
+every photo, `panel.py --graded` asks the same eight members, with the same
+system message and definitions (`prompt_graded.md`, fixed before the run), to
+**rate** each principle from 0 to 4 (0 absent, 1 a trace, 2 partly present,
+3 clearly present, 4 strongly present throughout), give one sentence of
+evidence, and draw up to three **boxes** around the elements that support the
+rating. Boxes come back in Qwen3-VL's relative 0–1000 `bbox_2d` convention
+(official cookbook) and are stored on the mask grid of the area files. One
+probe photo was used only to confirm the JSON format.
+
+Results of the 2026-10-19 run (`public/precomputed/vlm-panel/panel-graded.json`):
+
+| | Rhythm and variety | Active ground floor | Tactile materials |
+|---|---|---|---|
+| Krippendorff's alpha (ordinal), among members | 0.95 | 0.81 | 0.67 |
+| Distinct medians over 24 photos | 2 (3–4) | 4 (1–3) | 3 (2–3) |
+| Box area inside the matching automatic region | 83% (façade) | 64% (ground floor, dilated 2%) | 50% (eye-level zone) |
+| Spearman with the image measure (exploratory) | −0.04 | 0.49 (21 photos) | −0.25 |
+
+70 of 72 medians changed by at most 0.5 in a second run with seeds 37 and 41.
+129 s per photo for eight members; peak GPU memory 7.29 GB.
+
+Reading: the graded scale separates the ground floor and, a little, the
+materials, but rhythm is still at the top of the scale on every photo (3 or
+4). Agreement among members of one model and stability across seeds are
+consistency, not validity. The boxes mostly sit on relevant elements (shop
+windows and awnings, window bays, planters), but some cover a whole building.
+Neither the ratings nor the boxes are combined with gaze statistics.
+
+```sh
+uv run panel.py --graded   # writes public/precomputed/vlm-panel/panel-graded.json
+```
+
 ## Caveats
 
 - VLM judgements can track crowd ratings of general attractiveness (Zhou,

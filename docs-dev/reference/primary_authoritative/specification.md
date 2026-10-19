@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.27 · **Last updated:** 2026-10-19
+**Version:** 0.28 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -61,6 +61,8 @@ the site, the method texts and the offline area checks, leaving four
 predictions (prompt 032, owner's request of 2026-10-19). 0.27 draws the fixation points at 65% opacity
 and adds their checkbox under the image (prompt 050, owner's request of
 2026-10-19).
+0.28 adds a graded run of the simulated panel: ratings from 0 to 4 with boxes
+around the evidence, never combined with gaze statistics (prompt 044).
 
 ## Scope
 
@@ -589,6 +591,16 @@ was run on the photos.
   - a principle whose Fleiss' kappa is `null` (the same verdict on every
     photo) carries the note "The model gave this verdict for every example
     photo, so it does not tell the photos apart."
+  - a **graded run** of the same eight members (`panel-graded.json`, prompt
+    044; `tools/vlm-panel/prompt_graded.md`, fixed before the run) rates each
+    principle from 0 to 4 (0 absent, 1 a trace, 2 partly present, 3 clearly
+    present, 4 strongly present throughout), with one evidence sentence and up
+    to three boxes around the supporting elements, converted from Qwen3-VL's
+    relative 0–1000 `bbox_2d` to the mask grid. Shown as the median and range
+    of the eight ratings. It is an AI judgement too, with Krippendorff's alpha
+    (ordinal) for agreement among members and the share of medians within 0.5
+    in a second run for stability. Neither its ratings nor its boxes are ever
+    combined with gaze statistics.
 
 **Honesty** (binding on all visitor-facing text)
 
