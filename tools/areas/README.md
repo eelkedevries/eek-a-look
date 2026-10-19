@@ -76,11 +76,32 @@ specification. Masks are row-major run lengths that start outside the area.
 - the ground floor lies inside the façade;
 - the file is at most 150 kB.
 
+## Study images: renderings and 360° panoramas (prompt 051)
+
+The 25 images "From published studies" carry `imageKind` in the manifest:
+- **`render`** (10 Qinyang design renderings, about 368 × 205 px): the
+  ordinary rule; their virtual camera height is unknown, so 1.6 m is an
+  assumption. Two of them (qinyang-01, qinyang-10) fall back to the middle
+  row and so get a ground floor covering the whole façade.
+- **`panorama`** (15 Guangzhou 360° panoramas, equirectangular, 648 × 325
+  px): a level capture is assumed, so the horizon is the middle row
+  (`equirectangular`). Rows are elevation angles, π over the image height
+  *R*: a base row *y<sub>0</sub>* lies at depression *φ* = π (*y<sub>0</sub>* −
+  *y<sub>h</sub>*) / *R*, at distance *d* = *c* / tan *φ*, and the ground floor
+  reaches up to row *y<sub>h</sub>* − (*R* / π) atan((*H* − *c*) / *d*).
+  Checked by hand on one column of four panoramas (façades 2.4–21.8 m away).
+  The façades in these tree-lined streets are small (0–9% of the image),
+  and SAM 3 finds no windows, doors, balconies or shopfronts in them.
+
+Both kinds are recorded in the area file (`imageKind`).
+
 ## Commands
 
 ```sh
 cd tools/areas
-uv run build.py   # areas for all example photos, overlays in .cache/check/
+uv run build.py                  # areas for all example photos, overlays in .cache/check/
+uv run build.py --only-missing   # only photos without an area file (prompt 051)
+uv run elements.py --apply --only-missing   # façade elements for those photos
 ```
 
 The first run downloads OneFormer (about 0.9 GB). On the RTX 4070 a photo

@@ -355,17 +355,21 @@ def print_table(comparison: dict) -> None:
 
 # --- apply -----------------------------------------------------------------------
 
-def apply(dev: torch.device) -> None:
+def apply(dev: torch.device, only_missing: bool = False) -> None:
     comparison = json.loads(COMPARISON.read_text())
     winners = comparison["winners"]
     by_candidate: dict[str, list[str]] = {}
     for eid, w in winners.items():
         by_candidate.setdefault(w["candidate"], []).append(eid)
     files = {p["id"]: json.loads((OUT / f"{p['id']}.json").read_text()) for p in photos()}
+    if only_missing:  # prompt 051: leave photos that already have their element masks untouched
+        files = {pid: data for pid, data in files.items() if not any(a["id"] in ELEMENTS for a in data["areas"])}
     found: dict[str, dict[str, np.ndarray]] = {pid: {} for pid in files}
     for key, eids in by_candidate.items():
         candidate = load_candidate(key, dev)
         for photo in photos():
+            if photo["id"] not in files:
+                continue
             data = files[photo["id"]]
             w, h = data["width"], data["height"]
             cats = np.zeros((h, w), np.uint8)
@@ -424,6 +428,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--compare", action="store_true")
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--only-missing", action="store_true", help="with --apply: only photos without element masks (prompt 051)")
     args = parser.parse_args()
     dev = device()
     if args.compare:
@@ -431,8 +436,8 @@ def main() -> int:
         print_table(comparison)
         validate.save_elements(comparison)
     if args.apply:
-        apply(dev)
-        print(f"Added {', '.join(ELEMENTS)} to {len(photos())} area files; overlays in .cache/check/")
+        apply(dev, args.only_missing)
+        print(f"Added {', '.join(ELEMENTS)} to the area files; overlays in .cache/check/")
     return 0
 
 

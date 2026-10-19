@@ -226,3 +226,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   size checked by hand on zurich-23: 0.8465 on the page and by hand)
 - `048_upclip_view.md` (spec 0.31: "Descriptions and photos · UP-CLIP" at the end
   of the Qualities view, on all 49 example photos, `src/views/upclip.ts`)
+- `051_study_photo_areas.md` (spec 0.32: `imageKind` on the 25 study images;
+  areas for them with `--only-missing`, the 24 earlier files unchanged; a
+  spherical ground-floor rule for the 15 360° panoramas, checked by hand.
+  SAM 3 finds no façade elements in the panoramas)

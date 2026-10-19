@@ -13,8 +13,10 @@ import numpy as np
 import torch
 from PIL import Image, ImageDraw
 
+import argparse
+
 from common import CACHE, CATEGORIES, CATEGORY_IDS, EXAMPLES, ONEFORMER, ONEFORMER_REVISION, OUT, OneFormer, area_entry, decode_rle, device, mask_size, photos, write_area_file
-from groundfloor import CAMERA_HEIGHT_M, STOREY_HEIGHT_M, estimate_horizon, ground_floor, head_offset
+from groundfloor import CAMERA_HEIGHT_M, STOREY_HEIGHT_M, estimate_horizon, ground_floor, ground_floor_equirectangular, head_offset
 
 MAX_FILE_BYTES = 150_000
 # Okabe–Ito colours for the check overlays; white and grey for the last two.
@@ -67,6 +69,9 @@ def overlay(image: Image.Image, categories: np.ndarray, floor: np.ndarray, horiz
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--only-missing", action="store_true", help="only photos without an area file (prompt 051)")
+    args = parser.parse_args()
     dev = device()
     print(f"Device: {dev} ({torch.cuda.get_device_name(0) if dev.type == 'cuda' else 'CPU'})")
     OUT.mkdir(parents=True, exist_ok=True)
@@ -79,12 +84,20 @@ def main() -> int:
     print(header)
     failures = 0
     for photo in photos():
+        if args.only_missing and (OUT / f"{photo['id']}.json").exists():
+            continue
         t0 = time.perf_counter()
         image = Image.open(EXAMPLES / photo["file"]).convert("RGB")
         size = mask_size(image.width, image.height)
         categories = model.categories(image, size)
-        horizon, method, support = estimate_horizon(np.asarray(image.convert("L")), categories, CATEGORY_IDS)
-        floor = ground_floor(categories, CATEGORY_IDS, horizon)
+        kind = photo.get("imageKind")
+        if kind == "panorama":
+            # A level 360° panorama: the horizon is the middle row and rows are elevation angles (prompt 051).
+            horizon, method, support = size[1] / 2, "equirectangular", 0
+            floor = ground_floor_equirectangular(categories, CATEGORY_IDS, horizon)
+        else:
+            horizon, method, support = estimate_horizon(np.asarray(image.convert("L")), categories, CATEGORY_IDS)
+            floor = ground_floor(categories, CATEGORY_IDS, horizon)
         head = head_offset(categories, CATEGORY_IDS, horizon)
         if dev.type == "cuda":
             torch.cuda.synchronize()
@@ -110,6 +123,9 @@ def main() -> int:
             },
             "areas": areas,
         }
+        if kind:
+            # Renders: the camera height is unknown, so 1.6 m is assumed; panoramas: equirectangular rows.
+            data["imageKind"] = kind
         write_area_file(path, data)
         overlay(image, categories, floor, horizon, CACHE / "check" / f"{photo['id']}.png")
         problems = check(path)

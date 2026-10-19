@@ -121,9 +121,8 @@ def estimate_horizon(gray: np.ndarray, categories: np.ndarray, ids: list[str]) -
     return height / 2, "assumed-level", support
 
 
-def ground_floor(categories: np.ndarray, ids: list[str], horizon: float,
-                 camera_m: float = CAMERA_HEIGHT_M, storey_m: float = STOREY_HEIGHT_M) -> np.ndarray:
-    """Ground-floor mask on the category grid; horizon is in the same rows."""
+def _bases(categories: np.ndarray, ids: list[str]) -> np.ndarray:
+    """Per column, the row where the façade meets the street (NaN where unknown); hidden bases interpolated."""
     height, width = categories.shape
     facade = categories == ids.index("facade")
     street = categories == ids.index("street-surface")
@@ -146,13 +145,40 @@ def ground_floor(categories: np.ndarray, ids: list[str], horizon: float,
             base[cols] = np.nan
             continue
         base[cols] = np.interp(cols, known, base[known])
-    mask = np.zeros_like(facade)
-    rows = np.arange(height)[:, None]
+    return base
+
+
+def _band(categories: np.ndarray, ids: list[str], base: np.ndarray, top: np.ndarray, ok: np.ndarray) -> np.ndarray:
+    facade = categories == ids.index("facade")
+    rows = np.arange(categories.shape[0])[:, None]
+    band = ok[None, :] & (rows >= top[None, :]) & (rows <= base[None, :])
+    return band & facade
+
+
+def ground_floor(categories: np.ndarray, ids: list[str], horizon: float,
+                 camera_m: float = CAMERA_HEIGHT_M, storey_m: float = STOREY_HEIGHT_M) -> np.ndarray:
+    """Ground-floor mask on the category grid for a level pinhole camera; horizon is in the same rows."""
+    base = _bases(categories, ids)
     ok = ~np.isnan(base) & (base > horizon)
     top = horizon - (storey_m - camera_m) / camera_m * (base - horizon)
-    band = ok[None, :] & (rows >= top[None, :]) & (rows <= base[None, :])
-    mask[band & facade] = True
-    return mask
+    return _band(categories, ids, base, top, ok)
+
+
+def ground_floor_equirectangular(categories: np.ndarray, ids: list[str], horizon: float,
+                                 camera_m: float = CAMERA_HEIGHT_M, storey_m: float = STOREY_HEIGHT_M) -> np.ndarray:
+    """Ground-floor mask for a level 360° panorama in equirectangular projection (prompt 051).
+
+    Rows are elevation angles, π over the image height. A base row y0 below the
+    horizon lies at depression φ = π (y0 − y_h) / H, so at distance d = c / tan φ;
+    the storey line is at elevation atan((S − c) / d), row y_h − (H / π) of that.
+    """
+    height = categories.shape[0]
+    base = _bases(categories, ids)
+    ok = ~np.isnan(base) & (base > horizon)
+    depression = np.pi * (np.where(ok, base, horizon + 1) - horizon) / height
+    distance = camera_m / np.tan(depression)
+    top = horizon - height / np.pi * np.arctan((storey_m - camera_m) / distance)
+    return _band(categories, ids, base, top, ok)
 
 
 def head_offset(categories: np.ndarray, ids: list[str], horizon: float) -> float | None:

@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.31 · **Last updated:** 2026-10-19
+**Version:** 0.32 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -65,7 +65,9 @@ and adds their checkbox under the image (prompt 050, owner's request of
 around the evidence, never combined with gaze statistics (prompt 044). 0.29 adds UP-CLIP scores from a reproduction of the
 model and plain CLIP, for every example photo (prompt 046). 0.30 adds the Qualities view and moves the simulated
 panel there (prompt 047). 0.31 adds matching descriptions and photos with UP-CLIP
-to the Qualities view (prompt 048).
+to the Qualities view (prompt 048). 0.32 names the study images' kind (rendering or 360°
+panorama) and computes their areas, with a ground-floor rule for panoramas
+(prompt 051).
 
 ## Scope
 
@@ -209,7 +211,8 @@ interface AreaFile {
   photo: string;          // example photo id
   width: number;          // mask size: the photo scaled to 640 px on the long side
   height: number;
-  horizon: { row: number; method: 'vanishing-lines' | 'standing-people' | 'assumed-level'; support: number };
+  horizon: { row: number; method: 'vanishing-lines' | 'standing-people' | 'assumed-level' | 'equirectangular'; support: number };
+  imageKind?: 'render' | 'panorama';   // copied from the manifest (prompt 051)
   params: { cameraHeightM: number; storeyHeightM: number };
   models: Record<string, string>;   // step → repository@revision or rule
   areas: Array<{
@@ -269,6 +272,9 @@ interface ExamplePhoto {
   licenceUrl: string;
   sourceUrl: string;      // Commons file page, or the dataset's DOI
   changes: string;        // e.g. "Resized and recompressed"
+  imageKind?: 'render' | 'panorama'; // study images only (required there): a design
+                          // rendering, or a 360° panorama in equirectangular projection;
+                          // absent for ordinary photos (prompt 051)
   measured?: {            // only for photos with measured eye tracking
     observers: number;
     fixations: number;    // fixations in the measured map
@@ -369,6 +375,16 @@ interface ExamplePhoto {
     façade run;
   - the ground floor is the façade pixels from *y<sub>0</sub>* up to
     *y<sub>h</sub> − (H − c)/c · (y<sub>0</sub> − y<sub>h</sub>)*.
+  - **360° panoramas** (`imageKind: 'panorama'`, equirectangular, assumed
+    level): the horizon is the middle row (`equirectangular`); rows are
+    elevation angles, π over the image height *R*. A base row *y<sub>0</sub>*
+    below the horizon lies at depression *φ* = π (*y<sub>0</sub>* −
+    *y<sub>h</sub>*) / *R*, so at distance *d* = *c* / tan *φ*; the ground
+    floor reaches up to row *y<sub>h</sub>* − (*R* / π) atan((*H* − *c*) /
+    *d*). Hidden bases are interpolated as above (prompt 051).
+  - **Design renderings** (`imageKind: 'render'`) use the rule for ordinary
+    photos; their virtual camera height is unknown, so 1.6 m is an
+    assumption.
 - **Façade elements:** one text phrase per model call: windows ← "window",
   entrances ← "door", balconies ← "balcony", shopfronts ← "storefront". Only
   pixels inside the façade category dilated by 1% of the width are kept.
