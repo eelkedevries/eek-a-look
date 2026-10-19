@@ -254,6 +254,17 @@ A's settings. The rule kept A. The glazed or banded subset has only 4 images
 not settle glass façades. Figures in `rhythm_calibration.json`
 (`glassComparison`) and `qualities_validation.md`.
 
+**Rectified façades and translational symmetry (prompt 065):** `compare_rhythm.py
+--rectified` (CPU only, from the caches; about 12 min) compares A with R, the
+same centres after rectifying each window's façade plane (horizontal vanishing
+point from `tools/areas/groundfloor.py`, vertical one from near-vertical edges),
+and S, gradient profiles of the rectified window without instances. Balanced
+accuracy / precision on odd CMP: A 0.781 / 0.297, R 0.776 / 0.288, S 0.613 /
+0.203; on the LabelMeFacade test split A 0.797, R 0.775, S 0.552. 69% of the
+windows were rectified. The rule kept A: neither rectifying the spacing nor
+reading repetition from the image itself did better on held-out labels.
+`rhythm_calibration.json` (`rectifiedComparison`).
+
 ## Human ratings (prompt 059)
 
 Raters use `/eek-a-look/rate.html` and send back the CSV it downloads; the
@@ -281,6 +292,7 @@ uv run build.py --rhythm        # rhythm and variety (calibrates on CMP Facade f
 uv run build.py --calibrate     # re-run the rhythm calibration
 uv run fetch_labelmefacade.py   # LabelMeFacade into .cache/, once (prompt 053)
 uv run compare_rhythm.py        # glass and ribbon-window comparison (about 75 min on 8 GB)
+uv run compare_rhythm.py --rectified  # rectified spacing and translational symmetry (prompt 065)
 uv run fetch_dms.py             # DMS46 model, once
 uv run build.py --materials     # tactile materials
 ```

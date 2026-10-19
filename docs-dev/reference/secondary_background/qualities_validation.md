@@ -42,6 +42,18 @@ D's joint calibration chose s = 0.65, A's own threshold, so D is A. C's line thr
 
 Rule: highest mean over the two test sets among candidates within 0.01 of A on CMP odd; otherwise A. Choice: **A**. LabelMeFacade test images whose labelled windows cover >= 40% of the building or whose median window is >= 3x as wide as tall (4 images). LabelMeFacade's window labels are often incomplete (in 7 of 10 test images checked by eye only some windows are labelled), which counts true repetition as false and so penalises candidates that find more windows.
 
+### Rectified façades and translational symmetry (prompt 065)
+
+Same windows and reference as above; balanced accuracy / precision, mean over bays and floors.
+
+| Candidate | CMP odd | LabelMeFacade test | glazed or banded | Mean of the two test sets |
+|---|---|---|---|---|
+| A: current: SAM 3 window and balcony centres, score >= s, current tau | 0.781 / 0.297 | 0.797 / 0.106 | 0.825 / 0.116 | 0.789 |
+| R: A with the centres rectified per window (horizontal and vertical vanishing points), tau recalibrated | 0.776 / 0.288 | 0.775 / 0.101 | 0.758 / 0.098 | 0.776 |
+| S: no instances: rectified gradient profiles per window, autocorrelation peak at lags 5-100 px, own tau | 0.613 / 0.203 | 0.552 / 0.048 | 0.461 / 0.016 | 0.582 |
+
+Rectified: 165925 of 241355 windows (69%); the others have no façade plane with enough agreeing edges (most CMP façades are already rectified). Rule: highest mean balanced accuracy over the two test sets among candidates within 0.01 of A on CMP odd and with precision on CMP odd not below A's; otherwise A. Choice: **A**.
+
 ## Frontage: openings against CMP labels
 
 158 CMP images with odd numbers that label doors or shops. The bottom quarter of the labelled façade (CMP has no horizon) stands

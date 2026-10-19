@@ -228,5 +228,193 @@
   "rule": "highest mean over the two test sets among candidates within 0.01 of A on CMP odd; otherwise A",
   "choice": "A",
   "seconds": 4503.0
+ },
+ "rectifiedComparison": {
+  "date": "2026-10-19",
+  "prompt": "065",
+  "candidates": {
+   "A": "current: SAM 3 window and balcony centres, score >= s, current tau",
+   "R": "A with the centres rectified per window (horizontal and vertical vanishing points), tau recalibrated",
+   "S": "no instances: rectified gradient profiles per window, autocorrelation peak at lags 5-100 px, own tau"
+  },
+  "calibration": "CMP Facade base even images + LabelMeFacade train (100)",
+  "tests": {
+   "cmpTest": "CMP Facade base odd images",
+   "lmfTest": "LabelMeFacade test",
+   "lmfGlazedOrBanded": "LabelMeFacade test images, glazed or banded (4 images)"
+  },
+  "windows": {
+   "calibration": 63968,
+   "cmpTest": 48642,
+   "lmfTest": 128745,
+   "lmfGlazedOrBanded": 587
+  },
+  "rectifiedWindows": [
+   165925,
+   241355
+  ],
+  "params": {
+   "A": {
+    "s": 0.65,
+    "tau": {
+     "vertical": 0.2,
+     "layer": 0.1
+    }
+   },
+   "R": {
+    "s": 0.65,
+    "tau": {
+     "vertical": 0.15,
+     "layer": 0.1
+    }
+   },
+   "S": {
+    "s": 0.65,
+    "tau": {
+     "vertical": 0.35,
+     "layer": 0.3
+    }
+   }
+  },
+  "results": {
+   "A": {
+    "cmpTest": {
+     "balancedAccuracy": 0.7812161518241338,
+     "precision": 0.2969882883984152,
+     "byFamily": {
+      "vertical": {
+       "balancedAccuracy": 0.786175862026053,
+       "precision": 0.4087772876371451
+      },
+      "layer": {
+       "balancedAccuracy": 0.7762564416222146,
+       "precision": 0.1851992891596852
+      }
+     }
+    },
+    "lmfTest": {
+     "balancedAccuracy": 0.7968875228901716,
+     "precision": 0.10609786744113292,
+     "byFamily": {
+      "vertical": {
+       "balancedAccuracy": 0.8016394361288579,
+       "precision": 0.13743869526103486
+      },
+      "layer": {
+       "balancedAccuracy": 0.7921356096514853,
+       "precision": 0.074757039621231
+      }
+     }
+    },
+    "lmfGlazedOrBanded": {
+     "balancedAccuracy": 0.8246705027843534,
+     "precision": 0.11586614173228346,
+     "byFamily": {
+      "vertical": {
+       "balancedAccuracy": 0.8711438474870017,
+       "precision": 0.09
+      },
+      "layer": {
+       "balancedAccuracy": 0.7781971580817051,
+       "precision": 0.14173228346456693
+      }
+     }
+    },
+    "meanOfTestSets": 0.7890518373571527
+   },
+   "R": {
+    "cmpTest": {
+     "balancedAccuracy": 0.7761146090911957,
+     "precision": 0.28839834771129946,
+     "byFamily": {
+      "vertical": {
+       "balancedAccuracy": 0.7849226362617935,
+       "precision": 0.4027885360185902
+      },
+      "layer": {
+       "balancedAccuracy": 0.767306581920598,
+       "precision": 0.17400815940400874
+      }
+     }
+    },
+    "lmfTest": {
+     "balancedAccuracy": 0.7749125040593774,
+     "precision": 0.10117619873767411,
+     "byFamily": {
+      "vertical": {
+       "balancedAccuracy": 0.8130015529953774,
+       "precision": 0.13454032957502168
+      },
+      "layer": {
+       "balancedAccuracy": 0.7368234551233775,
+       "precision": 0.06781206790032655
+      }
+     }
+    },
+    "lmfGlazedOrBanded": {
+     "balancedAccuracy": 0.7580361586286226,
+     "precision": 0.09754901960784314,
+     "byFamily": {
+      "vertical": {
+       "balancedAccuracy": 0.8185441941074524,
+       "precision": 0.0784313725490196
+      },
+      "layer": {
+       "balancedAccuracy": 0.6975281231497927,
+       "precision": 0.11666666666666667
+      }
+     }
+    },
+    "meanOfTestSets": 0.7755135565752865
+   },
+   "S": {
+    "cmpTest": {
+     "balancedAccuracy": 0.6127235660757065,
+     "precision": 0.20296446367486753,
+     "byFamily": {
+      "vertical": {
+       "balancedAccuracy": 0.6055012534797365,
+       "precision": 0.28361035135703766
+      },
+      "layer": {
+       "balancedAccuracy": 0.6199458786716766,
+       "precision": 0.1223185759926974
+      }
+     }
+    },
+    "lmfTest": {
+     "balancedAccuracy": 0.5515363561189923,
+     "precision": 0.04765857993497947,
+     "byFamily": {
+      "vertical": {
+       "balancedAccuracy": 0.5597743668661088,
+       "precision": 0.06411366624971936
+      },
+      "layer": {
+       "balancedAccuracy": 0.5432983453718759,
+       "precision": 0.031203493620239577
+      }
+     }
+    },
+    "lmfGlazedOrBanded": {
+     "balancedAccuracy": 0.4609929757540123,
+     "precision": 0.01628768523249872,
+     "byFamily": {
+      "vertical": {
+       "balancedAccuracy": 0.4700173310225303,
+       "precision": 0.013157894736842105
+      },
+      "layer": {
+       "balancedAccuracy": 0.4519686204854944,
+       "precision": 0.019417475728155338
+      }
+     }
+    },
+    "meanOfTestSets": 0.5821299610973494
+   }
+  },
+  "rule": "highest mean balanced accuracy over the two test sets among candidates within 0.01 of A on CMP odd and with precision on CMP odd not below A's; otherwise A",
+  "choice": "A",
+  "seconds": 746.4
  }
 }

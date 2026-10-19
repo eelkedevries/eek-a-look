@@ -280,3 +280,8 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   side, the manipulated area only, a "Highlight manipulated area" checkbox;
   the entrance area is now the door and its recoloured surround, 1.0% of the
   image instead of 1.4%)
+- `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational
+  symmetry S against held-out labels; balanced accuracy on odd CMP A 0.781, R 0.776,
+  S 0.613, and R's precision lower, so A is kept and no quality file changed. A
+  first run rectified almost no windows because of a scale bug in the stretch
+  check; fixed before the recorded run)

@@ -280,6 +280,25 @@ def glass_section() -> list[str]:
     return lines
 
 
+def rectified_section() -> list[str]:
+    """The comparison of prompt 065 (rectified spacing and translational symmetry), if it ran."""
+    comparison = json.loads(rhythm.CALIBRATION.read_text()).get("rectifiedComparison")
+    if not comparison:
+        return []
+    names = {"cmpTest": "CMP odd", "lmfTest": "LabelMeFacade test", "lmfGlazedOrBanded": "glazed or banded"}
+    lines = ["", "### Rectified façades and translational symmetry (prompt 065)", "",
+             "Same windows and reference as above; balanced accuracy / precision, mean over bays and floors.", "",
+             "| Candidate | " + " | ".join(names.values()) + " | Mean of the two test sets |", "|---|---|---|---|---|"]
+    for key, row in comparison["results"].items():
+        lines.append(f"| {key}: {comparison['candidates'][key]} | "
+                     + " | ".join(f"{row[k]['balancedAccuracy']:.3f} / {row[k]['precision']:.3f}" for k in names)
+                     + f" | {row['meanOfTestSets']:.3f} |")
+    done, total = comparison["rectifiedWindows"]
+    lines += ["", f"Rectified: {done} of {total} windows ({done / total:.0%}); the others have no façade plane with enough "
+              f"agreeing edges (most CMP façades are already rectified). Rule: {comparison['rule']}. Choice: **{comparison['choice']}**."]
+    return lines
+
+
 def report(result: dict) -> str:
     r, f, s, d, x = result["rhythm"], result["frontage"], result["sensitivity"], result["discrimination"], result["panelCrossTable"]
     pct = lambda v: f"{v:.0%}"
@@ -315,6 +334,7 @@ def report(result: dict) -> str:
               f"Spearman ρ = {r['rhythmicShareSpearman']:.2f}, mean absolute difference {r['rhythmicShareMeanAbsDiff']:.2f}.",
               "CMP façades are rectified (no perspective) and mostly classical, so this is an easier test than the street photos.",
               *glass_section(),
+              *rectified_section(),
               "", "## Frontage: openings against CMP labels", "",
               f"{f['images']} CMP images with odd numbers that label doors or shops. {f['groundFloorProxy'][0].upper() + f['groundFloorProxy'][1:]} stands",
               "in for the ground floor, the same band for both sides, so only the openings and windows differ.", "",
