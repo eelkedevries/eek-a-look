@@ -69,6 +69,33 @@ PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True uv run python .cache/train_8gb.
 `evaluate.py` reads the training details from `.cache/training.json`, written
 by hand from the training log (batch, epochs, time, peak memory).
 
+## Scores for the example photos (prompt 046)
+
+`scores.py` scores every example photo (49 on 2026-10-19) against the 28
+sentences of `descriptions.json`, written for this project:
+- **perception** (supported use): "A street that feels {word}." for the 16
+  keywords of the authors' sample (Neat, Efficient, Walkable, Lively, …);
+- **principle** (adaptation): two positive and two negative sentences per
+  design principle, following the specification's operational definitions.
+
+A photo's embedding is the mean of three square crops across its width, so
+CLIP's centre crop does not cut off the sides (an adaptation). Scores are
+cosine similarities: compare descriptions within one model only; they are not
+probabilities and have no location in the photo. The principle score is the
+mean similarity with the positive sentences minus the mean with the negative
+ones.
+
+Exploratory, automated against automated, on the 24 photos with image
+measures (Spearman ρ, reproduction / plain CLIP):
+
+| Principle score against | Rhythm | Ground floor | Materials |
+|---|---|---|---|
+| the image measure's main indicator | −0.22 / −0.30 | 0.52 / 0.51 | 0.10 / 0.08 |
+| the graded panel's median | 0.45 / 0.36 | 0.65 / 0.56 | 0.03 / 0.09 |
+
+Only the ground floor shows some agreement between methods. None of this is a
+check against experts.
+
 ## Commands
 
 ```sh

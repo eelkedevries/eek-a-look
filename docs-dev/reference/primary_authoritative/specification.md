@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.28 · **Last updated:** 2026-10-19
+**Version:** 0.29 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -62,7 +62,8 @@ predictions (prompt 032, owner's request of 2026-10-19). 0.27 draws the fixation
 and adds their checkbox under the image (prompt 050, owner's request of
 2026-10-19).
 0.28 adds a graded run of the simulated panel: ratings from 0 to 4 with boxes
-around the evidence, never combined with gaze statistics (prompt 044).
+around the evidence, never combined with gaze statistics (prompt 044). 0.29 adds UP-CLIP scores from a reproduction of the
+model and plain CLIP, for every example photo (prompt 046).
 
 ## Scope
 
@@ -513,6 +514,36 @@ was run on the photos.
     materials; wet or dark surfaces; DMS46 was trained on general photos, not
     street façades (its published test accuracy per class ranges from about
     0.38 for polished stone to 0.90 for foliage).
+
+**UP-CLIP**
+
+- UP-CLIP (Huang, Song & Jiao 2026, *International Journal of Digital Earth*
+  19(1), 2677402) fine-tunes CLIP on 15,000 street-view image–text pairs from
+  Wuhan so that photos and descriptions of how a street feels match. Its
+  trained model is **not published**. eek-a-look uses a **reproduction**: the
+  authors' training script (`19883120121i-afk/UP-CLIP@ef1bb18`, no licence
+  file) re-run on their public 1,000-pair sample with gradient checkpointing
+  and 8-bit AdamW to fit 8 GB (`tools/up-clip/`, prompt 045), next to plain
+  CLIP ViT-L/14 (`openai/clip-vit-large-patch14@32bd642`). Nothing from the
+  authors' repository and no weights are published; the base model's card
+  rules out deployed use, so only pre-computed scores are.
+- Descriptions (`tools/up-clip/descriptions.json`, this project's wording):
+  one sentence per keyword of the authors' sample lexicon, "A street that
+  feels {word}." (**supported** use: matching photos with perception
+  descriptions, as the paper evaluates), and two positive and two negative
+  sentences per design principle (**adaptation**: not evaluated by the
+  authors).
+- A photo's embedding is the mean of three square crops across its width
+  (left, centre, right), so CLIP's centre crop does not cut off the sides (an
+  adaptation). Scores are cosine similarities, comparable between
+  descriptions within one model only, not probabilities, and without a
+  location in the photo.
+- Principle score = mean similarity with the positive sentences minus mean
+  similarity with the negative ones.
+- Every example photo is scored (`public/precomputed/up-clip/scores.json`).
+  Comparisons with the image measures and the graded panel cover the photos
+  that have them and are labelled exploratory. UP-CLIP scores are never
+  combined with gaze statistics.
 
 **Derived views**
 

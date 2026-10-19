@@ -1,0 +1,33 @@
+{
+ "note": "This project's own wording (prompt 046). Perception sentences use the 16 keywords of the authors' public sample; principle sentences follow the specification's operational definitions. No captions from the authors' data.",
+ "descriptions": [
+  {"id": "feels-neat", "text": "A street that feels neat.", "kind": "perception", "use": "supported"},
+  {"id": "feels-efficient", "text": "A street that feels efficient.", "kind": "perception", "use": "supported"},
+  {"id": "feels-inconvenient", "text": "A street that feels inconvenient.", "kind": "perception", "use": "supported"},
+  {"id": "feels-natural", "text": "A street that feels natural.", "kind": "perception", "use": "supported"},
+  {"id": "feels-comfortable", "text": "A street that feels comfortable.", "kind": "perception", "use": "supported"},
+  {"id": "feels-safe", "text": "A street that feels safe.", "kind": "perception", "use": "supported"},
+  {"id": "feels-run-down", "text": "A street that feels run-down.", "kind": "perception", "use": "supported"},
+  {"id": "feels-walkable", "text": "A street that feels walkable.", "kind": "perception", "use": "supported"},
+  {"id": "feels-beautiful", "text": "A street that feels beautiful.", "kind": "perception", "use": "supported"},
+  {"id": "feels-ugly", "text": "A street that feels ugly.", "kind": "perception", "use": "supported"},
+  {"id": "feels-unique", "text": "A street that feels unique.", "kind": "perception", "use": "supported"},
+  {"id": "feels-bustling", "text": "A street that feels bustling.", "kind": "perception", "use": "supported"},
+  {"id": "feels-chaotic", "text": "A street that feels chaotic.", "kind": "perception", "use": "supported"},
+  {"id": "feels-dangerous", "text": "A street that feels dangerous.", "kind": "perception", "use": "supported"},
+  {"id": "feels-lively", "text": "A street that feels lively.", "kind": "perception", "use": "supported"},
+  {"id": "feels-historic", "text": "A street that feels historic.", "kind": "perception", "use": "supported"},
+  {"id": "rhythm-pos-1", "text": "Façades divided into repeating floors and bays that vary from building to building.", "kind": "principle", "use": "adaptation", "principle": "rhythm", "polarity": "positive"},
+  {"id": "rhythm-pos-2", "text": "Rows and columns of windows and balconies repeat across varied façades.", "kind": "principle", "use": "adaptation", "principle": "rhythm", "polarity": "positive"},
+  {"id": "rhythm-neg-1", "text": "Flat, uniform façades without visible floors or divisions.", "kind": "principle", "use": "adaptation", "principle": "rhythm", "polarity": "negative"},
+  {"id": "rhythm-neg-2", "text": "Identical blank surfaces with no repeating windows or bands.", "kind": "principle", "use": "adaptation", "principle": "rhythm", "polarity": "negative"},
+  {"id": "ground-pos-1", "text": "Shop windows and entrances open onto the pavement.", "kind": "principle", "use": "adaptation", "principle": "groundFloor", "polarity": "positive"},
+  {"id": "ground-pos-2", "text": "A street-level storey with doors, shopfronts and visible activity.", "kind": "principle", "use": "adaptation", "principle": "groundFloor", "polarity": "positive"},
+  {"id": "ground-neg-1", "text": "Blank, closed walls line the street at ground level.", "kind": "principle", "use": "adaptation", "principle": "groundFloor", "polarity": "negative"},
+  {"id": "ground-neg-2", "text": "A ground floor of solid walls and service doors with no shops.", "kind": "principle", "use": "adaptation", "principle": "groundFloor", "polarity": "negative"},
+  {"id": "materials-pos-1", "text": "Brick, stone, wood and planting close to eye level.", "kind": "principle", "use": "adaptation", "principle": "materials", "polarity": "positive"},
+  {"id": "materials-pos-2", "text": "Textured paving, brickwork and detailed street furniture at street level.", "kind": "principle", "use": "adaptation", "principle": "materials", "polarity": "positive"},
+  {"id": "materials-neg-1", "text": "Smooth glass and metal surfaces at street level.", "kind": "principle", "use": "adaptation", "principle": "materials", "polarity": "negative"},
+  {"id": "materials-neg-2", "text": "Plain render and polished panels with no visible texture near the ground.", "kind": "principle", "use": "adaptation", "principle": "materials", "polarity": "negative"}
+ ]
+}

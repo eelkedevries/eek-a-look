@@ -212,3 +212,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   with gradient checkpointing and 8-bit AdamW; best epoch 8. Recall@5 on 200
   held-out pairs 0.40 / 0.34 against plain CLIP 0.19 / 0.16; report
   `upclip_reproduction.md`. Nothing from the authors' repository is in git)
+- `046_upclip_scores.md` (spec 0.29: `scores.json` for all 49 example photos,
+  both models, 28 descriptions; principle scores agree moderately with the
+  other methods on the ground floor (ρ 0.52 with the image measure, 0.65 with
+  the graded panel), not on rhythm or materials)
