@@ -83,10 +83,12 @@ surround, low planting along a building base, and opaque against transparent
 ground-floor windows, each on a Zürich photo edited with AI image editing.
 Choose one to see its question, background, conditions and two possible
 outcomes. Images A and B and the difference between them appear side by side
-for the model you choose, with colour bars; A and B share one colour scale.
-"Highlight manipulated area" outlines the area that is measured. For the
-chosen model, the predicted attention in that area is summed into one value
-for A and one for B, and the contrast B − A shows the direction of the effect.
+for the model you choose; A and B share one colour scale. In the difference,
+orange marks where the predicted gaze density is higher in B and blue where
+it is higher in A. "Highlight manipulated area" outlines the area that is
+measured. For the chosen model, the predicted gaze density in that area is
+summed into one value for A and one for B, and the contrast B − A shows the
+direction of the effect.
 The table lists the same numbers for every model. All maps here are
 predictions; measured gaze for the untouched originals is in the workspace.
 The links under the table open either image there.

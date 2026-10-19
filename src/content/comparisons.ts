@@ -6,7 +6,7 @@ export interface ManipulatedArea {
   /** Region id in public/precomputed/comparisons/<id>.json; the same pixels in A and B. */
   id: string;
   label: string;
-  /** How the area reads in a sentence: "more attention to …". */
+  /** How the area reads in a sentence: "summed over …". */
   phrase: string;
   /** How the area was found. */
   note: string;
@@ -29,7 +29,7 @@ export interface ComparisonText {
   outcomes: [string, string];
   labelA: string;
   labelB: string;
-  /** The area of interest: where the predicted attention in A and B is compared. */
+  /** The area of interest: where the predicted gaze density in A and B is compared. */
   area: ManipulatedArea;
 }
 
@@ -46,7 +46,7 @@ export const COMPARISONS: ComparisonText[] = [
     conditionA: 'The original entrance.',
     conditionB: 'A blue-teal surround around the doorway; the rest of the scene unchanged.',
     outcomes: [
-      'B draws more predicted attention to the entrance than A: the colour accent makes the entrance more prominent.',
+      'B has a higher predicted gaze density on the entrance than A: the colour accent makes the entrance more prominent.',
       'A and B do not differ meaningfully: the accent is too small to compete with the balconies, signs and other features of the scene.',
     ],
     labelA: 'A · Original',
@@ -70,8 +70,8 @@ export const COMPARISONS: ComparisonText[] = [
     conditionA: 'The original scene.',
     conditionB: 'Low leafy planting along the building base; the existing grass kept.',
     outcomes: [
-      'Attention shifts downwards: in B, a larger share falls on the planting and the lower third of the image.',
-      'The distribution stays much the same: the planting looks too much like the grass to stand out, and attention stays on the façades.',
+      'Predicted gaze density shifts downwards: in B, a larger share of it falls on the planting.',
+      'The density stays much the same: the planting looks too much like the grass to stand out, and the density stays on the façades.',
     ],
     labelA: 'A · Original',
     labelB: 'B · Low planting',
@@ -94,7 +94,7 @@ export const COMPARISONS: ComparisonText[] = [
     conditionA: 'Three window bays made opaque.',
     conditionB: 'The same three bays made transparent.',
     outcomes: [
-      'B draws more predicted attention to the window bays than A: the visible interior adds detail that attracts attention.',
+      'B has a higher predicted gaze density on the window bays than A: the visible interior adds detail that draws the eye.',
       'A and B do not differ meaningfully: reflections, the containers or other features outweigh the effect of transparency.',
     ],
     labelA: 'A · Opaque glazing',
@@ -112,7 +112,7 @@ export const COMPARISON_INTRO =
   'Three small design changes to Zürich street photos, made with AI image editing. Each example compares where people are predicted to look before and after the change. They are illustrations for discussing design and research questions, not studies.';
 
 export const COMPARISON_CAVEAT =
-  'The possible outcomes are hypotheses, not results; the numbers show what the models actually predict, even when the difference is small or matches neither outcome. A change in predicted attention does not show a change in wellbeing, preference or actual use. The image editing also made small unintended changes elsewhere, such as sign lettering.';
+  'The possible outcomes are hypotheses, not results; the numbers show what the models actually predict, even when the difference is small or matches neither outcome. A change in predicted gaze density does not show a change in wellbeing, preference or actual use. The image editing also made small unintended changes elsewhere, such as sign lettering.';
 
 export const MEASURED_NOTE =
   'All maps here are predictions. Measured gaze (48 people, six seconds of free viewing; Wilming et al. 2017) exists only for the untouched original photographs, so it cannot show the effect of an edit and is left out; the originals’ measured gaze can be seen in the workspace.';

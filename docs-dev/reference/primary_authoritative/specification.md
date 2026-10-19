@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.46 · **Last updated:** 2026-10-19
+**Version:** 0.47 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -103,6 +103,9 @@ fixations, the "Measured gaze" layer with the photo's number of people, all
 four predictions, areas without façade elements and the materials measure;
 `city` becomes optional where a place is not certain (prompt 069, owner's
 request of 2026-10-19).
+0.47 names the Example section's measure "predicted gaze density" and keeps a
+colour bar for the difference image only, with a key naming the image each
+colour favours (prompt 070, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -902,12 +905,13 @@ was run on the photos.
   **Conditions** (A, B and what is manipulated) and **Possible outcomes**
   (two that can be contrasted), followed by "What the selected model
   predicts".
-- **Effect** (prompt 068), for the selected model only: its predicted map is
-  a gaze density summing to 1 over the image; summed over the manipulated
-  area it gives one value per condition, Σ A and Σ B (the share of all
-  predicted attention in the area). The contrast B − A, in percentage
-  points, gives the direction of the effect: positive = more predicted
-  attention in B, negative = less, below 0.05 points = no change. The page
+- **Effect** (prompt 068), for the selected model only: its map is a
+  **predicted gaze density** (prompt 070: the term used throughout the
+  section) summing to 1 over the image; summed over the manipulated area it
+  gives one value per condition, Σ A and Σ B (the share of predicted
+  fixations in the area). The contrast B − A, in percentage points, gives
+  the direction of the effect: positive = higher predicted gaze density in
+  B, negative = lower, below 0.05 points = no change. The page
   states this computation. A table lists Σ A, Σ B, B − A and the Pearson r
   between the two maps for every model, the selected one highlighted. The
   possible outcomes are labelled as hypotheses; a result that matches
@@ -922,12 +926,13 @@ was run on the photos.
   width. A "Highlight manipulated area" checkbox, on by default, outlines the
   manipulated area on all three. Each image opens in the workspace, where
   every view works on it.
-- Colour bars (prompt 068) under each image. A and B are drawn on one scale,
-  from the lower minimum of the two maps to the 99th percentile of both
-  (values above it saturate), so their colours compare; the difference on a
-  scale symmetric around zero to the 99th percentile of its magnitude. Ticks
-  are densities as multiples of the image average (1 / number of grid
-  cells).
+- Colour scales (prompts 068, 070). A and B are drawn on one scale, from the
+  lower minimum of the two maps to the 99th percentile of both (values above
+  it saturate), so their colours compare; they have no colour bar. The
+  difference is drawn on a scale symmetric around zero to the 99th
+  percentile of its magnitude, with a colour bar whose ticks are densities as
+  multiples of the image average (1 / number of grid cells) and a key: blue
+  = higher in A, orange = higher in B, each named by its condition.
 
 **Rating page** (prompt 059)
 

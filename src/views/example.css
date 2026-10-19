@@ -228,8 +228,32 @@
   margin-top: 3px;
 }
 
-.comparison-colourbar-title {
-  margin-top: 2px;
+.comparison-colourbar-key {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+  margin-top: 4px;
+  color: var(--text);
+}
+
+.comparison-colourbar-key span::before {
+  content: '';
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 5px;
+  border-radius: 2px;
+  vertical-align: -1px;
+}
+
+/* The ends of BLUE_ORANGE in src/render/colormaps.ts. */
+.comparison-key-a::before {
+  background: #2f7fd0;
+}
+
+.comparison-key-b::before {
+  background: #dd7a16;
 }
 
 .comparison-figure figcaption {

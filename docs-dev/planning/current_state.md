@@ -293,6 +293,9 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `068_example_effect_per_model.md` (spec 0.43: colour bars, one colour scale
   for A and B, the selected model's sums over the manipulated area and their
   contrast, measured gaze left out of the section)
+- `070_example_density_terms.md` (spec 0.47: "predicted gaze density"
+  throughout the section; a colour bar with a blue/orange key for the
+  difference image only)
 - `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational
   symmetry S against held-out labels; balanced accuracy on odd CMP A 0.781, R 0.776,
   S 0.613, and R's precision lower, so A is kept and no quality file changed. A

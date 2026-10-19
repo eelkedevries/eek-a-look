@@ -7,7 +7,6 @@ import { models } from '../models/registry';
 import { mapLabel, type ModelSpec } from '../models/types';
 import { BLUE_ORANGE, cssColour } from '../render/colormaps';
 import { drawDifference, drawGreyed, drawHeatmap, sharedRange, type HeatRange } from '../render/heatmap';
-import { gradientCss } from './overlay';
 
 /** Content hashes of the data folders, set by vite.config.ts, so a stale cached copy is never used. */
 declare const __COMPARISONS_VERSION__: string;
@@ -87,7 +86,7 @@ const times = (x: number) => `${x.toFixed(x < 10 ? 1 : 0)}×`;
 /** The manipulated area: the same pixels in A and B. */
 const areaMask = (loaded: Loaded): Area | undefined => loaded.regions.find((r) => r.id === loaded.text.area.id);
 
-/** The sum of a map's predicted attention over the manipulated area: its share of all attention, as the Areas view computes it. */
+/** The sum of a map's predicted gaze density over the manipulated area: the share of predicted fixations in it, as the Areas view computes it. */
 function share(loaded: Loaded, condition: Condition, layer: string): number | null {
   const map = condition.maps.get(layer);
   const area = areaMask(loaded);
@@ -99,7 +98,7 @@ function share(loaded: Loaded, condition: Condition, layer: string): number | nu
 /** The direction of the effect, from the sign of B − A. */
 function direction(d: number): string {
   if (Math.abs(d) < NO_CHANGE) return 'no change (|B − A| under 0.05 points)';
-  return d > 0 ? 'more predicted attention in B' : 'less predicted attention in B';
+  return d > 0 ? 'higher predicted gaze density in B' : 'lower predicted gaze density in B';
 }
 
 /** Outlines a mask on a canvas twice its size. */
@@ -134,21 +133,23 @@ function drawOutline(canvas: HTMLCanvasElement, mask: Uint8Array | undefined, wi
 
 interface ColourBar {
   root: HTMLElement;
-  bar: HTMLElement;
   ticks: [HTMLElement, HTMLElement, HTMLElement];
-  title: HTMLElement;
+  key: [HTMLElement, HTMLElement];
 }
 
-function colourBar(gradient: string): ColourBar {
+/** The difference's colour bar: the scale, and which colour means which image. */
+function colourBar(): ColourBar {
   const root = el('div', 'comparison-colourbar');
   const bar = el('span', 'comparison-colourbar-bar');
-  bar.style.background = gradient;
+  bar.style.background = DIFFERENCE_GRADIENT;
   const scale = el('div', 'comparison-colourbar-ticks');
   const ticks: ColourBar['ticks'] = [el('span'), el('span'), el('span')];
   scale.append(...ticks);
-  const title = el('div', 'comparison-colourbar-title');
-  root.append(bar, scale, title);
-  return { root, bar, ticks, title };
+  const keys = el('div', 'comparison-colourbar-key');
+  const key: ColourBar['key'] = [el('span', 'comparison-key-a'), el('span', 'comparison-key-b')];
+  keys.append(...key);
+  root.append(bar, scale, keys);
+  return { root, ticks, key };
 }
 
 interface Figure {
@@ -159,11 +160,11 @@ interface Figure {
   outline: HTMLCanvasElement;
   tag: HTMLElement;
   note: HTMLElement;
-  colours: ColourBar;
+  colours?: ColourBar;
   caption: HTMLElement;
 }
 
-function figure(gradient: string): Figure {
+function figure(withColourBar = false): Figure {
   const root = el('figure', 'comparison-figure');
   const frame = el('div', 'frame');
   const photo = el('canvas', 'photo');
@@ -172,14 +173,13 @@ function figure(gradient: string): Figure {
   const tag = el('span', 'predicted-tag');
   const note = el('span', 'cell-note');
   frame.append(photo, heat, outline, tag, note);
-  const colours = colourBar(gradient);
+  const colours = withColourBar ? colourBar() : undefined;
   const caption = el('figcaption');
-  root.append(frame, colours.root, caption);
+  root.append(frame, ...(colours ? [colours.root] : []), caption);
   for (const canvas of [heat, outline]) canvas.setAttribute('aria-hidden', 'true');
   return { root, frame, photo, heat, outline, tag, note, colours, caption };
 }
 
-const HEAT_GRADIENT = gradientCss();
 const DIFFERENCE_GRADIENT = `linear-gradient(90deg, ${[0, 0.25, 0.5, 0.75, 1].map((t) => cssColour(BLUE_ORANGE, t)).join(', ')})`;
 
 /** Draws one condition with the chosen prediction on the scale shared by A and B, and the manipulated area. */
@@ -200,21 +200,11 @@ function paint(fig: Figure, loaded: Loaded, condition: Condition, model: ModelSp
   fig.tag.textContent = model ? `${mapLabel(model)} · ${short(model)}` : '';
   fig.note.textContent = model && !map ? 'Not available' : '';
 
-  fig.colours.root.hidden = !(map && range);
-  if (map && range) {
-    const cells = map.width * map.height;
-    const [low, mid, high] = fig.colours.ticks;
-    low.textContent = times(range.bottom * cells);
-    mid.textContent = times(((range.bottom + range.top) / 2) * cells);
-    high.textContent = `${times(range.top * cells)} or more`;
-    fig.colours.title.textContent = 'Predicted attention, × the image average · one scale for A and B';
-  }
-
   fig.outline.hidden = !highlighted;
   drawOutline(fig.outline, highlighted ? areaMask(loaded)?.mask : undefined, loaded.maskSize.width, loaded.maskSize.height);
 }
 
-/** Draws the difference B − A of the chosen prediction over B, with its own symmetric colour bar. */
+/** Draws the difference B − A of the chosen prediction over B, with its colour bar: orange where B is higher, blue where A is. */
 function paintDifference(fig: Figure, loaded: Loaded, model: ModelSpec | undefined, highlighted: boolean): void {
   const h = Math.round((WIDTH * loaded.b.photo.height) / loaded.b.photo.width);
   drawGreyed(fig.photo, loaded.b.bitmap, WIDTH, h);
@@ -223,15 +213,18 @@ function paintDifference(fig: Figure, loaded: Loaded, model: ModelSpec | undefin
   const mapA = model ? loaded.a.maps.get(model.id) : null;
   const mapB = model ? loaded.b.maps.get(model.id) : null;
   fig.heat.hidden = !(mapA && mapB);
-  fig.colours.root.hidden = !(mapA && mapB);
+  const colours = fig.colours!;
+  colours.root.hidden = !(mapA && mapB);
   if (mapA && mapB) {
     const top = drawDifference(fig.heat, difference(mapB, mapA), WIDTH, h);
     const cells = mapA.width * mapA.height;
-    const [low, mid, high] = fig.colours.ticks;
-    low.textContent = `−${times(top * cells)} less in B`;
+    const [low, mid, high] = colours.ticks;
+    low.textContent = `−${times(top * cells)}`;
     mid.textContent = '0';
-    high.textContent = `+${times(top * cells)} more in B`;
-    fig.colours.title.textContent = 'B − A, × the image average';
+    high.textContent = `+${times(top * cells)}`;
+    const [keyA, keyB] = colours.key;
+    keyA.textContent = `Blue: higher in ${loaded.text.labelA}`;
+    keyB.textContent = `Orange: higher in ${loaded.text.labelB}`;
   }
   fig.tag.hidden = !(mapA && mapB);
   fig.tag.textContent = model ? `Predicted B − A · ${short(model)}` : '';
@@ -241,10 +234,10 @@ function paintDifference(fig: Figure, loaded: Loaded, model: ModelSpec | undefin
 }
 
 /**
- * The Example section (prompts 058, 066–068): an overview of three design comparisons and, for the chosen one,
- * its question, background, conditions and two possible outcomes; A, B and their difference side by side with
- * colour bars; and, for the selected model, its predicted attention summed over the manipulated area in A and in
- * B, whose contrast B − A gives the direction of the effect. Predictions only: no measured gaze.
+ * The Example section (prompts 058, 066–068, 070): an overview of three design comparisons and, for the chosen one,
+ * its question, background, conditions and two possible outcomes; A, B and their difference side by side, the
+ * difference with a colour bar; and, for the selected model, its predicted gaze density summed over the
+ * manipulated area in A and in B, whose contrast B − A gives the direction of the effect. Predictions only.
  */
 export function mountExample(section: HTMLElement, manifest: ComparisonManifest, photoById: (id: string) => ExamplePhoto | undefined, open: (id: string) => void): void {
   const heading = el('h2', 'section-label', 'Example · three design comparisons');
@@ -393,9 +386,9 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     controls.append(mapGroup, highlightToggle);
 
     // A, B and the difference B − A, side by side.
-    const figA = figure(HEAT_GRADIENT);
-    const figB = figure(HEAT_GRADIENT);
-    const figDiff = figure(DIFFERENCE_GRADIENT);
+    const figA = figure();
+    const figB = figure();
+    const figDiff = figure(true);
     figA.caption.textContent = text.labelA;
     figB.caption.textContent = text.labelB;
     figDiff.caption.textContent = 'B − A · Difference';
@@ -435,7 +428,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       paint(figB, loaded, loaded.b, model, range, highlighted);
       paintDifference(figDiff, loaded, model, highlighted);
       caption.textContent = model
-        ? 'A and B use one colour scale, so their colours compare: brighter = more predicted attention. Difference: orange = more predicted attention in B, blue = less, over B. Colour bar values are densities as multiples of the image average.'
+        ? 'A and B use one colour scale, so their colours compare: brighter = higher predicted gaze density. Difference B − A, over B: orange where the density is higher in B, blue where it is higher in A; the colour bar is in multiples of the image average density.'
         : 'Choose a model to see where people are predicted to look.';
       renderResult(model);
       renderTable(model);
@@ -458,13 +451,13 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
         el('dd', '', `${points(b - a)} percentage points`),
       );
       result.replaceChildren(
-        el('p', 'comparison-result-head', `${model.name} · predicted attention summed over ${phrase}`),
+        el('p', 'comparison-result-head', `${model.name} · predicted gaze density summed over ${phrase}`),
         sums,
         el('p', 'comparison-direction', `Direction: ${direction(b - a)}.`),
         el(
           'p',
           'muted',
-          `How: the model’s map is a gaze density that sums to 100% over the whole image. Summing it over that area gives one value per condition, Σ\u00a0A and Σ\u00a0B. Their contrast B\u00a0−\u00a0A gives the direction of the effect: positive means more predicted attention in B, negative less; under 0.05 points counts as no change.`,
+          `How: the model’s map is a predicted gaze density that sums to 100% over the whole image. Summing it over that area gives one value per condition, Σ\u00a0A and Σ\u00a0B: the share of predicted fixations that land in the area. Their contrast B\u00a0−\u00a0A gives the direction of the effect: positive means a higher predicted gaze density in B, negative a lower one; under 0.05 points counts as no change.`,
         ),
       );
     }
@@ -491,14 +484,14 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
         return tr;
       });
       const { phrase, note } = text.area;
-      table.replaceChildren(el('caption', 'visually-hidden', `Predicted attention summed over ${phrase}, every model`), el('thead'), el('tbody'));
+      table.replaceChildren(el('caption', 'visually-hidden', `Predicted gaze density summed over ${phrase}, every model`), el('thead'), el('tbody'));
       table.tHead!.append(head);
       table.tBodies[0].append(...rows);
 
       const area = areaMask(loaded);
       const covered = pct(area ? area.mask.reduce((s, v) => s + v, 0) / area.mask.length : 0);
       notes.replaceChildren(
-        el('p', 'agreement-caption', `Every model, for comparison (the selected one highlighted): predicted attention summed over ${phrase} (${covered} of the image, the same pixels in A and B). B − A in percentage points. Match A–B: Pearson r between the two maps (1 = same pattern).`),
+        el('p', 'agreement-caption', `Every model, for comparison (the selected one highlighted): predicted gaze density summed over ${phrase} (${covered} of the image, the same pixels in A and B). B − A in percentage points. Match A–B: Pearson r between the two maps (1 = same pattern).`),
         el('p', 'agreement-caption', note),
         el('p', 'agreement-caption', MEASURED_NOTE),
         el('p', 'agreement-caption', COMPARISON_CAVEAT),
