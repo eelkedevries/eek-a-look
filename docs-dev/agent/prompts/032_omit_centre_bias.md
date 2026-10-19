@@ -2,8 +2,10 @@
 
 ## Goal
 
-Remove the centre-bias map from the site, so it appears in no view, list,
-score or method text (owner's request of 2026-10-19).
+Remove everything about the centre bias: the layer, its scores and texts on
+the site, its mentions in the other method texts, the docs, and the offline
+checks (owner's request of 2026-10-19: "Remove everything about the centre
+bias").
 
 ## Scope
 
@@ -27,28 +29,34 @@ systems or future prompts.
    `'baseline'` kind if no layer uses it any more (with its CSS).
 2. Remove the centre-bias method text from `src/content/methods.ts` and the
    file from `scripts/check-method-texts.mjs`.
-3. In the About section, rephrase "score at or below centre bias on the same
-   test" so it no longer refers to a layer the page does not show (for
-   example "score at or below a map that only favours the centre of the
-   photo").
-4. Update `docs/usage.md` (the models that run in the browser), the
+3. Remove the mentions of centre bias from the other method texts
+   (classic salience, UNISAL, DeepGaze IIE, DeepGaze MSDB) and from the About
+   section, keeping each method text accurate and within 90–115 words.
+4. Remove the `centre-bias` layer from `tools/areas/validate.py` and its
+   entries from `public/precomputed/areas/validation.json` and the generated
+   report `docs-dev/reference/secondary_background/areas_validation.md`
+   (removing a layer leaves the other layers' numbers unchanged, as each is
+   computed on its own).
+5. Update `README.md`, `docs/usage.md`, `docs/troubleshooting.md`, the
    specification (bump the version and record the change) and
-   `docs-dev/planning/current_state.md` (five models become four).
+   `docs-dev/planning/current_state.md`.
 
 ## Do not implement
 
 Do not implement:
 - any change to UNISAL, DeepGaze or their built-in centre priors;
-- any change to `tools/areas/validate.py` or `validation.json` (offline
-  checking numbers, not shown as a layer);
+- edits to earlier prompt files or `docs-dev/plan.md` (audit trail);
+- removing the descriptions of the centre priors inside DeepGaze in the
+  technical notes (`tools/deepgaze-local/`, the specification's DeepGaze
+  pipeline), which document how those maps were made;
 - any other change to the views' layout or wording.
 
 ## Acceptance criteria
 
 The task is complete when:
 - no centre-bias map, layer row, side-by-side panel, contrast option, match
-  score, agreement row or column, method card or About table row appears on
-  any photo or on an upload;
+  score, agreement row or column, method card, About table row or mention
+  appears on any photo or on an upload;
 - the remaining layers and views work as before;
 - `npm run check` passes.
 

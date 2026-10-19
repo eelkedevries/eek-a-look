@@ -31,7 +31,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
 
   const intro = el(
     'p',
-    'eek-a-look shows five predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model. The exception is the Zürich photos: for those, an extra layer, “Measured gaze”, shows where 48 people actually looked, recorded with an eye tracker. The images under “From published studies” are taken from two eye-tracking articles: they show predictions only, and each links to the heat map its study measured, which is not turned into a layer here. How each method works is explained at the bottom of the page.',
+    'eek-a-look shows four predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model. The exception is the Zürich photos: for those, an extra layer, “Measured gaze”, shows where 48 people actually looked, recorded with an eye tracker. The images under “From published studies” are taken from two eye-tracking articles: they show predictions only, and each links to the heat map its study measured, which is not turned into a layer here. How each method works is explained at the bottom of the page.',
     'about-lead',
   );
 
@@ -70,7 +70,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
   source.append(
     'Source: ',
     link(MIT300_SOURCE, 'MIT/Tübingen Saliency Benchmark'),
-    `, retrieved ${retrievedDate()}. Classic salience here is our own implementation and has no score; published versions of this approach score at or below centre bias on the same test. `,
+    `, retrieved ${retrievedDate()}. Classic salience here is our own implementation and has no score; published versions of this approach score well below the neural models on the same test. `,
     el('strong', 'None of these models were tested on Dutch street photos.'),
   );
 

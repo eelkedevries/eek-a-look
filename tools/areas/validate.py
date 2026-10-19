@@ -33,7 +33,7 @@ PRECOMPUTED = REPO / "public" / "precomputed"
 DEGREES_ACROSS = 1280 / 45.6  # the Zürich study: 45.6 px per degree on 1280 px photos
 MIN_SHARE = 0.005
 SETTINGS = [(1.6, 4.0), (1.5, 4.0), (1.7, 4.0), (1.6, 3.5), (1.6, 4.5), (1.6, 5.0)]
-LAYERS = ["deepgaze-msdb", "deepgaze-iie", "centre-bias"]
+LAYERS = ["deepgaze-msdb", "deepgaze-iie"]
 
 
 # --- datasets -----------------------------------------------------------------
@@ -135,23 +135,6 @@ def load_areas(photo_id: str) -> dict:
     return {"data": data, "masks": masks, "cats": cats}
 
 
-def grid_for(width: int, height: int) -> tuple[int, int]:
-    """(width, height) of the shared grid, as gridFor() in src/maps/saliency-map.ts."""
-    half_up = lambda x: int(np.floor(x + 0.5))
-    if width >= height:
-        return 128, max(1, half_up(128 * height / width))
-    return max(1, half_up(128 * width / height)), 128
-
-
-def centre_bias(gw: int, gh: int, width: int, height: int) -> np.ndarray:
-    """As centreBiasValues() in src/models/centre-bias.ts (Clarke & Tatler 2014)."""
-    aspect = height / width
-    y = ((np.arange(gh) + 0.5) / gh - 0.5) * 2 * aspect
-    x = ((np.arange(gw) + 0.5) / gw - 0.5) * 2
-    values = np.exp(-(x[None, :] ** 2) / (2 * 0.22) - (y[:, None] ** 2) / (2 * 0.45 * 0.22))
-    return values / values.sum()
-
-
 def decode_map(path: Path) -> np.ndarray:
     d = json.loads(path.read_text())
     values = np.frombuffer(base64.b64decode(d["data"]), dtype="<u2").astype(np.float64)
@@ -173,15 +156,10 @@ def resample(p: np.ndarray, width: int, height: int) -> np.ndarray:
 
 
 def layer_map(layer: str, photo: dict, width: int, height: int) -> np.ndarray | None:
-    if layer == "centre-bias":
-        gw, gh = grid_for(photo["width"], photo["height"])
-        grid = centre_bias(gw, gh, photo["width"], photo["height"])
-    else:
-        path = PRECOMPUTED / layer / f"{photo['id']}.json"
-        if not path.exists():
-            return None
-        grid = decode_map(path)
-    return resample(grid, width, height)
+    path = PRECOMPUTED / layer / f"{photo['id']}.json"
+    if not path.exists():
+        return None
+    return resample(decode_map(path), width, height)
 
 
 def ratio(p: np.ndarray, mask: np.ndarray) -> float | None:

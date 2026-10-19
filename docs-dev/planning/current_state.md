@@ -24,7 +24,8 @@ wins and the gap is work still to be done.
   `src/view-state.ts`. Site look, self-hosted fonts
   (`@fontsource`, Latin subsets), local-only upload (`src/image-input.ts`),
   app state (`src/state.ts`) and a stage frame for stacked layers (`src/stage.ts`).
-- Five models: three in the browser, DeepGaze IIE and MSDB pre-computed for the
+- Four models (the centre-bias layer was removed in prompt 032): two in the
+  browser, DeepGaze IIE and MSDB pre-computed for the
   examples (`src/models/deepgaze.ts`, `public/precomputed/`).
 - Areas (prompts 021–025): `tools/areas/` pre-computes, on the laptop GPU, nine
   street categories (OneFormer), the ground floor (a 4 m rule from the horizon)
@@ -49,7 +50,7 @@ wins and the gap is work still to be done.
   (`<id>.points.json`, `src/render/fixations.ts`) over the measured map only.
 - Maps and models: `src/maps/saliency-map.ts` (grid, normalise, resample,
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
-  drawing), `src/models/` (types, registry, centre bias, classic salience in a Web Worker
+  drawing), `src/models/` (types, registry, classic salience in a Web Worker
   at `src/models/classic-salience/`), `src/results.ts` (runs
   every model per image) and `src/views/` (tabs; overlay with model selector and slider; side by side
   with r against the reference and a shared pointer ring; contrast = any two
@@ -157,7 +158,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `022_area_validation.md` (eTRIMS IoU: façade 0.96, sky 0.98, street surface
   0.92, vehicles 0.93, greenery 0.88; CMP façade 0.84. 91% of eTRIMS door
   pixels lie inside the computed ground floor. Area ratios match measured gaze
-  on Zürich: MSDB ρ 0.91, IIE 0.82, centre bias 0.42. Report:
+  on Zürich: MSDB ρ 0.91, IIE 0.82. Report:
   `docs-dev/reference/secondary_background/areas_validation.md`)
 - `023_element_models.md` (spec 0.11; `tools/areas/elements.py` compared
   Grounding DINO + SAM 2.1, OWLv2 + SAM 2.1, Florence-2 + SAM 2.1 and SAM 3 on

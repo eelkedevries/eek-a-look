@@ -60,18 +60,18 @@ Horizon per example photo. The head offset is the median top row of standing peo
 
 Median over the example photos of each area's attention ÷ size (1.0 = what its size alone predicts), and the median range when the masks are eroded and dilated by 1° (photo width / 28). Areas under 0.5% of a photo are left out.
 
-| Area | measured: ratio (range) | deepgaze-msdb: ratio (range) | deepgaze-iie: ratio (range) | centre-bias: ratio (range) |
-|---|---|---|---|---|
-| Façade | 1.04 (0.27, n = 12) | 1.32 (0.54, n = 24) | 1.35 (0.42, n = 24) | 1.24 (0.25, n = 24) |
-| Sky | 0.30 (0.19, n = 11) | 0.18 (0.26, n = 23) | 0.19 (0.34, n = 23) | 0.92 (0.13, n = 23) |
-| Greenery | 1.34 (0.32, n = 6) | 0.87 (0.43, n = 17) | 1.17 (0.40, n = 17) | 1.01 (0.14, n = 17) |
-| Street surface | 0.52 (0.64, n = 11) | 0.25 (0.63, n = 23) | 0.24 (0.44, n = 23) | 0.37 (0.14, n = 23) |
-| People | 3.02 (0.44, n = 4) | 5.61 (1.92, n = 8) | 3.89 (1.08, n = 8) | 0.99 (0.08, n = 8) |
-| Vehicles | 2.62 (0.68, n = 9) | 2.71 (1.11, n = 16) | 2.15 (0.66, n = 16) | 0.56 (0.11, n = 16) |
-| Signage | 4.08 (1.01, n = 8) | 7.61 (3.67, n = 13) | 5.04 (1.97, n = 13) | 0.91 (0.10, n = 13) |
-| Street furniture | 1.93 (0.52, n = 8) | 1.68 (0.32, n = 18) | 1.91 (0.23, n = 18) | 1.05 (0.13, n = 18) |
-| Other | 3.90 (1.00, n = 1) | 1.32 (0.99, n = 6) | 1.41 (0.57, n = 6) | 1.07 (0.13, n = 6) |
-| Ground floor | 1.74 (0.20, n = 8) | 1.51 (0.53, n = 19) | 1.48 (0.49, n = 19) | 1.13 (0.25, n = 19) |
+| Area | measured: ratio (range) | deepgaze-msdb: ratio (range) | deepgaze-iie: ratio (range) |
+|---|---|---|---|
+| Façade | 1.04 (0.27, n = 12) | 1.32 (0.54, n = 24) | 1.35 (0.42, n = 24) |
+| Sky | 0.30 (0.19, n = 11) | 0.18 (0.26, n = 23) | 0.19 (0.34, n = 23) |
+| Greenery | 1.34 (0.32, n = 6) | 0.87 (0.43, n = 17) | 1.17 (0.40, n = 17) |
+| Street surface | 0.52 (0.64, n = 11) | 0.25 (0.63, n = 23) | 0.24 (0.44, n = 23) |
+| People | 3.02 (0.44, n = 4) | 5.61 (1.92, n = 8) | 3.89 (1.08, n = 8) |
+| Vehicles | 2.62 (0.68, n = 9) | 2.71 (1.11, n = 16) | 2.15 (0.66, n = 16) |
+| Signage | 4.08 (1.01, n = 8) | 7.61 (3.67, n = 13) | 5.04 (1.97, n = 13) |
+| Street furniture | 1.93 (0.52, n = 8) | 1.68 (0.32, n = 18) | 1.91 (0.23, n = 18) |
+| Other | 3.90 (1.00, n = 1) | 1.32 (0.99, n = 6) | 1.41 (0.57, n = 6) |
+| Ground floor | 1.74 (0.20, n = 8) | 1.51 (0.53, n = 19) | 1.48 (0.49, n = 19) |
 
 Match with measured gaze on the 12 Zürich photos: per photo, the Spearman correlation between a layer's ratios and the measured ratios across areas of at least 0.5%; mean (SD) over the photos.
 
@@ -79,7 +79,6 @@ Match with measured gaze on the 12 Zürich photos: per photo, the Spearman corre
 |---|---|---|---|
 | deepgaze-msdb | 0.91 | 0.10 | 12 |
 | deepgaze-iie | 0.82 | 0.10 | 12 |
-| centre-bias | 0.42 | 0.32 | 12 |
 | unisal | not computed: its browser resizing and priors are not reproduced in Python | | |
 | classic-salience | not computed: it exists only in the browser | | |
 

@@ -8,10 +8,8 @@ streetscape photos, running entirely in your browser.*
 ## What it does
 
 Choose an example photo of a Dutch high-rise street, or upload your own. The
-page shows up to five predictions of where people would look:
+page shows up to four predictions of where people would look:
 
-- **Centre bias:** people tend to look at the middle of a picture (Clarke and
-  Tatler, 2014).
 - **Classic salience:** spots that stand out in brightness, colour or edge
   direction (after Itti, Koch and Niebur, 1998).
 - **UNISAL:** a small neural network trained on eye- and mouse-tracking data

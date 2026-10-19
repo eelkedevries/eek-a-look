@@ -28,7 +28,6 @@
  * - S is resampled to the shared grid and blurred with a Gaussian of σ = 3 %
  *   of the image width, then normalised to sum 1, as is usual when a
  *   salience map is compared with other maps.
- * No centre bias is added.
  */
 
 interface Plane {

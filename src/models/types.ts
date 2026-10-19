@@ -11,13 +11,13 @@ export interface BenchmarkScore {
 }
 
 export interface ModelSpec {
-  id: 'centre-bias' | 'classic-salience' | 'unisal' | (string & {});
-  /** Visitor-facing name, e.g. "Centre bias". */
+  id: 'classic-salience' | 'unisal' | (string & {});
+  /** Visitor-facing name, e.g. "Classic salience". */
   name: string;
   /** Optional visitor-facing subtitle, e.g. "small neural network". */
   subtitle?: string;
   /** 'measured' is recorded eye tracking, not a prediction: it is always labelled as measured. */
-  kind: 'baseline' | 'classic' | 'neural' | 'measured';
+  kind: 'classic' | 'neural' | 'measured';
   /**
    * 'browser': runs on the visitor's device. 'precomputed': maps computed in
    * advance on the author's GPU, so only the example photos are covered.

@@ -1279,10 +1279,6 @@ a:hover {
   background: var(--iris);
 }
 
-.layer-row[data-kind='baseline'] .layer-dot {
-  background: #7a7a86;
-}
-
 .layer-row[data-kind='classic'] .layer-dot {
   background: #c58a3a;
 }

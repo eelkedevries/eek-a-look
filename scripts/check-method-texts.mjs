@@ -7,7 +7,6 @@ const registry = await readFile('src/models/registry.ts', 'utf8');
 const sources = await Promise.all(
   [
     'src/models/measured.ts',
-    'src/models/centre-bias.ts',
     'src/models/classic-salience/index.ts',
     'src/models/unisal/index.ts',
     'src/models/deepgaze.ts',

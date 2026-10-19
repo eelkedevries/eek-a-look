@@ -16,7 +16,7 @@ processed on your device and never uploaded. Large photos are scaled down to
 
 ## The models
 
-Centre bias, classic salience and UNISAL run in your browser on any photo.
+Classic salience and UNISAL run in your browser on any photo.
 DeepGaze IIE and DeepGaze MSDB, the strongest models, were computed in advance
 on a laptop GPU, so they cover the example photos only; for your own photo the
 page shows UNISAL in their place and says so.

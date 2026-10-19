@@ -10,7 +10,7 @@ If it never finishes, reload the page.
 
 UNISAL needs a browser with WebAssembly, Web Workers and OffscreenCanvas:
 current Chrome, Edge, Firefox and Safari (16.4 or later). Older browsers still
-show centre bias and, where OffscreenCanvas is available, classic salience.
+show classic salience where OffscreenCanvas is available.
 
 UNISAL runs on the processor (CPU), not the graphics card, so it works the
 same everywhere. On an older phone a map can take a few seconds.

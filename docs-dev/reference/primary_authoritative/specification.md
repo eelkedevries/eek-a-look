@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.25 · **Last updated:** 2026-10-19
+**Version:** 0.26 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -56,7 +56,9 @@ Ma 2025) with all five predictions; each links to the heat map its study
 measured, which is never turned into a layer (prompt 031, owner's request of
 2026-10-19). 0.25 opens the single map on measured gaze
 with its fixations where the photo has them (prompt 049, owner's request of
-2026-10-19).
+2026-10-19). 0.26 removes the centre-bias layer and every mention of it from
+the site, the method texts and the offline area checks, leaving four
+predictions (prompt 032, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -67,8 +69,8 @@ large models whose maps are pre-computed for the example photos.
 
 In scope for v1:
 
-- three models running in the visitor's browser: **centre bias**,
-  **classic salience** (Itti–Koch style) and **UNISAL**;
+- two models running in the visitor's browser: **classic salience**
+  (Itti–Koch style) and **UNISAL**;
 - two large models, **DeepGaze IIE** and **DeepGaze MSDB**, run on the owner's
   laptop GPU (`tools/deepgaze-local/`); their maps are published for the
   example photos only;
@@ -125,7 +127,7 @@ on the eelkedevries.com Projects page.
   `public/precomputed/areas/<photo-id>.json` (see *Data schemas*). No
   segmentation model runs on the site and no weights are published.
 - **Workers:** classic salience and UNISAL each run in a Web Worker, so the page
-  stays responsive. Centre bias runs on the main thread.
+  stays responsive.
 - **Shared grid:** every model's output is resampled to one grid per image. Its
   long side is 128 cells and its short side follows the image's aspect ratio
   (rounded). All comparisons use this grid. Display upsamples it to the image
@@ -163,9 +165,9 @@ interface BenchmarkScore {
 }
 
 interface ModelSpec {
-  id: 'centre-bias' | 'classic-salience' | 'unisal' | string;
-  name: string;           // visitor-facing, e.g. "Centre bias"
-  kind: 'baseline' | 'classic' | 'neural' | 'measured';
+  id: 'classic-salience' | 'unisal' | string;
+  name: string;           // visitor-facing, e.g. "Classic salience"
+  kind: 'classic' | 'neural' | 'measured';
   runtime: 'browser' | 'remote';
   covers?(context): boolean; // layers for some photos only (measured gaze)
   downloadBytes?: number; // weights + runtime the visitor downloads
@@ -275,19 +277,11 @@ interface ExamplePhoto {
 
 **Model definitions**
 
-- **Centre bias.** The anisotropic Gaussian baseline of Clarke and Tatler
-  (2014, *Vision Research* 102, 41–51):
-  - coordinates are normalised by half the image width, so the centre is
-    (0, 0), x lies in [−1, 1] and y in [−a, a], where a = height / width;
-  - the density is zero-mean with covariance diag(σ², ν·σ²), where σ² = 0.22
-    and ν = 0.45;
-  - evaluate it at cell centres, then normalise so the map sums to 1.
 - **Classic salience.** Our own implementation of Itti, Koch and Niebur (1998):
   - features: intensity, red–green and blue–yellow opponency, and four
     orientations;
   - processing: Gaussian pyramids, centre–surround differences, the
     normalisation operator N(·), conspicuity maps, summed and blurred;
-  - no centre bias is added;
   - it is labelled "our implementation"; its benchmark field stays empty.
 - **UNISAL.** Droste, Jiao and Noble (2020, ECCV), weights from
   `rdroste/unisal` (Apache-2.0):
@@ -612,7 +606,6 @@ was run on the photos.
 
   | Model | CC | AUC-Judd |
   |---|---|---|
-  | Centre bias | 0.4455 | 0.7830 |
   | UNISAL | 0.7851 | 0.8772 |
   | DeepGaze IIE | 0.8242 | 0.8829 |
   | DeepGaze MSDB | 0.8832 | 0.8942 |
@@ -657,7 +650,7 @@ was run on the photos.
 ## Naming and voice
 
 - The product name is always lower case: **eek-a-look**.
-- Visitor-facing model names: "Centre bias", "Classic salience" and "UNISAL"
+- Visitor-facing model names: "Classic salience" and "UNISAL"
   (subtitle "small neural network"). The measured layer is "Measured gaze"
   (subtitle "48 people, eye tracking").
 - A vision-language model's verdict is called an **"AI judgement"**, never an
