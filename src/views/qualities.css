@@ -1,0 +1,267 @@
+/* Qualities view (prompts 047, 048). Builds on the Areas and agreement styles in style.css. */
+
+.quality-switch {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.quality-switch[hidden],
+.quality-box-toggle[hidden],
+.quality-upclip[hidden] {
+  display: none;
+}
+
+.quality-box-toggle {
+  margin-top: 10px;
+  min-height: 36px;
+  font-size: 13px;
+}
+
+.area-swatch.quality-swatch-line {
+  height: 3px;
+  border-radius: 1px;
+}
+
+.quality-outcome {
+  margin: 4px 0 18px;
+}
+
+.quality-verdict {
+  margin: 0 0 6px;
+  font-family: var(--font-heading);
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--text-bright);
+}
+
+.quality-verdict-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.quality-reasons {
+  margin: 0 0 12px;
+  padding-left: 1.2em;
+  color: var(--text-soft);
+}
+
+.quality-indicators {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2px 16px;
+  max-width: 34rem;
+  margin: 0;
+  font-size: 14px;
+}
+
+.quality-indicators dt {
+  color: var(--text-soft);
+}
+
+.quality-indicators dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  text-align: right;
+  color: var(--text-bright);
+}
+
+.quality-definitions {
+  margin: 0 0 18px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.quality-definitions summary {
+  min-height: 28px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.quality-definition-grid {
+  display: grid;
+  gap: 4px 24px;
+}
+
+@media (min-width: 720px) {
+  .quality-definition-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.quality-definition h4 {
+  margin: 8px 0 4px;
+  font-family: var(--font-heading);
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-bright);
+}
+
+.quality-definition p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.quality-methods,
+.quality-attention,
+.quality-all,
+.quality-upclip {
+  margin: 0 0 20px;
+}
+
+.quality-methods-table th[scope='row'],
+.quality-all-table th[scope='row'] {
+  text-align: left;
+  white-space: normal;
+}
+
+.quality-methods-table td,
+.quality-all-table td {
+  background: var(--surface);
+  text-align: left;
+  font-size: 13px;
+}
+
+.quality-value {
+  color: var(--text-bright);
+  white-space: nowrap;
+}
+
+.quality-expert {
+  min-width: 14em;
+  font-family: var(--font-body);
+  color: var(--text-soft);
+}
+
+.quality-photo-link {
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  font-family: var(--font-body);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.quality-photo-link:hover,
+.quality-photo-link:focus-visible {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+.quality-current th,
+.quality-current td {
+  box-shadow: inset 0 0 0 1px var(--gold);
+}
+
+/* UP-CLIP section (prompt 048). */
+.upclip-heading {
+  margin-top: 8px;
+}
+
+.upclip-list {
+  margin: 8px 0 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.upclip-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+.upclip-score {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--text-bright);
+}
+
+.upclip-badge {
+  padding: 1px 7px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.upclip-badge.adaptation {
+  border-color: rgba(232, 180, 58, 0.5);
+  color: var(--gold);
+}
+
+.upclip-select {
+  max-width: 100%;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+}
+
+.upclip-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 10px;
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.upclip-photo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.upclip-photo img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.upclip-photo span {
+  padding: 0 8px 6px;
+}
+
+.upclip-photo:hover,
+.upclip-photo:focus-visible {
+  border-color: var(--gold);
+}
+
+.upclip-photo[aria-current='true'] {
+  border-color: var(--gold);
+  box-shadow: inset 0 0 0 1px var(--gold);
+}

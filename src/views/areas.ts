@@ -115,9 +115,7 @@ export function mountAreas(panel: HTMLElement): void {
     'Attention ÷ size: 1.0× = as much as the area’s size alone predicts. Areas are found automatically and can be wrong.',
   );
   const notes = el('p', 'agreement-caption areas-notes');
-  const panelBlock = el('div', 'areas-panel');
-  panelBlock.id = 'areas-panel';
-  panel.replaceChildren(stage, legend, tableWrap, caption, notes, panelBlock);
+  panel.replaceChildren(stage, legend, tableWrap, caption, notes);
 
   let highlighted: string | undefined;
 

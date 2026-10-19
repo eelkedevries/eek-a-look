@@ -216,3 +216,6 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   both models, 28 descriptions; principle scores agree moderately with the
   other methods on the ground floor (ρ 0.52 with the image measure, 0.65 with
   the graded panel), not on rhythm or materials)
+- `047_qualities_view.md` (spec 0.30: the Qualities view, `src/views/qualities.ts`
+  and `qualities.css`; the simulated panel moved there from Areas. Attention ÷
+  size checked by hand on zurich-23: 0.8465 on the page and by hand)

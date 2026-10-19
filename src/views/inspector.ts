@@ -20,6 +20,10 @@ const HELP: Record<string, [string, string]> = {
     'Two maps, one image',
     'Orange is where the first map expects more looking, blue where the second does. Both maps are shown underneath.',
   ],
+  qualities: [
+    'Design principles',
+    'Image measures for three design principles, with their evidence on the photo, beside the AI judgements and UP-CLIP. None of them is an expert judgement.',
+  ],
   areas: [
     'Attention per area',
     'Automatic areas for the example photos, with how much of each map’s attention falls inside them, relative to their size.',
@@ -185,7 +189,7 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
     layers.section.hidden = view === 'contrast';
     layers.heading.textContent = view === 'overlay' ? 'Layer' : 'Layers · choose one to open it';
     contrast.section.hidden = view !== 'contrast';
-    display.section.hidden = view === 'contrast' || view === 'areas';
+    display.section.hidden = view === 'contrast' || view === 'areas' || view === 'qualities';
     strengthValue.textContent = `${opacity}%`;
     [helpTitle.textContent, helpText.textContent] = HELP[view] ?? ['', ''];
     renderScores();

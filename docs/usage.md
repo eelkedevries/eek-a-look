@@ -43,6 +43,11 @@ Choose a view above the photo; the inspector on the right changes with it.
   measured map was built from as a semi-transparent cyan dot over the
   **Measured gaze** map, in all three views above. The dots are
   never drawn over a model's map.
+- **Qualities:** for the 24 Dutch and Zürich photos, three design principles
+  (rhythm and variety, an active ground floor, tactile materials) measured
+  from the photo, with the evidence drawn on it, the definitions, how a
+  simulated AI panel and UP-CLIP judged the same photo, and how much
+  attention the evidence regions receive. None of it is an expert judgement.
 - **Areas:** automatic areas for the example photos, with how much of each
   map's attention falls inside them relative to their size.
 - **Match with …** (inspector): each layer's correlation with the reference,

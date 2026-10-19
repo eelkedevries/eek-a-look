@@ -80,6 +80,8 @@ export default defineConfig({
     __EXAMPLES_VERSION__: JSON.stringify(examplesVersion),
     __AREAS_VERSION__: JSON.stringify(folderVersion('public/precomputed/areas')),
     __PANEL_VERSION__: JSON.stringify(folderVersion('public/precomputed/vlm-panel')),
+    __QUALITIES_VERSION__: JSON.stringify(folderVersion('public/precomputed/qualities')),
+    __UPCLIP_VERSION__: JSON.stringify(folderVersion('public/precomputed/up-clip')),
   },
   server: { proxy: localApi },
   preview: { proxy: localApi },

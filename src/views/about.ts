@@ -89,6 +89,17 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
   const panelHeading = el('h3', 'Simulated panel');
   const panelText = el('p');
   const panelCredit = el('li');
+  const qualitiesHeading = el('h3', 'Architectural qualities');
+  const qualitiesText = el(
+    'p',
+    'For the 24 Dutch and Zürich example photos, the Qualities view measures three design principles an HvA expert panel used (rhythm and variety, an active ground floor, tactile materials) from the photo itself: how regularly windows and balconies repeat, how much of the ground floor opens to the street, and which materials are visible near eye level. The definitions are this project’s, not the panel’s, and each rule was fixed before it ran on the photos. Parts of each measure were checked against people’s labels of other photos; the principles themselves were not, as no experts judged these photos.',
+  );
+  const materialsCredit = el('li');
+  materialsCredit.append(
+    'Materials: DMS46 by Paul Upchurch and Ransen Niu (',
+    link('https://github.com/apple/ml-dms-dataset', 'ECCV 2022'),
+    '; Apple sample-code licence, trained on labels under CC BY-NC 4.0), run locally; only its masks are published.',
+  );
 
   const privacy = el('h3', 'Privacy');
   const privacyText = el(
@@ -134,13 +145,13 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     link('https://github.com/eelkedevries/eek-a-look', 'Source code on GitHub'),
     '.',
   );
-  creditList.append(software, areasCredit, panelCredit);
+  creditList.append(software, areasCredit, panelCredit, materialsCredit);
   fillAreas(areasText, areasCredit);
   fillPanel(panelText, panelCredit);
 
   section.replaceChildren(
     heading, intro, quality, qualityText, table, large, source, limits, limitList,
-    areasHeading, areasText, panelHeading, panelText, privacy, privacyText, credits, creditList,
+    areasHeading, areasText, panelHeading, panelText, qualitiesHeading, qualitiesText, privacy, privacyText, credits, creditList,
   );
 }
 

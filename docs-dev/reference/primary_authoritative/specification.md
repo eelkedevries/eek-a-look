@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.29 · **Last updated:** 2026-10-19
+**Version:** 0.30 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -63,7 +63,8 @@ and adds their checkbox under the image (prompt 050, owner's request of
 2026-10-19).
 0.28 adds a graded run of the simulated panel: ratings from 0 to 4 with boxes
 around the evidence, never combined with gaze statistics (prompt 044). 0.29 adds UP-CLIP scores from a reproduction of the
-model and plain CLIP, for every example photo (prompt 046).
+model and plain CLIP, for every example photo (prompt 046). 0.30 adds the Qualities view and moves the simulated
+panel there (prompt 047).
 
 ## Scope
 
@@ -93,6 +94,10 @@ In scope for v1:
   **contrast** of two maps, **agreement scores**;
 - an **Areas** view for the example photos: automatic areas and attention ÷
   size per area and layer;
+- a **Qualities** view for the 24 Dutch and Zürich example photos: image
+  measures for three design principles with their evidence on the photo, the
+  definitions behind them, the other methods' judgements of the same photo,
+  and attention ÷ size for the evidence regions;
 - a short About section covering the models, honesty, privacy and credits.
 
 Out of scope for v1: drawing areas of interest, server-hosted models, languages
@@ -583,7 +588,7 @@ was run on the photos.
     "Dutch high-rise", thumbnails grouped by area and a blue dot on photos
     with measured gaze (one scrolling row on a phone);
   - the workspace: the photo's title and place, and the views "Single map",
-    "Side by side", "Contrast" and "Areas";
+    "Side by side", "Contrast", "Areas" and "Qualities";
   - an inspector: the layers (choosing one opens it in "Single map"), the
     Contrast selectors with "Reset to the best model", the heatmap strength
     (also applied in "Side by side") with its legend, on photos with measured
@@ -610,8 +615,38 @@ was run on the photos.
   - the note "Ground floor estimated assuming a level camera." when the
     horizon method is `assumed-level`, and "(unreliable: low score in the
     check)" after a `lowConfidence` element.
-- **Simulated panel** (under the Areas table; example photos only, nothing on
-  uploads), from `public/precomputed/vlm-panel/panel.json` (`tools/vlm-panel/`):
+- **Qualities** (a view after "Areas"; the 24 Dutch and Zürich photos, which
+  have quality files; other photos and uploads get "Qualities are computed in
+  advance for the 24 Dutch and Zürich example photos only." or "… for the
+  example photos only."):
+  - a switch for the three principles (rhythm and variety, active ground
+    floor, tactile materials);
+  - the greyed photo with the image measure's evidence: regions that support
+    the principle in bluish green, against it in vermilion, context in sky
+    blue (shown when its legend item is hovered or focused; line evidence is
+    drawn as lines); the legend gives each region's role and share;
+  - a toggle "Show the AI judgement's boxes" for the graded panel's boxes of
+    that principle, drawn dashed in yellow and labelled as AI judgement;
+  - the outcome as text ("Likely present", "Likely absent", "Unclear"), its
+    reasons, the indicators with plain names, and a note on how the measure
+    works and its main limits;
+  - "Definitions", collapsed: "Our definition" (the operational definition)
+    next to "In the original study" (14 experts judged whole photos as
+    present, absent or ambiguous; they named the principles without
+    defining them and did not judge these photos);
+  - "Methods for this photo": the image measure, the simulated panel
+    (present/absent and 0–4), the UP-CLIP reproduction and plain CLIP
+    (principle score and rank, marked "adaptation"), each with "Checked
+    against experts? No" and what was checked instead, and the caption
+    "These methods are compared with each other, not with experts.";
+  - attention ÷ size of the image measure's evidence regions per ready layer,
+    with the Areas rules; never for the panel's boxes or UP-CLIP;
+  - "All example photos": the 24 photos with the image measure, the panel's
+    two verdicts and the UP-CLIP reproduction's score for the chosen
+    principle, the outcome counts and the notes on principles that do not
+    vary; choosing a photo's name selects it.
+- **Simulated panel** (in the Qualities view since prompt 047, at the end;
+  example photos only, nothing on uploads), from `public/precomputed/vlm-panel/panel.json` (`tools/vlm-panel/`):
   - the verdict on each of the three principles of Spanjar & Suurenbroek
     (2020): horizontal–vertical rhythm and variety, active ground floor,
     tactile materials;
@@ -643,6 +678,9 @@ was run on the photos.
 - The Areas view carries the label **"Automatic areas · not an expert
   judgement"** and the caption "Areas are found automatically and can be
   wrong."
+- The Qualities view carries the label **"Image measure · not an expert
+  judgement"** (with the panel's boxes shown: "Image measure · boxes: AI
+  judgement · neither is an expert judgement").
 - The simulated panel is headed **"Simulated panel · AI judgement, not
   experts"**, and its caption says that no experts judged these photos, so it
   is not validated. Its verdicts are never combined with gaze statistics.

@@ -21,9 +21,17 @@ page shows up to four predictions of where people would look:
 
 The page is a workspace: a photo library on the left, the views in the middle
 (one map, all maps side by side, a contrast of any two maps — by default
-against the best model — and automatic areas) and an inspector on the right
-with the layers, display settings and each layer's match with the reference.
-Agreement scores between the models follow below.
+against the best model — automatic areas, and qualities) and an inspector on
+the right with the layers, display settings and each layer's match with the
+reference. Agreement scores between the models follow below.
+
+**Qualities** measures, for the 24 Dutch and Zürich photos, the three design
+principles of Spanjar & Suurenbroek (2020) — rhythm and variety, an active
+ground floor, tactile materials — from the photo itself, shows the evidence
+on it, and sets these image measures beside a simulated AI panel and UP-CLIP.
+The definitions are this project's; none of it is an expert judgement, and
+agreement with experts has not been evaluated (`tools/qualities/`,
+`tools/vlm-panel/`, `tools/up-clip/`).
 
 These are **predictions, not measured gaze**. The models were trained and
 tested on lab data, not on Dutch street photos.

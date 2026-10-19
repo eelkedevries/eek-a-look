@@ -19,6 +19,8 @@ import { contrastWith, mountContrast } from './views/contrast';
 import { mountFixationToggle } from './views/fixation-toggle';
 import { mountInspector } from './views/inspector';
 import { mountPanel } from './views/panel';
+import { mountQualities } from './views/qualities';
+import './views/qualities.css';
 import { mountMethods } from './views/methods';
 import { mountOverlay } from './views/overlay';
 import { mountSideBySide } from './views/side-by-side';
@@ -43,6 +45,7 @@ const showTab = mountTabs(
     { id: 'side', label: 'Side by side', panel: panel('side') },
     { id: 'contrast', label: 'Contrast', panel: panel('contrast') },
     { id: 'areas', label: 'Areas', panel: panel('areas') },
+    { id: 'qualities', label: 'Qualities', panel: panel('qualities') },
   ],
   (view) => setViewState({ view }),
 );
@@ -55,12 +58,19 @@ mountSideBySide(panel('side'), (a, b) => {
 mountContrast(panel('contrast'), contrastControls);
 mountFixationToggle($('#fixation-toggle'));
 mountAreas(panel('areas'));
-mountPanel($('#areas-panel'));
 mountAgreement($('#views'));
 mountMethods($('#methods'));
 
 const photosById = new Map<string, ExamplePhoto>();
 let markSelected: (id: string | undefined) => void = () => {};
+
+// The Qualities view (prompt 047) selects photos from its tables; the simulated panel lives there.
+const pickById = (id: string) => {
+  const photo = photosById.get(id);
+  if (photo) void pick(photo);
+};
+mountQualities(panel('qualities'), pickById, () => photosById);
+mountPanel($('#qualities-panel'));
 
 onImageChange((image) => {
   showOnStage(stage, image);
