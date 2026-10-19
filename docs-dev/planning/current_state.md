@@ -236,3 +236,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   ground floors read as closed)
 - `054_fixation_opacity_slider.md` (spec 0.34: a "Fixation points (raw data)" slider
   below the heatmap strength, 65% by default, on photos with measured gaze)
+- `055_qualities_all_at_once.md` (spec 0.35: the Qualities view shows the three
+  principles together, no switch: evidence outlined solid / dashed / dotted per
+  principle, one legend in three parts, three outcome cards, a column per
+  principle in the methods and all-photos tables)

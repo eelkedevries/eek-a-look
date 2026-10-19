@@ -24,8 +24,58 @@
   border-radius: 1px;
 }
 
-.quality-outcome {
+.quality-outcomes {
   margin: 4px 0 18px;
+}
+
+/* Prompt 055: the three principles side by side, stacked on a phone. */
+.quality-card-grid {
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 900px) {
+  .quality-card-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.quality-card {
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.quality-card-title {
+  margin: 0 0 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.04em;
+  color: var(--muted);
+}
+
+.quality-numbers summary {
+  min-height: 28px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--link);
+}
+
+.area-swatch.quality-swatch-dashed {
+  border: 2px dashed currentColor;
+}
+
+.area-swatch.quality-swatch-dotted {
+  border: 2px dotted currentColor;
+}
+
+.quality-all-cell small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: var(--muted);
 }
 
 .quality-kind {
@@ -42,7 +92,7 @@
 .quality-verdict {
   margin: 0 0 6px;
   font-family: var(--font-heading);
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
   color: var(--text-bright);
 }
@@ -148,8 +198,12 @@
   white-space: nowrap;
 }
 
+.quality-methods-table .quality-value {
+  white-space: normal;
+}
+
 .quality-expert {
-  min-width: 14em;
+  min-width: 10em;
   font-family: var(--font-body);
   color: var(--text-soft);
 }

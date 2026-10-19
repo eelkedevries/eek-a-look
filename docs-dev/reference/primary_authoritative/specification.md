@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.34 · **Last updated:** 2026-10-19
+**Version:** 0.35 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -69,7 +69,9 @@ to the Qualities view (prompt 048). 0.32 names the study images' kind (rendering
 panorama) and computes their areas, with a ground-floor rule for panoramas
 (prompt 051). 0.33 computes the image measures for the study images too
 and tags them on the page (prompt 052). 0.34 adds a slider for the fixation points' opacity below
-the heatmap strength (prompt 054, owner's request of 2026-10-19).
+the heatmap strength (prompt 054, owner's request of 2026-10-19). 0.35 shows
+the three principles together in the Qualities view instead of behind a switch
+(prompt 055, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -648,33 +650,41 @@ was run on the photos.
   "Qualities are computed in advance for the example photos only."):
   - study images carry a tag "Design rendering" or "360° panorama" above the
     outcome (prompt 052);
-  - a switch for the three principles (rhythm and variety, active ground
-    floor, tactile materials);
-  - the greyed photo with the image measure's evidence: regions that support
-    the principle in bluish green, against it in vermilion, context in sky
-    blue (shown when its legend item is hovered or focused; line evidence is
-    drawn as lines); the legend gives each region's role and share;
+  - all three principles (rhythm and variety, active ground floor, tactile
+    materials) at once, without a switch (prompt 055);
+  - the greyed photo with the evidence of all three image measures: regions
+    that support a principle in bluish green, against it in vermilion,
+    context in sky blue (shown when its legend item is hovered or focused;
+    line evidence is drawn as lines), outlined in the principle's line style
+    (rhythm solid, ground floor dashed, materials dotted) and filled while
+    its legend item is hovered or focused; one legend under the photo in
+    three parts, each headed by the principle and its line style, gives each
+    region's role and share;
   - a toggle "Show the AI judgement's boxes" for the graded panel's boxes of
-    that principle, drawn dashed in yellow and labelled as AI judgement;
-  - the outcome as text ("Likely present", "Likely absent", "Unclear"), its
-    reasons, the indicators with plain names, and a note on how the measure
-    works and its main limits;
-  - "Definitions", collapsed: "Our definition" (the operational definition)
-    next to "In the original study" (14 experts judged whole photos as
-    present, absent or ambiguous; they named the principles without
-    defining them and did not judge these photos);
-  - "Methods for this photo": the image measure, the simulated panel
-    (present/absent and 0–4), the UP-CLIP reproduction and plain CLIP
-    (principle score and rank, marked "adaptation"), each with "Checked
-    against experts? No" and what was checked instead, and the caption
-    "These methods are compared with each other, not with experts.";
-  - attention ÷ size of the image measure's evidence regions per ready layer,
-    with the Areas rules; never for the panel's boxes or UP-CLIP;
+    all three principles, drawn dashed in yellow, each labelled with its
+    principle and as AI judgement;
+  - the three outcomes side by side, one card per principle: the outcome as
+    text ("Likely present", "Likely absent", "Unclear") and its reasons, with
+    the indicators with plain names and a note on how the measure works and
+    its main limits under "The numbers", collapsed;
+  - "Definitions", collapsed: per principle "Our definition" (the
+    operational definition), and "In the original study" (14 experts judged
+    whole photos as present, absent or ambiguous; they named the principles
+    without defining them and did not judge these photos);
+  - "Methods for this photo": one row per method — the image measure, the
+    simulated panel (present/absent and 0–4), the UP-CLIP reproduction and
+    plain CLIP (principle score and rank, marked "adaptation") — with a
+    column per principle and "Checked against experts? No" with what was
+    checked instead, and the caption "These methods are compared with each
+    other, not with experts.";
+  - attention ÷ size of the image measures' evidence regions per ready
+    layer, grouped by principle, with the Areas rules; never for the panel's
+    boxes or UP-CLIP;
   - "All example photos": every example photo (the study images under their
-    own heading) with the image measure, the panel's
-    two verdicts and the UP-CLIP reproduction's score for the chosen
-    principle, the outcome counts and the notes on principles that do not
-    vary; choosing a photo's name selects it.
+    own heading) with, per principle, the image measure, the panel's
+    two verdicts and the UP-CLIP reproduction's score, the outcome counts and
+    the notes on principles that do not vary; choosing a photo's name
+    selects it.
   - at the end, **"Descriptions and photos · UP-CLIP"** (prompt 048), on
     every example photo (also those without image measures), nothing on
     uploads: a switch between "UP-CLIP reproduction" and "Plain CLIP"; the
@@ -722,8 +732,8 @@ was run on the photos.
 - The Areas view carries the label **"Automatic areas · not an expert
   judgement"** and the caption "Areas are found automatically and can be
   wrong."
-- The Qualities view carries the label **"Image measure · not an expert
-  judgement"** (with the panel's boxes shown: "Image measure · boxes: AI
+- The Qualities view carries the label **"Image measures · not an expert
+  judgement"** (with the panel's boxes shown: "Image measures · boxes: AI
   judgement · neither is an expert judgement").
 - The simulated panel is headed **"Simulated panel · AI judgement, not
   experts"**, and its caption says that no experts judged these photos, so it

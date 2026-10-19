@@ -211,41 +211,57 @@ function decodeLayers(file: QualityFile, result: PrincipleResult): Layer[] {
   return result.evidence.map((e) => (e.rle ? { ...e, mask: decodeRle(e.rle, file.width * file.height) } : { ...e }));
 }
 
-/** Draw evidence at twice the mask size: supports and against filled lightly, context only when highlighted. */
-function drawEvidence(canvas: HTMLCanvasElement, layers: Layer[], width: number, height: number, highlighted?: string): void {
+/** Line style per principle, so all three can be drawn at once (prompt 055): solid, dashed, dotted. */
+const STYLE: Record<PrincipleId, { name: string; on: (x: number, y: number) => boolean; swatch: string }> = {
+  rhythm: { name: 'solid lines', on: () => true, swatch: 'solid' },
+  groundFloor: { name: 'dashed', on: (x, y) => (x + y) % 6 < 4, swatch: 'dashed' },
+  materials: { name: 'dotted', on: (x, y) => (x + y) % 4 < 2, swatch: 'dotted' },
+};
+
+type Keyed = Layer & { principle: PrincipleId; key: string };
+
+/**
+ * Draw the evidence of all three principles at twice the mask size: the regions that support or count against a
+ * principle as outlines in its line style, filled only when highlighted; context regions and lines only when
+ * highlighted.
+ */
+function drawEvidence(canvas: HTMLCanvasElement, layers: Keyed[], width: number, height: number, highlighted?: string): void {
   const scale = 2;
   canvas.width = width * scale;
   canvas.height = height * scale;
   const image = new ImageData(canvas.width, canvas.height);
   const d = image.data;
+  const paint = (x: number, y: number, rgb: number[], alpha: number) => {
+    for (let dy = 0; dy < scale; dy++) {
+      for (let dx = 0; dx < scale; dx++) {
+        const k = ((y * scale + dy) * canvas.width + x * scale + dx) * 4;
+        if (d[k + 3] >= alpha) continue;
+        d[k] = rgb[0];
+        d[k + 1] = rgb[1];
+        d[k + 2] = rgb[2];
+        d[k + 3] = alpha;
+      }
+    }
+  };
   for (const layer of layers) {
-    const shown = layer.id === highlighted || layer.role !== 'context';
-    if (!layer.mask || !shown) continue;
+    const on = layer.key === highlighted;
+    if (!layer.mask || (layer.role === 'context' && !on)) continue;
     const rgb = [1, 3, 5].map((i) => parseInt(ROLE_COLOUR[layer.role].slice(i, i + 2), 16));
-    const alpha = layer.id === highlighted ? 150 : 70;
+    const style = STYLE[layer.principle].on;
     const m = layer.mask;
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const i = y * width + x;
         if (!m[i]) continue;
         const edge = x === 0 || y === 0 || x === width - 1 || y === height - 1 || !m[i - 1] || !m[i + 1] || !m[i - width] || !m[i + width];
-        const a = edge ? 255 : alpha;
-        for (let dy = 0; dy < scale; dy++) {
-          for (let dx = 0; dx < scale; dx++) {
-            const k = ((y * scale + dy) * canvas.width + x * scale + dx) * 4;
-            if (d[k + 3] >= a) continue;
-            d[k] = rgb[0];
-            d[k + 1] = rgb[1];
-            d[k + 2] = rgb[2];
-            d[k + 3] = a;
-          }
-        }
+        if (edge && (on || style(x, y))) paint(x, y, rgb, 255);
+        else if (on) paint(x, y, rgb, 130);
       }
     }
   }
   const ctx = canvas.getContext('2d')!;
   ctx.putImageData(image, 0, 0);
-  const lines = layers.find((l) => l.lines && l.id === highlighted);
+  const lines = layers.find((l) => l.lines && l.key === highlighted);
   if (lines?.lines) {
     ctx.strokeStyle = ROLE_COLOUR[lines.role];
     ctx.lineWidth = 2;
@@ -273,22 +289,24 @@ function drawBoxes(canvas: HTMLCanvasElement, boxes: { label: string; box: numbe
     if (!box) continue;
     const [x0, y0, x1, y1] = box.map((v) => v * scale);
     ctx.strokeRect(x0, y0, x1 - x0, y1 - y0);
-    if (label) ctx.fillText(label.slice(0, 28), x0 + 4, Math.max(20, y0 - 6));
+    if (label) ctx.fillText(label.slice(0, 36), x0 + 4, Math.max(20, y0 - 6));
   }
 }
 
 const rank = (values: number[], value: number) => values.filter((v) => v > value).length + 1;
+const SHORT: Record<PrincipleId, string> = { rhythm: 'Rhythm', groundFloor: 'Ground floor', materials: 'Materials' };
+const signed = (v: number) => `${v >= 0 ? '+' : ''}${v.toFixed(3)}`;
+const verdictV1 = (v: { consensus: string }) => (v.consensus === 'ambiguous' ? 'No consensus' : v.consensus === 'present' ? 'Present' : 'Absent');
 
 /**
- * The Qualities view: per example photo and design principle, the image measure with its evidence,
- * the definitions behind it, the other methods' verdicts on the same photo, and attention ÷ size
- * for the evidence regions. Uploads get a short message.
+ * The Qualities view: per example photo, the image measures of all three design principles at once (prompt 055),
+ * with their evidence on the photo and one legend, the definitions behind them, the other methods' verdicts on the
+ * same photo, and attention ÷ size for the evidence regions. Uploads get a short message.
  */
 export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => void, photos: () => Map<string, PhotoInfo>): HTMLElement {
-  let principle: PrincipleId = 'rhythm';
   let showBoxes = false;
   let highlighted: string | undefined;
-  let current: { results: Results; file: QualityFile; layers: Layer[] } | null = null;
+  let current: { results: Results; file: QualityFile; layers: Keyed[] } | null = null;
   let extras: { checks: ChecksFile | null; panelV1: PanelFile | null; graded: GradedFile | null; upclip: UpClipFile | null } = {
     checks: null,
     panelV1: null,
@@ -297,27 +315,12 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
   };
   const shareCache = new Map<string, Map<string, number>>();
 
-  const switcher = el('div', 'area-switch quality-switch');
-  switcher.setAttribute('role', 'group');
-  switcher.setAttribute('aria-label', 'Design principle');
-  const switchButtons = PRINCIPLES.map(({ id, name }) => {
-    const button = el('button', 'model-button', name);
-    button.type = 'button';
-    button.addEventListener('click', () => {
-      principle = id;
-      highlighted = undefined;
-      render();
-    });
-    switcher.append(button);
-    return button;
-  });
-
   const stage = el('div', 'stage');
   const frame = el('div', 'frame');
   const photo = el('canvas', 'photo');
   const evidenceLayer = el('canvas', 'layer');
   const boxLayer = el('canvas', 'layer');
-  const tag = el('span', 'predicted-tag areas-tag', 'Image measure · not an expert judgement');
+  const tag = el('span', 'predicted-tag areas-tag', 'Image measures · not an expert judgement');
   frame.append(photo, evidenceLayer, boxLayer, tag);
   const empty = el('p', 'stage-empty');
 
@@ -330,7 +333,7 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
   });
 
   const legend = el('ul', 'area-legend');
-  const outcome = el('div', 'quality-outcome');
+  const outcome = el('div', 'quality-outcomes');
   const definitions = el('details', 'quality-definitions');
   const methods = el('div', 'quality-methods');
   const attention = el('div', 'quality-attention');
@@ -338,12 +341,8 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
   const panelBlock = el('div', 'areas-panel');
   const upclipBlock = el('div', 'quality-upclip');
   const body = el('div', 'quality-body');
-  body.append(switcher, stage, boxToggle, legend, outcome, definitions, methods, attention, all, panelBlock, upclipBlock);
+  body.append(stage, boxToggle, legend, outcome, definitions, methods, attention, all, panelBlock, upclipBlock);
   panel.replaceChildren(body);
-
-  function result(): PrincipleResult | undefined {
-    return current?.file.principles[principle];
-  }
 
   function drawStage() {
     if (!current) return;
@@ -357,28 +356,33 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
 
   function renderBoxes() {
     boxToggle.setAttribute('aria-pressed', String(showBoxes));
-    const graded = extras.graded?.photos[current?.file.photo ?? '']?.[principle];
-    boxToggle.hidden = !graded?.boxes.length;
+    const graded = extras.graded?.photos[current?.file.photo ?? ''];
+    const boxes = graded ? PRINCIPLES.flatMap(({ id }) => (graded[id]?.boxes ?? []).map((b) => ({ ...b, label: `${SHORT[id]}: ${b.label}` }))) : [];
+    boxToggle.hidden = !boxes.length;
     if (!current) return;
-    drawBoxes(boxLayer, showBoxes && graded ? graded.boxes : [], current.file.width, current.file.height);
-    tag.textContent = showBoxes ? 'Image measure · boxes: AI judgement · neither is an expert judgement' : 'Image measure · not an expert judgement';
+    drawBoxes(boxLayer, showBoxes ? boxes : [], current.file.width, current.file.height);
+    tag.textContent = showBoxes ? 'Image measures · boxes: AI judgement · neither is an expert judgement' : 'Image measures · not an expert judgement';
   }
 
+  /** One legend in three labelled parts, one per principle, with its line style (prompt 055). */
   function renderLegend() {
-    const r = result();
-    if (!r || !current) return legend.replaceChildren();
-    legend.replaceChildren(
-      ...current.layers.map((layer) => {
+    if (!current) return legend.replaceChildren();
+    const items: HTMLElement[] = [];
+    for (const { id, name } of PRINCIPLES) {
+      const layers = current.layers.filter((l) => l.principle === id);
+      if (!layers.length) continue;
+      items.push(el('li', 'area-legend-heading', `${name} · ${STYLE[id].name}`));
+      for (const layer of layers) {
         const item = el('li');
         const button = el('button', 'area-legend-item');
         button.type = 'button';
-        const swatch = el('span', 'area-swatch');
-        swatch.style.background = ROLE_COLOUR[layer.role];
-        if (layer.lines) swatch.classList.add('quality-swatch-line');
+        const swatch = el('span', `area-swatch quality-swatch-${layer.lines ? 'line' : STYLE[id].swatch}`);
+        swatch.style.color = ROLE_COLOUR[layer.role];
+        swatch.style.background = layer.lines || STYLE[id].swatch === 'solid' ? ROLE_COLOUR[layer.role] : 'none';
         const share = layer.lines ? '' : ` ${percent(layer.share)}`;
         button.append(swatch, `${layer.label} `, el('span', 'area-percent', `${ROLE_TEXT[layer.role]}${share}`));
         const show = (on: boolean) => {
-          highlighted = on ? layer.id : undefined;
+          highlighted = on ? layer.key : undefined;
           if (current) drawEvidence(evidenceLayer, current.layers, current.file.width, current.file.height, highlighted);
         };
         button.addEventListener('mouseenter', () => show(true));
@@ -386,109 +390,137 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
         button.addEventListener('focus', () => show(true));
         button.addEventListener('blur', () => show(false));
         item.append(button);
-        return item;
-      }),
-    );
+        items.push(item);
+      }
+    }
+    legend.replaceChildren(...items);
   }
 
+  /** The three outcomes side by side, each with its reasons, its numbers (collapsed) and how it was found. */
   function renderOutcome() {
-    const r = result();
-    if (!r) return outcome.replaceChildren();
-    const heading = el('h3', 'quality-verdict');
-    heading.append(el('span', 'quality-verdict-label', 'Image measure: '), el('strong', undefined, OUTCOME_TEXT[r.outcome]));
-    const reasons = el('ul', 'quality-reasons');
-    for (const reason of r.reasons) reasons.append(el('li', undefined, reason));
-    const list = el('dl', 'quality-indicators');
-    for (const [key, value] of Object.entries(r.indicators)) {
-      const name = key.startsWith('material: ') ? `Common material: ${key.slice(10)}` : INDICATORS[key] ?? key;
-      list.append(el('dt', undefined, name), el('dd', undefined, formatIndicator(key, value)));
-    }
-    const how = el('p', 'agreement-caption', HOW[principle]);
-    const kind = current?.file.imageKind;
-    outcome.replaceChildren(...(kind ? [el('p', 'quality-kind', KIND_TEXT[kind])] : []), heading, reasons, list, how);
+    if (!current) return outcome.replaceChildren();
+    const kind = current.file.imageKind;
+    const cards = PRINCIPLES.map(({ id, name }) => {
+      const r = current!.file.principles[id];
+      const card = el('section', 'quality-card');
+      card.append(el('h3', 'quality-card-title', name));
+      if (!r) return card;
+      const verdict = el('p', 'quality-verdict');
+      verdict.append(el('strong', undefined, OUTCOME_TEXT[r.outcome]));
+      const reasons = el('ul', 'quality-reasons');
+      for (const reason of r.reasons) reasons.append(el('li', undefined, reason));
+      const numbers = el('details', 'quality-numbers');
+      numbers.append(el('summary', undefined, 'The numbers'));
+      const list = el('dl', 'quality-indicators');
+      for (const [key, value] of Object.entries(r.indicators)) {
+        const label = key.startsWith('material: ') ? `Common material: ${key.slice(10)}` : INDICATORS[key] ?? key;
+        list.append(el('dt', undefined, label), el('dd', undefined, formatIndicator(key, value)));
+      }
+      numbers.append(list, el('p', 'agreement-caption', HOW[id]));
+      card.append(verdict, reasons, numbers);
+      return card;
+    });
+    const grid = el('div', 'quality-card-grid');
+    grid.append(...cards);
+    outcome.replaceChildren(
+      ...(kind ? [el('p', 'quality-kind', KIND_TEXT[kind])] : []),
+      el('p', 'quality-verdict-label', 'Image measures'),
+      grid,
+    );
   }
 
   function renderDefinitions() {
     const summary = el('summary', undefined, 'Definitions');
-    const ours = el('div', 'quality-definition');
-    ours.append(el('h4', undefined, 'Our definition'), el('p', undefined, DEFINITIONS[principle]));
+    const grid = el('div', 'quality-definition-grid');
+    for (const { id, name } of PRINCIPLES) {
+      const ours = el('div', 'quality-definition');
+      ours.append(el('h4', undefined, `${name}: our definition`), el('p', undefined, DEFINITIONS[id]));
+      grid.append(ours);
+    }
     const theirs = el('div', 'quality-definition');
     theirs.append(el('h4', undefined, 'In the original study'), el('p', undefined, ORIGINAL));
-    const grid = el('div', 'quality-definition-grid');
-    grid.append(ours, theirs);
+    grid.append(theirs);
     definitions.replaceChildren(summary, grid);
   }
 
-  function upclipScore(modelId: string): { score: number; rank: number; of: number } | null {
-    const u = extras.upclip;
+  function upclipScore(modelId: string, principle: PrincipleId): string | null {
     const id = current?.file.photo;
-    const scores = u?.principleScores[modelId];
+    const scores = extras.upclip?.principleScores[modelId];
     if (!scores || !id || !scores[id]) return null;
     const values = Object.values(scores).map((s) => s[principle]);
-    return { score: scores[id][principle], rank: rank(values, scores[id][principle]), of: values.length };
+    return `${signed(scores[id][principle])} · rank ${rank(values, scores[id][principle])} of ${values.length}`;
   }
 
+  /** Methods for this photo: one row per method, one column per principle. */
   function renderMethods() {
-    const r = result();
     const id = current?.file.photo;
-    if (!r || !id) return methods.replaceChildren();
-    const c = extras.checks;
-    const checked: Record<PrincipleId, string> = {
-      rhythm: c ? `Parts checked against human labels: repetition agrees on held-out façades (balanced accuracy ${c.rhythm.families.vertical.balancedAccuracy.toFixed(2)} across, ${c.rhythm.families.layer.balancedAccuracy.toFixed(2)} up)` : '',
-      groundFloor: c ? `Parts checked against human labels: open share from the model against people’s labels, ρ = ${c.frontage.openShareSpearman.toFixed(2)}` : '',
-      materials: c?.materials.dmsTest ? `Parts checked against human labels: material groups right on ${percent(c.materials.dmsTest.groupPixelAccuracy)} of pixels in ${c.materials.dmsTest.images} test photos` : '',
-    };
-    const rows: [string, string, string][] = [['Image measure (this project’s rule)', OUTCOME_TEXT[r.outcome], checked[principle]]];
-    const v1 = extras.panelV1?.photos[id]?.[principle];
+    if (!current || !id) return methods.replaceChildren();
+    const file = current.file;
+    const rows: [string, (p: PrincipleId) => string | null, string][] = [
+      ['Image measure (this project’s rule)', (p) => (file.principles[p] ? OUTCOME_TEXT[file.principles[p]!.outcome] : null), 'No · parts checked against human labels'],
+    ];
+    const v1 = extras.panelV1?.photos[id];
     if (v1) {
-      const total = v1.votes.present + v1.votes.absent + v1.votes.missing;
-      const text = v1.consensus === 'ambiguous' ? 'No consensus' : `${v1.consensus === 'present' ? 'Present' : 'Absent'} (${v1.votes[v1.consensus]} of ${total})`;
-      const flat = extras.panelV1?.fleissKappa[principle] === null ? 'Said the same for every example photo' : 'AI judgement';
-      rows.push(['Simulated panel, present or absent', text, flat]);
+      rows.push(['Simulated panel, present or absent', (p) => {
+        const v = v1[p];
+        if (!v) return null;
+        const total = v.votes.present + v.votes.absent + v.votes.missing;
+        return v.consensus === 'ambiguous' ? 'No consensus' : `${verdictV1(v)} (${v.votes[v.consensus]} of ${total})`;
+      }, 'No · AI judgement']);
     }
-    const g = extras.graded?.photos[id]?.[principle];
-    if (g && g.median !== null) {
-      const rated = g.ratings.filter((x): x is number => x !== null);
-      rows.push(['Simulated panel, rated 0–4', `${g.median} (range ${Math.min(...rated)}–${Math.max(...rated)})`, 'AI judgement']);
+    const g = extras.graded?.photos[id];
+    if (g) {
+      rows.push(['Simulated panel, rated 0–4', (p) => {
+        const v = g[p];
+        if (!v || v.median === null) return null;
+        const rated = v.ratings.filter((x): x is number => x !== null);
+        return `${v.median} (range ${Math.min(...rated)}–${Math.max(...rated)})`;
+      }, 'No · AI judgement']);
     }
     for (const m of extras.upclip?.models ?? []) {
-      const s = upclipScore(m.id);
-      if (s) rows.push([m.name, `${s.score >= 0 ? '+' : ''}${s.score.toFixed(3)} · rank ${s.rank} of ${s.of}`, 'Adaptation: not tested on these principles']);
+      rows.push([m.name, (p) => upclipScore(m.id, p), 'No · adaptation, not tested on these principles']);
     }
     const table = el('table', 'agreement-matrix quality-methods-table');
     const head = el('tr');
-    for (const h of ['Method', 'For this photo', 'Checked against experts?']) head.append(el('th', undefined, h));
+    for (const h of ['Method', ...PRINCIPLES.map((p) => p.name), 'Checked against experts?']) head.append(el('th', undefined, h));
     table.append(head);
     for (const [name, value, note] of rows) {
       const tr = el('tr');
       const th = el('th', undefined, name);
       th.scope = 'row';
-      const expert = el('td', 'quality-expert');
-      expert.append(el('strong', undefined, 'No'), note ? el('span', undefined, ` · ${note}`) : '');
-      tr.append(th, el('td', 'quality-value', value), expert);
+      tr.append(th, ...PRINCIPLES.map(({ id: p }) => el('td', 'quality-value', value(p) ?? '–')), el('td', 'quality-expert', note));
       table.append(tr);
     }
+    const c = extras.checks;
+    const checked = c
+      ? [
+          `Rhythm: repetition agrees with human labels on held-out façades (balanced accuracy ${c.rhythm.families.vertical.balancedAccuracy.toFixed(2)} across, ${c.rhythm.families.layer.balancedAccuracy.toFixed(2)} up).`,
+          `Ground floor: the open share from the model against people’s labels, ρ = ${c.frontage.openShareSpearman.toFixed(2)}.`,
+          c.materials.dmsTest ? `Materials: the material groups are right on ${percent(c.materials.dmsTest.groupPixelAccuracy)} of pixels in ${c.materials.dmsTest.images} test photos.` : '',
+        ].join(' ')
+      : '';
     const wrap = el('div', 'agreement-wrap');
     wrap.append(table);
     methods.replaceChildren(
       el('h3', 'panel-heading', 'Methods for this photo'),
       wrap,
-      el('p', 'agreement-caption', 'These methods are compared with each other, not with experts. No expert has judged these photos.'),
+      el('p', 'agreement-caption', `These methods are compared with each other, not with experts. No expert has judged these photos. ${checked}`),
     );
   }
 
   function shares(modelId: string): Map<string, number> | undefined {
     if (!current) return undefined;
-    const key = `${current.file.photo}:${principle}:${modelId}`;
+    const key = `${current.file.photo}:${modelId}`;
     const status = current.results.status.get(modelId);
     if (status?.state !== 'ready') return undefined;
     if (!shareCache.has(key)) {
-      const regions = current.layers.filter((l) => l.mask) as unknown as Area[];
+      const regions = current.layers.filter((l) => l.mask).map((l) => ({ ...l, id: l.key })) as unknown as Area[];
       shareCache.set(key, attentionShares(status.map, regions, current.file.width, current.file.height));
     }
     return shareCache.get(key);
   }
 
+  /** Attention ÷ size for every evidence region, with a row heading per principle. */
   function renderAttention() {
     if (!current) return attention.replaceChildren();
     const layers = modelsFor(current.results).filter((m) => current!.results.status.get(m.id)?.state === 'ready');
@@ -502,56 +534,63 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       head.append(th);
     }
     table.append(head);
-    for (const layer of current.layers.filter((l) => l.mask)) {
-      const tr = el('tr');
-      const name = el('th', undefined, layer.label);
-      name.scope = 'row';
-      tr.append(name, el('td', 'areas-share', percent(layer.share)));
-      for (const m of layers) {
-        const td = el('td');
-        const share = shares(m.id)?.get(layer.id);
-        if (share === undefined || layer.share < MIN_SHARE) {
-          td.textContent = '–';
-          td.className = 'agreement-empty';
-          if (layer.share < MIN_SHARE) td.title = 'Under 0.5% of the photo: too small to judge';
-        } else {
-          const ratio = share / layer.share;
-          td.textContent = `${ratio.toFixed(1)}×`;
-          td.className = 'agreement-cell';
-          td.dataset.ratio = String(ratio);
-          td.title = `${m.name}: ${percent(share)} of the attention on ${percent(layer.share)} of the photo`;
-          td.style.setProperty('--r', String(Math.max(0, Math.min(1, Math.log2(ratio) / 2))));
+    for (const { id, name } of PRINCIPLES) {
+      const regions = current.layers.filter((l) => l.principle === id && l.mask);
+      if (!regions.length) continue;
+      const group = el('tr', 'areas-group-row');
+      const groupHead = el('th', undefined, name);
+      groupHead.colSpan = head.childElementCount;
+      group.append(groupHead);
+      table.append(group);
+      for (const layer of regions) {
+        const tr = el('tr');
+        const label = el('th', undefined, layer.label);
+        label.scope = 'row';
+        tr.append(label, el('td', 'areas-share', percent(layer.share)));
+        for (const m of layers) {
+          const td = el('td');
+          const share = shares(m.id)?.get(layer.key);
+          if (share === undefined || layer.share < MIN_SHARE) {
+            td.textContent = '–';
+            td.className = 'agreement-empty';
+            if (layer.share < MIN_SHARE) td.title = 'Under 0.5% of the photo: too small to judge';
+          } else {
+            const ratio = share / layer.share;
+            td.textContent = `${ratio.toFixed(1)}×`;
+            td.className = 'agreement-cell';
+            td.dataset.ratio = String(ratio);
+            td.title = `${m.name}: ${percent(share)} of the attention on ${percent(layer.share)} of the photo`;
+            td.style.setProperty('--r', String(Math.max(0, Math.min(1, Math.log2(ratio) / 2))));
+          }
+          tr.append(td);
         }
-        tr.append(td);
+        table.append(tr);
       }
-      table.append(tr);
     }
     const wrap = el('div', 'agreement-wrap');
     wrap.append(table);
     attention.replaceChildren(
       el('h3', 'panel-heading', 'Attention ÷ size of the evidence'),
       wrap,
-      el('p', 'agreement-caption', '1.0× = as much as the region’s size alone predicts. Only the image measure’s regions are shown here; the AI judgements and UP-CLIP are never combined with gaze.'),
+      el('p', 'agreement-caption', '1.0× = as much as the region’s size alone predicts. Only the image measures’ regions are shown here; the AI judgements and UP-CLIP are never combined with gaze.'),
     );
   }
 
+  /** All example photos: the image measure for each principle, with the panel and UP-CLIP under it. */
   function renderAll() {
-    const c = extras.checks?.discrimination[principle];
+    const c = extras.checks?.discrimination;
     if (!c) return all.replaceChildren();
     const info = photos();
+    const reproduction = extras.upclip?.models.find((m) => m.id === 'up-clip-reproduction');
     const table = el('table', 'agreement-matrix quality-all-table');
     const head = el('tr');
-    const reproduction = extras.upclip?.models.find((m) => m.id === 'up-clip-reproduction');
-    for (const h of ['Photo', 'Image measure', 'Panel, present/absent', 'Panel, 0–4', reproduction ? 'UP-CLIP reproduction' : '']) {
-      if (h) head.append(el('th', undefined, h));
-    }
+    for (const h of ['Photo', ...PRINCIPLES.map((p) => p.name)]) head.append(el('th', undefined, h));
     table.append(head);
-    // The 24 earlier photos first, then the study images under their own heading (prompt 052).
-    const entries = Object.entries(c.perPhoto);
-    const study = entries.filter(([id]) => info.get(id)?.imageKind);
-    const ordered = [...entries.filter(([id]) => !info.get(id)?.imageKind), ...study];
-    for (const [id, row] of ordered) {
-      if (study.length && id === study[0][0]) {
+    // The earlier photos first, then the study images under their own heading (prompt 052).
+    const ids = Object.keys(c.rhythm.perPhoto);
+    const study = ids.filter((id) => info.get(id)?.imageKind);
+    for (const id of [...ids.filter((id) => !info.get(id)?.imageKind), ...study]) {
+      if (study.length && id === study[0]) {
         const group = el('tr', 'areas-group-row');
         const th = el('th', undefined, 'From published studies · renderings and 360° panoramas');
         th.colSpan = head.childElementCount;
@@ -566,36 +605,44 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       button.type = 'button';
       button.addEventListener('click', () => pickPhoto(id));
       th.append(button);
-      const v1 = extras.panelV1?.photos[id]?.[principle];
-      const g = extras.graded?.photos[id]?.[principle];
-      const u = reproduction ? extras.upclip?.principleScores[reproduction.id]?.[id]?.[principle] : undefined;
-      tr.append(
-        th,
-        el('td', `quality-outcome-${row.outcome}`, OUTCOME_TEXT[row.outcome]),
-        el('td', undefined, v1 ? (v1.consensus === 'ambiguous' ? 'No consensus' : v1.consensus === 'present' ? 'Present' : 'Absent') : '–'),
-        el('td', undefined, g?.median !== null && g?.median !== undefined ? String(g.median) : '–'),
-      );
-      if (reproduction) tr.append(el('td', undefined, u === undefined ? '–' : `${u >= 0 ? '+' : ''}${u.toFixed(3)}`));
+      tr.append(th);
+      for (const { id: p } of PRINCIPLES) {
+        const row = c[p].perPhoto[id];
+        const td = el('td', 'quality-all-cell');
+        td.append(el('span', undefined, row ? OUTCOME_TEXT[row.outcome] : '–'));
+        const v1 = extras.panelV1?.photos[id]?.[p];
+        const g = extras.graded?.photos[id]?.[p];
+        const u = reproduction ? extras.upclip?.principleScores[reproduction.id]?.[id]?.[p] : undefined;
+        const others = [
+          v1 ? `panel ${verdictV1(v1).toLowerCase()}` : null,
+          g && g.median !== null ? `0–4: ${g.median}` : null,
+          u !== undefined ? `UP-CLIP ${signed(u)}` : null,
+        ].filter(Boolean);
+        if (others.length) td.append(el('small', undefined, others.join(' · ')));
+        tr.append(td);
+      }
       table.append(tr);
     }
-    const counts = c.outcomes;
-    const notes: string[] = [
-      `Image measure: ${counts['likely-present']} likely present, ${counts.unclear} unclear, ${counts['likely-absent']} likely absent.`,
-    ];
-    if (c.sameOnAllPhotos) notes.push('The image measure gives the same outcome on every photo, so it does not tell them apart.');
-    if (extras.panelV1?.fleissKappa[principle] === null) notes.push('The present/absent panel gave the same verdict for every photo.');
-    const d = extras.graded?.discrimination[principle];
-    if (d) notes.push(`The 0–4 panel used ${d.distinctMedians} different medians, from ${d.min} to ${d.max}.`);
+    const notes: string[] = [];
+    for (const { id: p, name } of PRINCIPLES) {
+      const counts = c[p].outcomes;
+      notes.push(`${name}: ${counts['likely-present']} likely present, ${counts.unclear} unclear, ${counts['likely-absent']} likely absent.`);
+      if (c[p].sameOnAllPhotos) notes.push('The image measure gives the same outcome on every photo, so it does not tell them apart.');
+      if (extras.panelV1?.fleissKappa[p] === null) notes.push('The present/absent panel gave the same verdict for every photo it judged.');
+      const d = extras.graded?.discrimination[p];
+      if (d) notes.push(`The 0–4 panel used ${d.distinctMedians} different medians, from ${d.min} to ${d.max}.`);
+    }
     const wrap = el('div', 'agreement-wrap');
     wrap.append(table);
     all.replaceChildren(el('h3', 'panel-heading', 'All example photos'), wrap, el('p', 'agreement-caption', notes.join(' ')));
   }
 
   function render() {
-    switchButtons.forEach((b, i) => b.setAttribute('aria-pressed', String(PRINCIPLES[i].id === principle)));
     if (!current) return;
-    const r = result();
-    current.layers = r ? decodeLayers(current.file, r) : [];
+    current.layers = PRINCIPLES.flatMap(({ id }) => {
+      const r = current!.file.principles[id];
+      return r ? decodeLayers(current!.file, r).map((l) => ({ ...l, principle: id, key: `${id}:${l.id}` })) : [];
+    });
     drawStage();
     renderLegend();
     renderOutcome();
@@ -611,7 +658,7 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
     empty.textContent = text;
     stage.replaceChildren(empty);
     for (const node of [legend, outcome, definitions, methods, attention, all]) node.replaceChildren();
-    for (const node of [switcher, boxToggle]) node.hidden = true;
+    boxToggle.hidden = true;
     upclipBlock.hidden = !keepUpClip;
   }
 
@@ -635,7 +682,7 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       showEmpty('Qualities could not be loaded for this photo.', true);
       return;
     }
-    for (const node of [switcher, upclipBlock]) node.hidden = false;
+    upclipBlock.hidden = false;
     extras = { checks, panelV1, graded, upclip };
     current = { results, file, layers: [] };
     highlighted = undefined;

@@ -47,7 +47,10 @@ Choose a view above the photo; the inspector on the right changes with it.
 - **Qualities:** for every example photo (study images are tagged as a design
   rendering or a 360° panorama), three design principles
   (rhythm and variety, an active ground floor, tactile materials) measured
-  from the photo, with the evidence drawn on it, the definitions, how a
+  from the photo, all three at once: the evidence drawn on it (rhythm in
+  solid lines, ground floor dashed, materials dotted; point at a legend item
+  to fill its region), one card per principle with the outcome, the
+  definitions, how a
   simulated AI panel and UP-CLIP judged the same photo, and how much
   attention the evidence regions receive. At the end, **Descriptions and
   photos** shows which short descriptions UP-CLIP matches with the photo,
