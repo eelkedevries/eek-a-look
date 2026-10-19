@@ -77,8 +77,9 @@ Choose a view above the photo; the inspector on the right changes with it.
 surround, low planting along a building base, and opaque against transparent
 ground-floor windows, each on a Zürich photo edited with AI image editing.
 Choose one to see its question, background, conditions, two possible
-outcomes and what the models predict. Compare the two images side by side, with a slider or as
-a difference map, for any model, and choose which area the table measures.
+outcomes and what the models predict for the manipulated area. Images A and
+B and the difference between them appear side by side, for any model; "Highlight
+manipulated area" outlines the area the table measures.
 Measured gaze appears only on the untouched original photos. The links under
 the table open either image in the workspace.
 

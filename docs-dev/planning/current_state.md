@@ -71,9 +71,11 @@ wins and the gap is work still to be done.
   greenery, glazing) on four edited Zürich images listed in
   `public/examples/comparisons.json`, outside the library. All maps and
   areas are pre-computed; Classic salience and UNISAL by the app's code in
-  headless Chromium and the changed regions by `tools/comparisons/`. Measured
-  gaze only on untouched originals. The edited images have no SAM 3 façade
-  elements yet (gated model; laptop step).
+  headless Chromium and the manipulated areas by `tools/comparisons/`. Since
+  prompt 067 each comparison shows A, B and the difference B − A side by side
+  and measures one manipulated area only (entrance: the door and its
+  recoloured surround). Measured gaze only on untouched originals. The edited
+  images have no SAM 3 façade elements yet (gated model; laptop step).
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
@@ -272,3 +274,9 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   openings per 100 m, and a grade adapted from the Urban Design Compendium's
   Table 5.3; outcomes unchanged. E 26, D 3, D–E 2, none 18; a check by eye found
   doors missed and first-floor windows counted, so the grade leans low)
+- `066_example_study_format.md` (spec 0.41: each comparison as question,
+  background, conditions and two possible outcomes)
+- `067_example_three_panels.md` (spec 0.42: A, B and the difference side by
+  side, the manipulated area only, a "Highlight manipulated area" checkbox;
+  the entrance area is now the door and its recoloured surround, 1.0% of the
+  image instead of 1.4%)

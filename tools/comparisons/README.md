@@ -26,12 +26,15 @@ Both Python tools read `comparisons.json` as well as `examples.json`.
   dependency) and saves their maps in
   `public/precomputed/comparisons/<model-id>/<image-id>.json`, in the format
   of the DeepGaze maps.
-- `regions.py` finds where each edit changed the image: the mean absolute RGB
-  difference between A and B, blurred (4 px) and above 20, inside a search
-  box set by hand around the described change. Entrance: the bounding
-  rectangle of the changed pixels. Greenery: the changed pixels, closed,
-  filled and dilated. Glazing: the bounding rectangles of the three largest
-  patches. It writes `public/precomputed/comparisons/<example>.json` (masks
+- `regions.py` finds each comparison's manipulated area inside a search box
+  set by hand around the described change. Entrance (prompt 067): the door
+  and its recoloured surround, i.e. the bounding rectangle of the frame found
+  from the change in blueness (blue minus red) between A and B, blurred
+  (2 px) and above 15, extended down to the step (y = 797 px), where the
+  plants hide the frame's legs. Greenery and glazing: the mean absolute RGB
+  difference between A and B, blurred (4 px) and above 20; greenery takes
+  the changed pixels, closed, filled and dilated, and glazing the bounding
+  rectangles of the three largest patches. It writes `public/precomputed/comparisons/<example>.json` (masks
   as run lengths at 640 × 480, as in the area files), check overlays in
   `.cache/`, and each layer's share of attention per region.
 
@@ -43,15 +46,15 @@ on this CPU reproduced the committed maps (DeepGaze IIE and MSDB r = 1.0) and
 its street categories (100% of pixels). SAM 3 is gated and was not available,
 so the edited images have no façade elements yet.
 
-Share of attention in the changed region, %:
+Share of attention in the manipulated area, % (entrance as of prompt 067):
 
 | Comparison | Layer | A | B |
 |---|---|---|---|
-| Entrance (1.4% of the image) | Measured (A only) | 4.63 | – |
-| | Classic salience | 1.44 | 1.29 |
-| | UNISAL | 1.80 | 2.52 |
-| | DeepGaze IIE | 3.06 | 4.15 |
-| | DeepGaze MSDB | 4.37 | 4.52 |
+| Entrance, door and surround (1.0% of the image) | Measured (A only) | 3.43 | – |
+| | Classic salience | 1.05 | 0.94 |
+| | UNISAL | 1.26 | 1.79 |
+| | DeepGaze IIE | 2.71 | 3.60 |
+| | DeepGaze MSDB | 3.45 | 3.53 |
 | Greenery, added planting (4.3%) | Measured (A only) | 2.71 | – |
 | | Classic salience | 5.19 | 6.16 |
 | | UNISAL | 3.44 | 1.75 |

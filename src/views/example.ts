@@ -1,6 +1,6 @@
-import { COMPARISON_CAVEAT, COMPARISON_INTRO, COMPARISONS, MEASURED_NOTE, type ComparisonText, type Measure } from '../content/comparisons';
+import { COMPARISON_CAVEAT, COMPARISON_INTRO, COMPARISONS, MEASURED_NOTE, type ComparisonText } from '../content/comparisons';
 import type { ComparisonManifest, ExamplePhoto } from '../examples';
-import { attentionShares, decodeAreas, decodeRle, type Area, type AreaFile } from '../maps/areas';
+import { attentionShares, decodeRle, type Area } from '../maps/areas';
 import { difference, pearson, type SaliencyMap } from '../maps/saliency-map';
 import { decodeMap, type PrecomputedMap } from '../models/deepgaze';
 import { loadFixations } from '../models/measured';
@@ -11,13 +11,11 @@ import { drawDifference, drawGreyed, drawHeatmap } from '../render/heatmap';
 
 /** Content hashes of the data folders, set by vite.config.ts, so a stale cached copy is never used. */
 declare const __COMPARISONS_VERSION__: string;
-declare const __AREAS_VERSION__: string;
 
 const BASE = import.meta.env.BASE_URL;
 const WIDTH = 640;
 
 type MapChoice = 'photo' | (string & {});
-type Mode = 'pair' | 'slider' | 'difference';
 
 interface RegionFile {
   example: string;
@@ -27,12 +25,11 @@ interface RegionFile {
   regions: { id: string; label: string; share: number; rle: number[] }[];
 }
 
-/** Everything one condition needs: its photo, every layer's map (null where it has none) and its automatic areas. */
+/** Everything one condition needs: its photo and every layer's map (null where it has none). */
 interface Condition {
   photo: ExamplePhoto;
   bitmap: ImageBitmap;
   maps: Map<string, SaliencyMap | null>;
-  areas: Area[];
 }
 
 interface Loaded {
@@ -66,8 +63,7 @@ async function loadCondition(photo: ExamplePhoto): Promise<Condition> {
       }),
     ),
   );
-  const areaFile = await fetchJson<AreaFile>(`${BASE}precomputed/areas/${photo.id}.json?v=${__AREAS_VERSION__}`);
-  return { photo, bitmap: await bitmap, maps, areas: areaFile ? decodeAreas(areaFile) : [] };
+  return { photo, bitmap: await bitmap, maps };
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -81,35 +77,26 @@ const pct = (x: number) => `${(x * 100).toFixed(1)}%`;
 const points = (d: number) => `${d >= 0.0005 ? '+' : d <= -0.0005 ? '−' : '±'}${Math.abs(d * 100).toFixed(1)}`;
 const short = (m: ModelSpec) => m.shortName ?? m.name;
 
-/**
- * The mask of a measure for one condition: a changed region, an automatic area or the lower third. All are the
- * same pixels in A and B, except an automatic area marked perImage, which comes from each image itself.
- */
-function measureMask(loaded: Loaded, measure: Measure, condition: Condition): Area | undefined {
-  const { width, height } = loaded.maskSize;
-  if (measure.source === 'region') return loaded.regions.find((r) => r.id === measure.id);
-  if (measure.source === 'area') return (measure.perImage || condition === loaded.reference ? condition : loaded.a).areas.find((a) => a.id === measure.id);
-  const mask = new Uint8Array(width * height);
-  mask.fill(1, Math.ceil((height * 2) / 3) * width);
-  return { id: measure.id, label: measure.label, group: 'category', share: 1 / 3, rle: [], mask };
-}
+/** The manipulated area: the same pixels in every image of the comparison. */
+const areaMask = (loaded: Loaded): Area | undefined => loaded.regions.find((r) => r.id === loaded.text.area.id);
 
-/** Share of a map's attention inside a measure's mask, as the Areas view computes it. */
-function share(loaded: Loaded, measure: Measure, condition: Condition, layer: string): number | null {
+/** Share of a map's attention inside the manipulated area, as the Areas view computes it. */
+function share(loaded: Loaded, condition: Condition, layer: string): number | null {
   const map = condition.maps.get(layer);
-  const area = measureMask(loaded, measure, condition);
+  const area = areaMask(loaded);
   if (!map || !area) return null;
   const { width, height } = loaded.maskSize;
   return attentionShares(map, [area], width, height).get(area.id) ?? null;
 }
 
-/** The sentence under "What the models predict" for one measure, built from the numbers so it always matches the table. */
-function verdict(loaded: Loaded, measure: Measure): string {
+/** The sentence under "What the models predict", built from the numbers so it always matches the table. */
+function verdict(loaded: Loaded): string {
+  const area = loaded.text.area;
   const predictions = models.filter((m) => m.kind !== 'measured');
   const rows = predictions
-    .map((m) => ({ m, a: share(loaded, measure, loaded.a, m.id), b: share(loaded, measure, loaded.b, m.id) }))
+    .map((m) => ({ m, a: share(loaded, loaded.a, m.id), b: share(loaded, loaded.b, m.id) }))
     .filter((r): r is { m: ModelSpec; a: number; b: number } => r.a !== null && r.b !== null);
-  if (!rows.length) return `${measure.label}: not available.`;
+  if (!rows.length) return `${area.label}: not available.`;
   const delta = (r: { a: number; b: number }) => Math.round((r.b - r.a) * 1000) / 1000;
   const more = rows.filter((r) => delta(r) > 0);
   const less = rows.filter((r) => delta(r) < 0);
@@ -120,19 +107,19 @@ function verdict(loaded: Loaded, measure: Measure): string {
   const names = (list: typeof rows) => list.map((r) => r.m.name).join(', ');
   const verb = (list: typeof rows, one: string, many: string) => `${names(list)} ${list.length === 1 ? one : many}`;
   const n = rows.length;
-  const where = `on ${measure.phrase} in B`;
-  if (more.length === n) return `${measure.label}: all ${n} models predict a larger share of attention ${where} (${range(more)}).`;
-  if (less.length === n) return `${measure.label}: all ${n} models predict a smaller share of attention ${where} (${range(less)}).`;
+  const where = `on ${area.phrase} in B`;
+  if (more.length === n) return `${area.label}: all ${n} models predict a larger share of attention ${where} (${range(more)}).`;
+  if (less.length === n) return `${area.label}: all ${n} models predict a smaller share of attention ${where} (${range(less)}).`;
   const same = rows.filter((r) => delta(r) === 0);
   const [lead, other, leadWord, otherWord] = more.length >= less.length ? [more, less, 'larger', 'smaller'] : [less, more, 'smaller', 'larger'];
   const parts = [`${lead.length} of ${n} models predict a ${leadWord} share of attention ${where} (${names(lead)}: ${range(lead)})`];
   if (other.length) parts.push(`${verb(other, 'predicts', 'predict')} a ${otherWord} share (${range(other)})`);
   if (same.length) parts.push(`${verb(same, 'shows', 'show')} no change`);
-  return `${measure.label}: ${parts.join('; ')}.`;
+  return `${area.label}: ${parts.join('; ')}.`;
 }
 
-/** Outlines a mask on a canvas twice its size; a dashed line for automatic areas, which differ per image. */
-function drawOutline(canvas: HTMLCanvasElement, mask: Uint8Array | undefined, width: number, height: number, dashed: boolean): void {
+/** Outlines a mask on a canvas twice its size. */
+function drawOutline(canvas: HTMLCanvasElement, mask: Uint8Array | undefined, width: number, height: number): void {
   const scale = 2;
   canvas.width = width * scale;
   canvas.height = height * scale;
@@ -146,7 +133,7 @@ function drawOutline(canvas: HTMLCanvasElement, mask: Uint8Array | undefined, wi
       const i = y * width + x;
       if (!mask[i]) continue;
       const edge = x === 0 || y === 0 || x === width - 1 || y === height - 1 || !mask[i - 1] || !mask[i + 1] || !mask[i - width] || !mask[i + width];
-      if (!edge || (dashed && (x + y) % 6 >= 4)) continue;
+      if (!edge) continue;
       for (let dy = 0; dy < scale; dy++) {
         for (let dx = 0; dx < scale; dx++) {
           const k = ((y * scale + dy) * canvas.width + x * scale + dx) * 4;
@@ -190,8 +177,8 @@ function figure(): Figure {
   return { root, frame, photo, heat, dots, outline, tag, note, caption };
 }
 
-/** Draws one condition with the chosen map, its measured fixations where it has them, and the measure's outline. */
-function paint(fig: Figure, loaded: Loaded, condition: Condition, choice: MapChoice, measure: Measure, outlined: boolean): void {
+/** Draws one condition with the chosen map, its measured fixations where it has them, and the manipulated area. */
+function paint(fig: Figure, loaded: Loaded, condition: Condition, choice: MapChoice, highlighted: boolean): void {
   const h = Math.round((WIDTH * condition.photo.height) / condition.photo.width);
   const model = models.find((m) => m.id === choice);
   fig.photo.setAttribute('role', 'img');
@@ -220,15 +207,34 @@ function paint(fig: Figure, loaded: Loaded, condition: Condition, choice: MapCho
     );
   }
 
-  const area = measureMask(loaded, measure, condition);
-  fig.outline.hidden = !outlined;
-  drawOutline(fig.outline, outlined ? area?.mask : undefined, loaded.maskSize.width, loaded.maskSize.height, measure.source === 'area');
+  fig.outline.hidden = !highlighted;
+  drawOutline(fig.outline, highlighted ? areaMask(loaded)?.mask : undefined, loaded.maskSize.width, loaded.maskSize.height);
+}
+
+/** Draws the difference B − A of the chosen prediction over B; measured gaze has none, as B is always edited. */
+function paintDifference(fig: Figure, loaded: Loaded, choice: MapChoice, highlighted: boolean): void {
+  const h = Math.round((WIDTH * loaded.b.photo.height) / loaded.b.photo.width);
+  const model = models.find((m) => m.id === choice);
+  drawGreyed(fig.photo, loaded.b.bitmap, WIDTH, h);
+  fig.photo.setAttribute('role', 'img');
+  fig.photo.setAttribute('aria-label', `Difference between the maps of B and A, over ${loaded.b.photo.title}`);
+  const mapA = model && model.kind !== 'measured' ? loaded.a.maps.get(model.id) : null;
+  const mapB = model && model.kind !== 'measured' ? loaded.b.maps.get(model.id) : null;
+  fig.heat.hidden = !(mapA && mapB);
+  if (mapA && mapB) drawDifference(fig.heat, difference(mapB, mapA), WIDTH, h);
+  fig.tag.hidden = !(mapA && mapB);
+  fig.tag.className = 'predicted-tag';
+  fig.tag.textContent = model ? `Predicted B − A · ${short(model)}` : '';
+  fig.note.textContent = mapA && mapB ? '' : !model ? 'Choose a model to see the difference' : model.kind === 'measured' ? 'No difference: B has no measured gaze' : 'Not available';
+  fig.dots.hidden = true;
+  fig.outline.hidden = !highlighted;
+  drawOutline(fig.outline, highlighted ? areaMask(loaded)?.mask : undefined, loaded.maskSize.width, loaded.maskSize.height);
 }
 
 /**
- * The Example section (prompts 058, 066): an overview of three design comparisons and, for the chosen one, its
- * question, background, conditions, two possible outcomes, what the models predict, and the two images with
- * any map side by side, as a slider or as a difference. Measured gaze appears only on untouched originals.
+ * The Example section (prompts 058, 066, 067): an overview of three design comparisons and, for the chosen one,
+ * its question, background, conditions, two possible outcomes, what the models predict in the manipulated area,
+ * and A, B and their difference side by side for any map. Measured gaze appears only on untouched originals.
  */
 export function mountExample(section: HTMLElement, manifest: ComparisonManifest, photoById: (id: string) => ExamplePhoto | undefined, open: (id: string) => void): void {
   const heading = el('h2', 'section-label', 'Example · three design comparisons');
@@ -317,9 +323,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     const { text } = loaded;
     detail.dataset.id = text.id;
     let choice: MapChoice = 'deepgaze-msdb';
-    let mode: Mode = 'pair';
-    let measure = text.measures[0];
-    let outlined = true;
+    let highlighted = true;
 
     const head = el('header', 'comparison-head');
     head.append(el('p', 'photo-place', `Example ${text.number} · ${text.place}`), el('h3', 'comparison-title', text.title));
@@ -339,7 +343,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     for (const outcome of text.outcomes) outcomeList.append(el('li', '', outcome));
     outcomes.append(outcomeList, el('p', 'muted', 'Hypotheses, not results.'));
     const result = el('dd', 'comparison-result');
-    for (const m of text.measures) result.append(el('span', '', verdict(loaded, m)));
+    result.append(el('span', '', verdict(loaded)));
     facts.append(
       el('dt', '', 'Question'),
       el('dd', 'comparison-question', text.question),
@@ -353,7 +357,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       result,
     );
 
-    // Controls: which map, how to compare, and which measure is outlined and tabulated.
+    // Controls: which map, and whether the manipulated area is highlighted.
     const controls = el('div', 'comparison-controls');
     const mapGroup = el('div', 'view-tabs comparison-maps');
     mapGroup.setAttribute('role', 'group');
@@ -373,82 +377,26 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       mapGroup.append(button);
       return { id, button };
     });
-    const modeGroup = el('div', 'view-tabs comparison-modes');
-    modeGroup.setAttribute('role', 'group');
-    modeGroup.setAttribute('aria-label', 'Compare');
-    const modes: [Mode, string][] = [
-      ['pair', 'Side by side'],
-      ['slider', 'Slider'],
-      ['difference', 'Difference B − A'],
-    ];
-    const modeButtons = modes.map(([id, label]) => {
-      const button = el('button', 'view-tab', label);
-      button.type = 'button';
-      button.addEventListener('click', () => {
-        mode = id;
-        update();
-      });
-      modeGroup.append(button);
-      return { id, button };
-    });
-    const measureGroup = el('div', 'filters comparison-measures');
-    measureGroup.setAttribute('role', 'group');
-    measureGroup.setAttribute('aria-label', 'Area');
-    const measureButtons = text.measures.map((m) => {
-      const button = el('button', 'filter', m.label);
-      button.type = 'button';
-      button.addEventListener('click', () => {
-        measure = m;
-        update();
-      });
-      measureGroup.append(button);
-      return { m, button };
-    });
-    const outlineToggle = el('label', 'toggle');
-    const outlineBox = el('input');
-    outlineBox.type = 'checkbox';
-    outlineBox.checked = true;
-    outlineBox.addEventListener('change', () => {
-      outlined = outlineBox.checked;
+    const highlightToggle = el('label', 'toggle');
+    const highlightBox = el('input');
+    highlightBox.type = 'checkbox';
+    highlightBox.checked = true;
+    highlightBox.addEventListener('change', () => {
+      highlighted = highlightBox.checked;
       update();
     });
-    outlineToggle.append(outlineBox, ' Outline the area');
-    controls.append(mapGroup, modeGroup, measureGroup, outlineToggle);
+    highlightToggle.append(highlightBox, ' Highlight manipulated area');
+    controls.append(mapGroup, highlightToggle);
 
-    // Side by side, slider and difference share one stage.
-    const stage = el('div', 'comparison-stage');
+    // A, B and the difference B − A, side by side.
     const figA = figure();
     const figB = figure();
-    const pair = el('div', 'comparison-pair');
-    pair.append(figA.root, figB.root);
-    const slider = el('div', 'comparison-slider');
-    const sliderFigA = figure();
-    const sliderFigB = figure();
-    sliderFigB.root.classList.add('comparison-slider-top');
-    const sliderFrame = el('div', 'comparison-slider-frame');
-    sliderFrame.append(sliderFigA.root, sliderFigB.root);
-    const range = el('input', 'comparison-range');
-    range.type = 'range';
-    range.min = '0';
-    range.max = '100';
-    range.value = '50';
-    range.setAttribute('aria-label', `Show more of ${text.labelA} or ${text.labelB}`);
-    const rangeLabels = el('div', 'comparison-range-labels');
-    rangeLabels.append(el('span', '', text.labelA), el('span', '', text.labelB));
-    const applyRange = () => sliderFrame.style.setProperty('--split', `${range.value}%`);
-    range.addEventListener('input', applyRange);
-    applyRange();
-    slider.append(sliderFrame, range, rangeLabels);
-    const diff = el('figure', 'comparison-figure comparison-difference');
-    const diffFrame = el('div', 'frame');
-    const diffPhoto = el('canvas', 'photo');
-    const diffLayer = el('canvas', 'layer');
-    const diffTag = el('span', 'predicted-tag');
-    const diffNote = el('span', 'cell-note');
-    diffFrame.append(diffPhoto, diffLayer, diffTag, diffNote);
-    const diffCaption = el('figcaption');
-    diff.append(diffFrame, diffCaption);
-    stage.append(pair, slider, diff);
+    const figDiff = figure();
+    figA.caption.textContent = text.labelA;
+    figB.caption.textContent = text.labelB;
+    figDiff.caption.textContent = 'B − A · Difference';
+    const stage = el('div', 'comparison-trio');
+    stage.append(figA.root, figB.root, figDiff.root);
 
     const caption = el('p', 'agreement-caption');
     const tableWrap = el('div', 'agreement-wrap');
@@ -476,45 +424,15 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     function update() {
       const model = models.find((m) => m.id === choice);
       for (const { id, button } of mapButtons) button.setAttribute('aria-pressed', String(id === choice));
-      for (const { id, button } of modeButtons) button.setAttribute('aria-pressed', String(id === mode));
-      for (const { m, button } of measureButtons) button.setAttribute('aria-pressed', String(m === measure));
-      pair.hidden = mode !== 'pair';
-      slider.hidden = mode !== 'slider';
-      diff.hidden = mode !== 'difference';
-
-      if (mode === 'pair') {
-        paint(figA, loaded, loaded.a, choice, measure, outlined);
-        paint(figB, loaded, loaded.b, choice, measure, outlined);
-        figA.caption.textContent = text.labelA;
-        figB.caption.textContent = text.labelB;
-      } else if (mode === 'slider') {
-        paint(sliderFigA, loaded, loaded.a, choice, measure, outlined);
-        paint(sliderFigB, loaded, loaded.b, choice, measure, outlined);
-        sliderFigA.caption.textContent = '';
-        sliderFigB.caption.textContent = '';
-      } else {
-        const h = Math.round((WIDTH * loaded.b.photo.height) / loaded.b.photo.width);
-        drawGreyed(diffPhoto, loaded.b.bitmap, WIDTH, h);
-        const mapA = model && model.kind !== 'measured' ? loaded.a.maps.get(model.id) : null;
-        const mapB = model && model.kind !== 'measured' ? loaded.b.maps.get(model.id) : null;
-        diffLayer.hidden = !(mapA && mapB);
-        if (mapA && mapB) drawDifference(diffLayer, difference(mapB, mapA), WIDTH, h);
-        diffTag.hidden = !(mapA && mapB);
-        diffTag.textContent = model ? `Predicted B − A · ${short(model)}` : '';
-        diffNote.textContent = mapA && mapB ? '' : 'Choose a prediction: measured gaze exists for one image at most.';
-        diffCaption.textContent = `Orange: more predicted attention in B (${text.labelB.replace(/^B · /, '')}); blue: less. Shown over B.`;
-      }
-
+      paint(figA, loaded, loaded.a, choice, highlighted);
+      paint(figB, loaded, loaded.b, choice, highlighted);
+      paintDifference(figDiff, loaded, choice, highlighted);
       caption.textContent =
-        mode === 'difference'
-          ? 'The difference of two predicted maps on the same grid. Pale or no colour means little change.'
-          : model?.kind === 'measured'
-            ? 'Measured gaze with its fixation points, on the untouched original only.'
-            : model
-              ? 'Brighter = more predicted attention. Both images use the same model.'
-              : 'Choose a map to see where people are predicted to look.';
-
-      renderTable();
+        model?.kind === 'measured'
+          ? 'Measured gaze with its fixation points, on the untouched original only.'
+          : model
+            ? 'Brighter = more predicted attention; A and B use the same model. Difference: orange = more predicted attention in B, blue = less, shown over B.'
+            : 'Choose a map to see where people are predicted to look.';
     }
 
     function renderTable() {
@@ -526,8 +444,8 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
           const tr = el('tr');
           const name = el('th', m.kind === 'measured' ? 'measured' : '', m.name);
           name.scope = 'row';
-          const a = share(loaded, measure, loaded.a, m.id);
-          const b = share(loaded, measure, loaded.b, m.id);
+          const a = share(loaded, loaded.a, m.id);
+          const b = share(loaded, loaded.b, m.id);
           const mapA = loaded.a.maps.get(m.id);
           const mapB = loaded.b.maps.get(m.id);
           const cell = (value: string, title?: string) => {
@@ -545,38 +463,34 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
           );
           return tr;
         });
-      table.replaceChildren(el('caption', 'visually-hidden', `Share of attention on ${measure.phrase}`), el('thead'), el('tbody'));
+      const { phrase, note } = text.area;
+      table.replaceChildren(el('caption', 'visually-hidden', `Share of attention on ${phrase}`), el('thead'), el('tbody'));
       table.tHead!.append(head);
       table.tBodies[0].append(...rows);
 
-      const area = measureMask(loaded, measure, loaded.a);
+      const area = areaMask(loaded);
       const covered = pct(area ? area.mask.reduce((s, v) => s + v, 0) / area.mask.length : 0);
-      const size = measure.perImage
-        ? 'an automatic area found in each image separately, so the planting in B counts'
-        : measure.source === 'area'
-          ? `${covered} of the image: the automatic area found in A, used for both`
-          : `${covered} of the image, the same pixels in A and B`;
       notes.replaceChildren(
-        el('p', 'agreement-caption', `Share of all attention on ${measure.phrase} (${size}). B − A in percentage points. Match A–B: Pearson r between the two maps (1 = same pattern).`),
+        el('p', 'agreement-caption', `Share of all attention on ${phrase} (${covered} of the image, the same pixels in A and B). B − A in percentage points. Match A–B: Pearson r between the two maps (1 = same pattern).`),
+        el('p', 'agreement-caption', note),
       );
-      if (measure.source === 'region')
-        notes.append(el('p', 'agreement-caption', 'The area is where the edit changed the image, found from the pixel difference between A and B.'));
       if (loaded.reference) {
-        const msdb = share(loaded, measure, loaded.reference, 'deepgaze-msdb');
-        const measured = share(loaded, measure, loaded.reference, 'measured');
+        const msdb = share(loaded, loaded.reference, 'deepgaze-msdb');
+        const measured = share(loaded, loaded.reference, 'measured');
         if (measured !== null && msdb !== null)
           notes.append(
-            el('p', 'agreement-caption', `On the untouched original photograph, without the edits, measured gaze puts ${pct(measured)} of attention on ${measure.phrase}; DeepGaze MSDB predicts ${pct(msdb)}.`),
+            el('p', 'agreement-caption', `On the untouched original photograph, without the edits, measured gaze puts ${pct(measured)} of attention on ${phrase}; DeepGaze MSDB predicts ${pct(msdb)}.`),
           );
       } else {
-        const measured = share(loaded, measure, loaded.a, 'measured');
-        const msdb = share(loaded, measure, loaded.a, 'deepgaze-msdb');
+        const measured = share(loaded, loaded.a, 'measured');
+        const msdb = share(loaded, loaded.a, 'deepgaze-msdb');
         if (measured !== null && msdb !== null)
           notes.append(el('p', 'agreement-caption', `On the original (A), measured gaze puts ${pct(measured)} of attention there and DeepGaze MSDB predicts ${pct(msdb)}: a check of the model on this scene, not of the change.`));
       }
       notes.append(el('p', 'agreement-caption', MEASURED_NOTE), el('p', 'agreement-caption', COMPARISON_CAVEAT));
     }
 
+    renderTable();
     update();
   }
 

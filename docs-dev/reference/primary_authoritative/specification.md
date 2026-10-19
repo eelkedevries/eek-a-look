@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.41 · **Last updated:** 2026-10-19
+**Version:** 0.42 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -88,6 +88,10 @@ Compendium to the ground-floor measure, as indicators that change no outcome
 (prompt 062, owner's request of 2026-10-19).
 0.41 describes each example comparison as question, background, conditions
 and two possible outcomes (prompt 066, owner's request of 2026-10-19).
+0.42 shows A, B and their difference side by side, measures only the
+manipulated area, with a "Highlight manipulated area" checkbox, and makes the
+entrance area the door and its recoloured surround (prompt 067, owner's
+request of 2026-10-19).
 
 ## Scope
 
@@ -806,13 +810,15 @@ was run on the photos.
   `public/precomputed/comparisons/<model-id>/`), and the automatic areas by
   `tools/areas/build.py` (categories and ground floor; SAM 3 façade elements
   only when `elements.py --apply --only-missing` runs on the laptop).
-- **Changed region**: where the edit changed the image, from the pixel
-  difference between A and B inside a search box set around the described
-  change (`tools/comparisons/regions.py`, masks at 640 × 480 in
-  `public/precomputed/comparisons/<id>.json`). The same pixels count in A and
-  B. Also shown: the lower third of the image (greenery), the automatic
-  ground floor found in A, used for both (entrance, glazing), and greenery
-  found in each image separately, so that added planting counts (greenery).
+- **Manipulated area** (prompt 067): the one area of interest of each
+  comparison, the same pixels in A and B (`tools/comparisons/regions.py`,
+  masks at 640 × 480 in `public/precomputed/comparisons/<id>.json`).
+  Entrance: the door and its recoloured surround, i.e. the bounding rectangle
+  of the frame found from the change in blueness between A and B, extended
+  down to the step, where the plants hide the frame's legs. Greenery and
+  glazing: where the edit changed the image, from the pixel difference
+  between A and B inside a search box set around the described change. No
+  other area (automatic areas, the lower third) is measured in this section.
 - Each comparison is described in a fixed format (prompt 066): **Question**
   (one short sentence), **Background** (only what the question needs),
   **Conditions** (A, B and what is manipulated) and **Possible outcomes**
@@ -827,9 +833,11 @@ was run on the photos.
   untouched original. An edited image never shows a measured layer or
   fixation points, and its place line reads "edited for the Example section,
   predictions only".
-- Views: side by side, a slider between A and B, and the difference B − A of
-  a predicted map (blue–orange, as in Contrast). Each image opens in the
-  workspace, where every view works on it.
+- View (prompt 067): A, B and the difference B − A of the chosen predicted
+  map (blue–orange, as in Contrast, over B) side by side; one column at phone
+  width. A "Highlight manipulated area" checkbox, on by default, outlines the
+  manipulated area on all three. Each image opens in the workspace, where
+  every view works on it.
 
 **Rating page** (prompt 059)
 

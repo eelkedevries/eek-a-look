@@ -1,17 +1,15 @@
 /**
- * The three design comparisons of the Example section (prompt 058). The images and their credits are in
- * public/examples/comparisons.json; the regions in public/precomputed/comparisons/<id>.json.
+ * The three design comparisons of the Example section (prompts 058, 066, 067). The images and their credits are in
+ * public/examples/comparisons.json; the manipulated areas in public/precomputed/comparisons/<id>.json.
  */
-export interface Measure {
-  /** 'region': a changed region of the comparison (same pixels in both images); 'area': an automatic area of each image; 'lower-third': the bottom third of the image. */
-  source: 'region' | 'area' | 'lower-third';
-  /** Region or area id. */
+export interface ManipulatedArea {
+  /** Region id in public/precomputed/comparisons/<id>.json; the same pixels in A and B. */
   id: string;
   label: string;
-  /** How the measure reads in a sentence: "more attention to …". */
+  /** How the area reads in a sentence: "more attention to …". */
   phrase: string;
-  /** For an automatic area: use each image's own mask (the edit itself changes it, as with greenery), not image A's for both. */
-  perImage?: boolean;
+  /** How the area was found. */
+  note: string;
 }
 
 export interface ComparisonText {
@@ -31,8 +29,8 @@ export interface ComparisonText {
   outcomes: [string, string];
   labelA: string;
   labelB: string;
-  /** The first measure answers the question; the others add context. */
-  measures: Measure[];
+  /** The area of interest: where the predicted attention in A and B is compared. */
+  area: ManipulatedArea;
 }
 
 export const COMPARISONS: ComparisonText[] = [
@@ -53,10 +51,12 @@ export const COMPARISONS: ComparisonText[] = [
     ],
     labelA: 'A · Original',
     labelB: 'B · Blue-teal surround',
-    measures: [
-      { source: 'region', id: 'entrance', label: 'Entrance and surround', phrase: 'the entrance and its surround' },
-      { source: 'area', id: 'ground-floor', label: 'Ground floor (automatic)', phrase: 'the ground floor' },
-    ],
+    area: {
+      id: 'entrance',
+      label: 'Door and surround',
+      phrase: 'the door and its surround',
+      note: 'The area is the door and its recoloured surround: the surround found from the change in colour between A and B, down to the step, where the plants hide it.',
+    },
   },
   {
     id: 'greenery',
@@ -75,11 +75,12 @@ export const COMPARISONS: ComparisonText[] = [
     ],
     labelA: 'A · Original',
     labelB: 'B · Low planting',
-    measures: [
-      { source: 'region', id: 'planting', label: 'Added planting', phrase: 'the added planting' },
-      { source: 'lower-third', id: 'lower-third', label: 'Lower third of the image', phrase: 'the lower third of the image' },
-      { source: 'area', id: 'greenery', label: 'Greenery (automatic)', phrase: 'all greenery', perImage: true },
-    ],
+    area: {
+      id: 'planting',
+      label: 'Added planting',
+      phrase: 'the added planting',
+      note: 'The area is where the edit added planting, found from the pixel difference between A and B.',
+    },
   },
   {
     id: 'glazing',
@@ -98,10 +99,12 @@ export const COMPARISONS: ComparisonText[] = [
     ],
     labelA: 'A · Opaque glazing',
     labelB: 'B · Transparent glazing',
-    measures: [
-      { source: 'region', id: 'windows', label: 'Three window bays', phrase: 'the three window bays' },
-      { source: 'area', id: 'ground-floor', label: 'Ground floor (automatic)', phrase: 'the ground floor' },
-    ],
+    area: {
+      id: 'windows',
+      label: 'Three window bays',
+      phrase: 'the three window bays',
+      note: 'The area is the three window bays, found from the pixel difference between the two versions.',
+    },
   },
 ];
 
