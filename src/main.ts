@@ -13,12 +13,12 @@ import { showOnStage } from './stage';
 import { renderAbout } from './views/about';
 import { mountAgreement } from './views/agreement';
 import { mountAreas } from './views/areas';
+import { contrastWith, mountContrast } from './views/contrast';
 import { mountPanel } from './views/panel';
 import { mountMethods } from './views/methods';
 import { mountOverlay } from './views/overlay';
 import { mountSideBySide } from './views/side-by-side';
 import { mountTabs } from './views/tabs';
-import { mountWhatAiAdds } from './views/what-ai-adds';
 
 const stage = document.querySelector<HTMLElement>('#stage')!;
 const credit = document.querySelector<HTMLElement>('#credit')!;
@@ -29,14 +29,17 @@ const uploadMessage = document.querySelector<HTMLElement>('#upload-message')!;
 
 const panel = (id: string) => document.querySelector<HTMLElement>(`#panel-${id}`)!;
 mountOverlay(document.querySelector<HTMLElement>('#overlay-controls')!, stage);
-mountSideBySide(panel('side'));
-mountWhatAiAdds(panel('adds'));
+mountSideBySide(panel('side'), (a, b) => {
+  contrastWith(a, b);
+  showTab('contrast');
+});
+mountContrast(panel('contrast'));
 mountAreas(panel('areas'));
 mountPanel(document.querySelector<HTMLElement>('#areas-panel')!);
-mountTabs(document.querySelector<HTMLElement>('#view-tabs')!, [
+const showTab = mountTabs(document.querySelector<HTMLElement>('#view-tabs')!, [
   { id: 'overlay', label: 'Overlay', panel: panel('overlay') },
   { id: 'side', label: 'Side by side', panel: panel('side') },
-  { id: 'adds', label: 'What AI adds', panel: panel('adds') },
+  { id: 'contrast', label: 'Contrast', panel: panel('contrast') },
   { id: 'areas', label: 'Areas', panel: panel('areas') },
 ]);
 mountAgreement(document.querySelector<HTMLElement>('#views')!);

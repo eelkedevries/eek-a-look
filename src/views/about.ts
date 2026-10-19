@@ -80,7 +80,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     'The models learned from people looking at photos on a screen for a few seconds, not from people walking down a real street.',
     'They predict an average viewer, not any one person.',
     'What people are doing changes where they look: finding an entrance is not the same as taking in the view.',
-    'In “What AI adds”, the neural model mostly adds sharp peaks; where it expects less, the change is small and spread out, so the blue is faint.',
+    'In “Contrast”, a sharp peak in one map shows strongly; a difference that is spread thinly over a large area shows only faintly.',
   ]) limitList.append(el('li', text));
 
   const areasHeading = el('h3', 'Automatic areas');

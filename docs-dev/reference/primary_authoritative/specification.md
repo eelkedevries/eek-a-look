@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.14 · **Last updated:** 2026-10-19
+**Version:** 0.15 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -28,7 +28,10 @@ example photos: nine street categories and the ground floor (prompt 021).
 that scored best on human-labelled façades (prompt 023). 0.12 takes the
 horizon from standing people when façade lines fail (prompt 021b). 0.13 adds
 the Areas view with attention ÷ size per area (prompt 025). 0.14 adds the
-simulated panel's verdicts under the Areas table (prompt 026).
+simulated panel's verdicts under the Areas table (prompt 026). 0.15 replaces
+"What AI adds" with a Contrast view of any two maps, by default against the
+best model, and adds match scores and a shared pointer ring to the side-by-side
+view (prompt 027, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -51,7 +54,7 @@ In scope for v1:
   (`tools/measured-gaze/`);
 - **upload** of the visitor's own photo (file picker only; no camera capture);
 - four views: **overlay with opacity slider**, **side by side**,
-  **"What AI adds"** map, **agreement scores**;
+  **contrast** of two maps, **agreement scores**;
 - an **Areas** view for the example photos: automatic areas and attention ÷
   size per area and layer;
 - a short About section covering the models, honesty, privacy and credits.
@@ -313,18 +316,28 @@ interface ExamplePhoto {
 
 **Derived views**
 
-- **What AI adds** = P_ai − P_centre on the shared grid, where *ai* is the
-  best available neural model (MSDB, then IIE, then UNISAL) and is named in the
-  view. It is drawn with a diverging colour map symmetric around zero and
-  described to visitors as "where the AI expects more (or less) looking than
-  *people look at the middle* alone".
+- **Best model** = the best available neural model for the photo: MSDB, then
+  IIE, then UNISAL.
+- **Side by side**: the photo and every layer that covers it. Each map shows
+  its Pearson r with the reference (measured gaze where the photo has it,
+  otherwise the best model), and the reference is marked as such. A ring
+  follows the pointer at the same relative spot in every panel. A "Contrast"
+  button opens that map against the reference in the Contrast view.
+- **Contrast** = P_a − P_b on the shared grid for any two layers the visitor
+  chooses (with a swap button). By default *b* is the best model and *a* is
+  measured gaze where the photo has it, otherwise the next model below *b*
+  in display order. It is drawn with a diverging colour map symmetric around
+  zero, with both names in the legend and the caption ("Orange: *a* expects
+  more looking here than *b*. Blue: less."), their Pearson r, and both
+  heatmaps beneath. A difference involving measured gaze is labelled
+  "Measured vs predicted".
 - **Agreement** = the Pearson correlation of two maps on the shared grid, for
   every pair of models, shown as a lower-triangle matrix to two decimals with
   the plain-language scale "0 = unrelated · 1 = same pattern"; "n/a" where a
   model does not cover the photo.
 - **Match with measured gaze** (photos with measured data only) = each model's
   Pearson r with the measured map, to two decimals, sorted from high to low.
-- **Areas** (a tab after "What AI adds"; example photos only, uploads get "Areas
+- **Areas** (a tab after "Contrast"; example photos only, uploads get "Areas
   are computed in advance for the example photos only."):
   - the greyed photo with the area outlines of one group, either "Street
     categories" or "Façade elements" (with the ground floor);
@@ -409,7 +422,9 @@ interface ExamplePhoto {
   after research: Borland and Taylor (2007); Liu and Heer (CHI 2018); Crameri,
   Shephard and Heron (Nature Communications, 2020); Reda (IEEE TVCG, 2023).
 - The difference map uses a colour-blind-safe diverging map
-  (blue → neutral → orange).
+  (blue → neutral → orange). The pale middle of the table is skipped
+  (indexed from 0.3 of each half) and alpha = 0.92·|t|^0.75, so small
+  differences tint rather than veil the photo.
 - No rainbow or "jet" colour maps.
 
 ## Naming and voice

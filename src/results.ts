@@ -1,5 +1,5 @@
 import { assertProbability, gridFor, type GridSize, type SaliencyMap } from './maps/saliency-map';
-import { models } from './models/registry';
+import { models, NEURAL_PREFERENCE } from './models/registry';
 import { UnavailableError, type ModelSpec } from './models/types';
 import { onImageChange, type CurrentImage } from './state';
 
@@ -31,6 +31,11 @@ export function onResults(listener: Listener): void {
 /** The layers that cover this image, in display order; a layer such as measured gaze is absent on other photos. */
 export function modelsFor(results: Results): ModelSpec[] {
   return models.filter((m) => results.status.has(m.id));
+}
+
+/** The best neural model that covers this photo: the first in NEURAL_PREFERENCE that is not unavailable or failed. */
+export function bestModel(results: Results): string | undefined {
+  return NEURAL_PREFERENCE.find((id) => !['unavailable', 'failed'].includes(results.status.get(id)?.state ?? 'unavailable'));
 }
 
 function emit(results: Results, modelId?: string) {

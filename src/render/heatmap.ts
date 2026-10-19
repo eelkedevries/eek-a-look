@@ -44,18 +44,23 @@ export function drawHeatmap(target: HTMLCanvasElement, map: SaliencyMap, width: 
   paint(target, width, height, rgba, map.width, map.height);
 }
 
-/** Draws a signed field on a scale symmetric around zero; alpha follows the magnitude. */
+/**
+ * Draws a signed field on a scale symmetric around zero; alpha follows the magnitude. The pale middle
+ * of the table is skipped, so small differences tint the photo blue or orange instead of veiling it
+ * in white, which made the zero lines read as dark rings.
+ */
 export function drawDifference(target: HTMLCanvasElement, field: SignedField, width: number, height: number, lut: Lut = BLUE_ORANGE): void {
   const magnitudes = field.data.map(Math.abs);
   const top = percentile(magnitudes, 0.99) || 1;
   const rgba = new Uint8ClampedArray(field.width * field.height * 4);
   for (let i = 0; i < field.data.length; i++) {
     const t = Math.max(-1, Math.min(field.data[i] / top, 1));
-    const k = Math.round(((t + 1) / 2) * 255) * 3;
+    const c = Math.sign(t) * (0.3 + 0.7 * Math.abs(t));
+    const k = Math.round(((c + 1) / 2) * 255) * 3;
     rgba[i * 4] = lut[k];
     rgba[i * 4 + 1] = lut[k + 1];
     rgba[i * 4 + 2] = lut[k + 2];
-    rgba[i * 4 + 3] = Math.round(235 * Math.pow(Math.abs(t), 0.5));
+    rgba[i * 4 + 3] = Math.round(235 * Math.pow(Math.abs(t), 0.75));
   }
   paint(target, width, height, rgba, field.width, field.height);
 }

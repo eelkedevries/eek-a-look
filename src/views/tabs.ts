@@ -4,8 +4,11 @@ export interface Tab {
   panel: HTMLElement;
 }
 
-/** An ARIA tablist: arrow keys, Home and End move between tabs; only the selected tab is in the tab order. */
-export function mountTabs(list: HTMLElement, tabs: Tab[], onChange?: (id: string) => void): void {
+/**
+ * An ARIA tablist: arrow keys, Home and End move between tabs; only the selected tab is in the tab order.
+ * Returns a function that selects a tab by id.
+ */
+export function mountTabs(list: HTMLElement, tabs: Tab[], onChange?: (id: string) => void): (id: string) => void {
   const buttons = tabs.map((tab) => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -46,4 +49,8 @@ export function mountTabs(list: HTMLElement, tabs: Tab[], onChange?: (id: string
 
   list.replaceChildren(...buttons);
   select(0);
+  return (id) => {
+    const index = tabs.findIndex((tab) => tab.id === id);
+    if (index >= 0) select(index);
+  };
 }

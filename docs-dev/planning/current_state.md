@@ -40,8 +40,10 @@ wins and the gap is work still to be done.
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
   drawing), `src/models/` (types, registry, centre bias, classic salience in a Web Worker
   at `src/models/classic-salience/`), `src/results.ts` (runs
-  every model per image) and `src/views/` (tabs; overlay with model selector and slider; side by side;
-  "What AI adds" = UNISAL − centre bias; agreement = Pearson r per pair).
+  every model per image) and `src/views/` (tabs; overlay with model selector and slider; side by side
+  with r against the reference and a shared pointer ring; contrast = any two
+  maps, by default against `bestModel()` in `src/results.ts`; agreement =
+  Pearson r per pair). "What AI adds" was removed in prompt 027.
 - UNISAL in the browser: `src/models/unisal/` (onnxruntime-web 1.30.0, CPU
   WASM in a Web Worker; about 0.1–0.35 s per photo on a desktop). Dev check
   `?check=unisal` compares with the export's reference output (r = 0.9937).

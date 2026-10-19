@@ -21,8 +21,8 @@ page shows up to five predictions of where people would look:
   browser, so their maps were computed in advance on a laptop GPU and cover
   the example photos only.
 
-You can view them as an overlay, side by side, as "What AI adds" (the best
-neural model minus centre bias), and as agreement scores between the models.
+You can view them as an overlay, side by side, as a contrast of any two maps
+(by default against the best model), and as agreement scores between the models.
 
 These are **predictions, not measured gaze**. The models were trained and
 tested on lab data, not on Dutch street photos.

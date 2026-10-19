@@ -22,10 +22,14 @@ page shows UNISAL in their place and says so.
 - **Overlay:** one model's heatmap on the photo. Choose the model with the
   buttons above the photo; the slider fades the heatmap in and out. The
   warmer and redder an area, the more likely people are to look there.
-- **Side by side:** the photo and all models together.
-- **What AI adds:** the best available neural model minus centre bias. Orange
-  marks where it expects more looking than "people look at the middle" alone;
-  blue marks where it expects less.
+- **Side by side:** the photo and all models together. Move the pointer over
+  any map to mark the same spot in all of them. Each map shows its match (r)
+  with the reference: measured gaze where the photo has it, otherwise the best
+  available model. **Contrast** under a map opens it in the Contrast view.
+- **Contrast:** one map minus another. By default, measured gaze (on the
+  Zürich photos) or the next-best model against the best available model;
+  choose any two maps, or swap them. Orange marks where the first map expects
+  more looking, blue where the second does. Both maps are shown underneath.
 - **How much the models agree:** a table of correlations between each pair of
   maps for this photo (0 = unrelated, 1 = same pattern; n/a where a model does
   not cover the photo).
