@@ -86,10 +86,11 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Drafted, not run (2026-10-19): prompts 051–053 in `docs-dev/plan.md`
-(*Seventh round*): areas and image measures for the 25 study photos
-(renderings and 360° panoramas), and a held-out comparison of ways to see
-rhythm on glass and ribbon-window façades.
+Seventh round run (2026-10-19, prompts 051–057). Proposed next, awaiting the
+owner's choice: prompts 058–064 in
+`docs-dev/reference/secondary_background/qualities_improvement_research.md`;
+human ratings with a rubric come first, because no outcome has been checked
+against people yet.
 
 Sixth round (2026-10-19, prompts 040–048, all run, `docs-dev/plan.md`): image measures
 with spatial evidence for the three design principles (`tools/qualities/`),
@@ -234,6 +235,12 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   photos, the 24 earlier files unchanged; study images tagged on the page and
   grouped in the all-photos table. Panoramas: no façade elements found, so their
   ground floors read as closed)
+- `053_rhythm_glass_facades.md` (no spec change: four ways of finding repeating
+  elements compared on odd CMP and LabelMeFacade; mean balanced accuracy A
+  0.781 / 0.797, glazed or banded subset 0.825; B lower there (0.755), C and D
+  end at A's settings, so A is kept and no quality file changed. The glazed
+  subset is only 4 images, so glass façades remain a known limit.
+  LabelMeFacade stays in `.cache/`)
 - `054_fixation_opacity_slider.md` (spec 0.34: a "Fixation points (raw data)" slider
   below the heatmap strength, 65% by default, on photos with measured gaze)
 - `055_qualities_all_at_once.md` (spec 0.35: the Qualities view shows the three

@@ -125,7 +125,8 @@ plain (fewer than 3 instances), irregular.
 **Limits:**
 - Glass curtain walls and ribbon windows, where SAM 3 finds no windows at the
   0.65 threshold, read as plain even when floor bands are plain to see (for
-  example weena-millenniumtoren).
+  example weena-millenniumtoren). Prompt 053 tested three fixes against held-out
+  labels (below); none did better, so the measure is unchanged.
 - Arches, columns and pilasters are not counted (zurich-30, the station
   façade, reads as plain).
 - Sun and shade can split one façade into two colour zones, which counts as
@@ -224,6 +225,20 @@ rhythm as plain; DMS46 reads the stretched ground of a panorama as sand,
 soil, water or plaster; the renders are smaller than the mask grid
 (about 368 px wide).
 
+**Glass and ribbon-window façades (prompt 053):** `compare_rhythm.py` compares the
+measure (A) with three variants on the same cells and windows: B adds SAM 3
+instances for "ribbon window" and "curtain wall panel", C adds LSD segments as
+items where a window has fewer than 3 instances, D calibrates the instance
+score with τ. Calibration: even CMP images plus the LabelMeFacade train split
+(`fetch_labelmefacade.py`, pinned commit, SHA-256-checked, kept in `.cache/`
+and never committed; non-commercial, no licence file). Tests: odd CMP, the
+LabelMeFacade test split and its glazed or banded subset. Mean balanced
+accuracy 0.781 / 0.797 / 0.825 for A; B 0.781 / 0.796 / 0.755; C and D end at
+A's settings. The rule kept A. The glazed or banded subset has only 4 images
+(587 windows), and LabelMeFacade often labels only some windows, so this does
+not settle glass façades. Figures in `rhythm_calibration.json`
+(`glassComparison`) and `qualities_validation.md`.
+
 ## Output
 
 `public/precomputed/qualities/<photo-id>.json`, the `QualityFile` of the
@@ -239,6 +254,8 @@ uv run build.py                 # every measure implemented so far
 uv run build.py --ground-floor  # the active ground floor only
 uv run build.py --rhythm        # rhythm and variety (calibrates on CMP Facade first if needed)
 uv run build.py --calibrate     # re-run the rhythm calibration
+uv run fetch_labelmefacade.py   # LabelMeFacade into .cache/, once (prompt 053)
+uv run compare_rhythm.py        # glass and ribbon-window comparison (about 75 min on 8 GB)
 uv run fetch_dms.py             # DMS46 model, once
 uv run build.py --materials     # tactile materials
 ```

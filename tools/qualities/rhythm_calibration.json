@@ -141,5 +141,92 @@
    }
   }
  },
- "seconds": 780.8
+ "seconds": 780.8,
+ "glassComparison": {
+  "date": "2026-10-19",
+  "prompt": "053",
+  "candidates": {
+   "A": "current: SAM 3 window and balcony, score >= s, current tau",
+   "B": "A plus SAM 3 'ribbon window' and 'curtain wall panel' at score >= sB, tau recalibrated",
+   "C": "A plus LSD segments as items where a window has fewer than 3 instances, own threshold tauLine",
+   "D": "A with s and tau calibrated jointly"
+  },
+  "calibration": "CMP Facade base even images + LabelMeFacade train (100)",
+  "tests": {
+   "cmpTest": "CMP Facade base odd images",
+   "lmfTest": "LabelMeFacade test (845)",
+   "lmfGlazedOrBanded": "LabelMeFacade test images whose labelled windows cover >= 40% of the building or whose median window is >= 3x as wide as tall (4 images)"
+  },
+  "windows": {
+   "calibration": 63968,
+   "cmpTest": 48642,
+   "lmfTest": 128745,
+   "lmfGlazedOrBanded": 587
+  },
+  "params": {
+   "A": {
+    "s": 0.65,
+    "tau": {
+     "vertical": 0.2,
+     "layer": 0.1
+    }
+   },
+   "B": {
+    "s": 0.65,
+    "sB": 0.2,
+    "tau": {
+     "vertical": 0.2,
+     "layer": 0.1
+    }
+   },
+   "C": {
+    "s": 0.65,
+    "tau": {
+     "vertical": 0.2,
+     "layer": 0.1
+    },
+    "tauLine": {
+     "vertical": 0.85,
+     "layer": 0.9
+    }
+   },
+   "D": {
+    "s": 0.65,
+    "sB": null,
+    "tau": {
+     "vertical": 0.2,
+     "layer": 0.1
+    }
+   }
+  },
+  "meanBalancedAccuracy": {
+   "A": {
+    "cmpTest": 0.7812161518241338,
+    "lmfTest": 0.7968875228901716,
+    "lmfGlazedOrBanded": 0.8246705027843534,
+    "meanOfTestSets": 0.7890518373571527
+   },
+   "B": {
+    "cmpTest": 0.7811103127388441,
+    "lmfTest": 0.7964801338299057,
+    "lmfGlazedOrBanded": 0.7552875715841005,
+    "meanOfTestSets": 0.7887952232843749
+   },
+   "C": {
+    "cmpTest": 0.7812161518241338,
+    "lmfTest": 0.7968854926476795,
+    "lmfGlazedOrBanded": 0.8246705027843534,
+    "meanOfTestSets": 0.7890508222359067
+   },
+   "D": {
+    "cmpTest": 0.7812161518241338,
+    "lmfTest": 0.7968875228901716,
+    "lmfGlazedOrBanded": 0.8246705027843534,
+    "meanOfTestSets": 0.7890518373571527
+   }
+  },
+  "rule": "highest mean over the two test sets among candidates within 0.01 of A on CMP odd; otherwise A",
+  "choice": "A",
+  "seconds": 4503.0
+ }
 }

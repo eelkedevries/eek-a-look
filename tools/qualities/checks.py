@@ -238,6 +238,32 @@ def panel_cross_table(data: dict) -> dict:
     return out
 
 
+def glass_section() -> list[str]:
+    """The comparison of prompt 053 (glass and ribbon-window façades), from rhythm_calibration.json, if it ran."""
+    comparison = json.loads(rhythm.CALIBRATION.read_text()).get("glassComparison")
+    if not comparison:
+        return []
+    names = {"cmpTest": "CMP odd", "lmfTest": "LabelMeFacade test", "lmfGlazedOrBanded": "LabelMeFacade glazed or banded"}
+    lines = ["", "### Glass and ribbon-window façades (prompt 053)", "",
+             "Four ways of finding repeating elements, calibrated on the even CMP images and the LabelMeFacade "
+             "train split, tested on held-out labels (mean balanced accuracy over bays and floors).", "",
+             "| Candidate | " + " | ".join(names.values()) + " | Mean of the two test sets |", "|---|---|---|---|---|"]
+    for key, row in comparison["meanBalancedAccuracy"].items():
+        lines.append(f"| {key}: {comparison['candidates'][key]} | " + " | ".join(f"{row[k]:.3f}" for k in names)
+                     + f" | {row['meanOfTestSets']:.3f} |")
+    params, windows = comparison["params"], comparison["windows"]
+    lines += ["", f"D's joint calibration chose s = {params['D']['s']}, A's own threshold, so D is A. C's line threshold "
+              f"(bays {params['C']['tauLine']['vertical']}, floors {params['C']['tauLine']['layer']}) is so strict that the line "
+              "fallback hardly ever counts, so C differs from A only in the fourth decimal. B's extra phrases at "
+              f"s_B = {params['B']['sB']} lower the glazed or banded subset. That subset is 4 images with "
+              f"{windows['lmfGlazedOrBanded']} windows, too few to show a gain on glass façades either way."]
+    lines += ["", f"Rule: {comparison['rule']}. Choice: **{comparison['choice']}**. "
+              f"{comparison['tests']['lmfGlazedOrBanded']}. LabelMeFacade's window labels are often incomplete "
+              "(in 7 of 10 test images checked by eye only some windows are labelled), which counts true repetition as false and so "
+              "penalises candidates that find more windows."]
+    return lines
+
+
 def report(result: dict) -> str:
     r, f, s, d, x = result["rhythm"], result["frontage"], result["sensitivity"], result["discrimination"], result["panelCrossTable"]
     pct = lambda v: f"{v:.0%}"
@@ -272,6 +298,7 @@ def report(result: dict) -> str:
     lines += ["", f"Per image, the share of rhythmic windows from the measure against the share from the labels: "
               f"Spearman ρ = {r['rhythmicShareSpearman']:.2f}, mean absolute difference {r['rhythmicShareMeanAbsDiff']:.2f}.",
               "CMP façades are rectified (no perspective) and mostly classical, so this is an easier test than the street photos.",
+              *glass_section(),
               "", "## Frontage: openings against CMP labels", "",
               f"{f['images']} CMP images with odd numbers that label doors or shops. {f['groundFloorProxy'][0].upper() + f['groundFloorProxy'][1:]} stands",
               "in for the ground floor, the same band for both sides, so only the openings and windows differ.", "",

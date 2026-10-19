@@ -217,11 +217,20 @@ parts of 040 and 041). Results are summarised in
 `reference/secondary_background/qualities_validation.md` and
 `upclip_reproduction.md`.
 
-## Seventh round: study photos and glass façades (drafted 2026-10-19)
+## Seventh round: study photos and glass façades (run 2026-10-19)
 
 Owner's request after the sixth round: measure the 25 "Published studies"
 photos too, and fix the rhythm measure's blind spot on glass and
-ribbon-window façades. Drafted, not run.
+ribbon-window façades. All three run; 053 kept the current rhythm measure (no
+variant did better on held-out labels). Owner's interface requests 054–057
+followed (fixation slider, the three principles at once, fixations over the
+model maps, display settings above the image).
+
+Next, proposed and not drafted: prompts 058–064 in
+`docs-dev/reference/secondary_background/qualities_improvement_research.md`
+(human ratings with a rubric first, then a panel that observes rather than
+judges, panoramas in perspective views, an adapted frontage grade, a
+surface-detail indicator, an outcome scale, rhythm on rectified façades).
 
 | # | Prompt | Notes |
 |---|---|---|

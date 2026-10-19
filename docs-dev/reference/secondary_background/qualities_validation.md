@@ -27,6 +27,21 @@ calibration of τ. Reference: at least 3 regularly spaced elements of one labell
 Per image, the share of rhythmic windows from the measure against the share from the labels: Spearman ρ = 0.68, mean absolute difference 0.28.
 CMP façades are rectified (no perspective) and mostly classical, so this is an easier test than the street photos.
 
+### Glass and ribbon-window façades (prompt 053)
+
+Four ways of finding repeating elements, calibrated on the even CMP images and the LabelMeFacade train split, tested on held-out labels (mean balanced accuracy over bays and floors).
+
+| Candidate | CMP odd | LabelMeFacade test | LabelMeFacade glazed or banded | Mean of the two test sets |
+|---|---|---|---|---|
+| A: current: SAM 3 window and balcony, score >= s, current tau | 0.781 | 0.797 | 0.825 | 0.789 |
+| B: A plus SAM 3 'ribbon window' and 'curtain wall panel' at score >= sB, tau recalibrated | 0.781 | 0.796 | 0.755 | 0.789 |
+| C: A plus LSD segments as items where a window has fewer than 3 instances, own threshold tauLine | 0.781 | 0.797 | 0.825 | 0.789 |
+| D: A with s and tau calibrated jointly | 0.781 | 0.797 | 0.825 | 0.789 |
+
+D's joint calibration chose s = 0.65, A's own threshold, so D is A. C's line threshold (bays 0.85, floors 0.9) is so strict that the line fallback hardly ever counts, so C differs from A only in the fourth decimal. B's extra phrases at s_B = 0.2 lower the glazed or banded subset. That subset is 4 images with 587 windows, too few to show a gain on glass façades either way.
+
+Rule: highest mean over the two test sets among candidates within 0.01 of A on CMP odd; otherwise A. Choice: **A**. LabelMeFacade test images whose labelled windows cover >= 40% of the building or whose median window is >= 3x as wide as tall (4 images). LabelMeFacade's window labels are often incomplete (in 7 of 10 test images checked by eye only some windows are labelled), which counts true repetition as false and so penalises candidates that find more windows.
+
 ## Frontage: openings against CMP labels
 
 158 CMP images with odd numbers that label doors or shops. The bottom quarter of the labelled façade (CMP has no horizon) stands
