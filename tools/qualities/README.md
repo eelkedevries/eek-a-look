@@ -65,6 +65,69 @@ closed frontage (against), entrances and shopfronts on the ground floor
 - People in front of the ground floor come and go, so `useCues` is context,
   not evidence.
 
+## Horizontal–vertical rhythm and variety (prompt 041)
+
+**Definition (this project's):** façades articulated by horizontal layers
+(floor lines, bands, cornices, rows of windows or balconies) and vertical
+units (bays, columns of windows, pilasters) that repeat, with visible
+variation between façade zones, rather than a uniform or unarticulated
+surface. Rhythm is a relation between elements, so the measure looks at their
+spacing; one window says nothing about rhythm.
+
+**Items:** SAM 3 instances for "window" and "balcony" (the thresholds of
+prompt 023), inside the façade. LSD line segments on the façade are drawn as
+evidence ("Floor lines and bands", "Vertical divisions") but are not counted.
+
+**Cells and periodicity.** The façade is cut into 32 × 32 px cells (on the
+640 px mask grid). Each cell with at least 60% façade is judged from the
+160 × 160 px window around it: the instance centres are projected on the
+x-axis (bays) and the y-axis (floors), smoothed (σ = 1.5 px), and the highest
+local peak of the autocorrelation at lags of 5–100 px is the periodicity *p*
+(0 with fewer than 3 instances). A family repeats when *p* ≥ τ.
+
+**Calibration** (`rhythm_calibration.json`): τ per family on the CMP Facade
+images with even numbers, for the best balanced accuracy against the human
+labels (a family repeats if any one labelled class — window, door, balcony,
+pillar or shop across; window, balcony, sill, cornice or moulding up — has at
+least 3 regularly spaced centres in the window). Result: τ = 0.15 for bays
+(balanced accuracy 0.78) and 0.10 for floors (0.80), at the low end of the
+grid, so having three or more regularly placed elements carries most of the
+signal. The odd CMP images are kept for prompt 043.
+
+The prompt's first design did not work on the calibration images and was
+changed there, before the measure ran on the example photos:
+- 64 px windows with lags up to 40 px could not hold three windows of CMP
+  Facade (median gaps 54 px across, 80 px up): the reference fired on 2–3% of
+  windows and τ fell to the edge of its grid;
+- with 160 px windows, line segments and instances together scored a balanced
+  accuracy of 0.59 (bays) and 0.52 (floors); instances alone 0.78 and 0.80.
+
+**Cell classes:** rhythmic (both families repeat), layers only, bays only,
+plain (fewer than 3 instances), irregular.
+
+**Variety:** façade cells clustered by mean colour (CIELAB, distances on
+(L/2, a, b), average linkage, cut at 12); a zone is a cluster with at least
+10% of the façade cells.
+
+**Rule:**
+- `facadeCells` < 8 → Unclear ("Too little façade is visible");
+- `rhythmicShare` ≥ 0.25 and `distinctZones` ≥ 2 → Likely present;
+- `rhythmicShare` ≥ 0.25 and one zone → Unclear ("Repetition without visible
+  variety");
+- `rhythmicShare` < 0.10 → Likely absent ("Few repeating layers or bays");
+- otherwise Unclear ("Some repetition").
+
+**Limits:**
+- Glass curtain walls and ribbon windows, where SAM 3 finds no windows at the
+  0.65 threshold, read as plain even when floor bands are plain to see (for
+  example weena-millenniumtoren).
+- Arches, columns and pilasters are not counted (zurich-30, the station
+  façade, reads as plain).
+- Sun and shade can split one façade into two colour zones, which counts as
+  variety.
+- "Irregular" hardly occurs: with τ this low, three instances almost always
+  count as repeating.
+
 ## Output
 
 `public/precomputed/qualities/<photo-id>.json`, the `QualityFile` of the
@@ -78,6 +141,8 @@ run lengths add up and match its share.
 cd tools/qualities
 uv run build.py                 # every measure implemented so far
 uv run build.py --ground-floor  # the active ground floor only
+uv run build.py --rhythm        # rhythm and variety (calibrates on CMP Facade first if needed)
+uv run build.py --calibrate     # re-run the rhythm calibration
 ```
 
 Check overlays go to `.cache/check/` (ignored by git).

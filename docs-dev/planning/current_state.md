@@ -174,3 +174,9 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   the whole façade, so their outcomes were artefacts)
 - `040b_frontage_assumed_horizon.md` (spec 0.19: assumed horizon → Unclear.
   Ground floor now 1 likely present, 13 likely absent, 10 unclear)
+- `041_rhythm_evidence.md` (spec 0.20: rhythm from the spacing of SAM 3
+  window and balcony instances in 160 px windows, τ calibrated on even CMP
+  images (bays 0.15, floors 0.10; balanced accuracy 0.78 and 0.80), colour
+  zones for variety. The prompt's 64 px windows and line segments failed on
+  the calibration images and were replaced there. 13 likely present, 5
+  unclear, 6 likely absent; glass façades and arcades read as plain)

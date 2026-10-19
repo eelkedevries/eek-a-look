@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.19 · **Last updated:** 2026-10-19
+**Version:** 0.20 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -40,7 +40,11 @@ owner's request of 2026-10-19). 0.18 adds image measures for the three design
 principles, starting with the active ground floor: this project's operational
 definition, frontage columns and a fixed rule, written to quality files
 (prompt 040). 0.19 makes that measure Unclear when the horizon was assumed,
-since the ground floor is then unreliable (prompt 040b).
+since the ground floor is then unreliable (prompt 040b). 0.20 adds the image
+measure for horizontal–vertical rhythm and variety: the spacing of window and
+balcony instances in local windows, calibrated on CMP Facade, and colour zones
+for variety (prompt 041; the window size, the items and the reference were
+corrected on the calibration images before the measure ran on the photos).
 
 ## Scope
 
@@ -214,7 +218,8 @@ interface PrincipleResult {
     label: string;        // visitor-facing
     role: 'supports' | 'against' | 'context';
     share: number;        // fraction of all mask pixels
-    rle: number[];        // as in the area file
+    rle?: number[];       // a region, as in the area file
+    lines?: number[][];   // or line segments [x1, y1, x2, y2] on the mask grid, drawn 1 px wide
   }>;
 }
 ```
@@ -389,6 +394,60 @@ was run on the photos.
   - Shares are of image columns, not metres: perspective compresses distant
     frontage, and people in front of the ground floor come and go. Glazing
     that the window model does not find counts as closed.
+- **Horizontal–vertical rhythm and variety** (operational definition):
+  façades articulated by horizontal layers (floor lines, bands, cornices,
+  rows of windows or balconies) and vertical units (bays, columns of windows,
+  pilasters) that repeat, with visible variation between façade zones, rather
+  than a uniform or unarticulated surface. Rhythm is a relation between
+  elements, so the measure looks at their spacing, not at single elements.
+  - Items, on the mask grid: SAM 3 instances for "window" and "balcony" at the
+    thresholds chosen for windows and balconies in *Automatic areas*, inside
+    the façade category. LSD line segments on façade pixels (at least 2% of
+    the image width long; **vertical** within 8° of vertical, **layer** within
+    60° of horizontal) are drawn as evidence but do not enter the
+    periodicity: on the calibration images they pulled the agreement with the
+    human labels towards chance.
+  - Cells: the façade is cut into 32 × 32 px cells; a cell with at least 60%
+    façade pixels is classified from the 160 × 160 px window centred on it
+    (about two to three periods of the windows in CMP Facade, whose median
+    gaps on the mask grid are 54 px across and 80 px up). Per window and
+    family, the instance centroids are projected on the image x-axis (the
+    vertical family: bays) or the y-axis (the layer family: floors). A 1-px
+    histogram of the positions, smoothed with a Gaussian of σ = 1.5 px, gives
+    a normalised autocorrelation; the **periodicity** *p* is its highest
+    local peak at lags of 5–100 px, or 0 with fewer than 3 items. The family
+    **repeats** if *p* ≥ τ.
+  - τ is calibrated per family on CMP Facade base images with even numbers,
+    in 0.10–0.90 (steps of 0.05), for the highest balanced accuracy against a
+    reference from the human labels: the vertical family repeats if any one
+    of window, door, balcony, pillar or shop has at least 3 instances in the
+    window with distinct x-centres (closer than 3 px count as one) whose gaps
+    have a coefficient of variation ≤ 0.35; the layer family likewise for the
+    y-centres of window, balcony, sill, cornice or moulding. τ is recorded in
+    `tools/qualities/rhythm_calibration.json`. τ came out at the low end of
+    the grid (vertical 0.15, layer 0.10): three or more regularly placed
+    elements already carry most of the signal.
+  - Cell classes: *rhythmic* (both families repeat), *layers only*, *bays
+    only*, *plain* (fewer than 3 items in both families) or *irregular*.
+  - Variety: the façade cells are clustered by the mean CIELAB colour of
+    their façade pixels, with distances on (L/2, a, b), average linkage, cut
+    at 12. A **zone** is a cluster with at least 10% of the façade cells.
+  - Indicators: `facadeCells`; `rhythmicShare`, `layersOnlyShare`,
+    `baysOnlyShare`, `plainShare`, `irregularShare` (each ÷ façade cells);
+    `distinctZones`; `windowInstances`; `balconyInstances`.
+  - Rule: `facadeCells` < 8 → Unclear ("Too little façade is visible"); else
+    `rhythmicShare` ≥ 0.25 and `distinctZones` ≥ 2 → Likely present; else
+    `rhythmicShare` ≥ 0.25 → Unclear ("Repetition without visible
+    variety"); else `rhythmicShare` < 0.10 → Likely absent ("Few repeating
+    layers or bays"); else Unclear ("Some repetition").
+  - Evidence: "Repeating layers and bays" (supports); "Layers only", "Bays
+    only" (context); "Plain or irregular" (against); "Floor lines and bands"
+    and "Vertical divisions", stored as segments and drawn 1 px wide
+    (context); "Façade zone 1…k" (context).
+  - Limits: perspective changes spacing along a receding façade (hence local
+    windows); glass curtain walls, where SAM 3 finds no windows, read as
+    plain even when mullions divide them; sun and shade can split one façade
+    into two colour zones.
 
 **Derived views**
 

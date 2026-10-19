@@ -51,6 +51,12 @@ def evidence(eid: str, label: str, role: str, mask: np.ndarray) -> dict:
     return {"id": eid, "label": label, "role": role, "share": float(mask.mean()), "rle": encode_rle(mask)}
 
 
+def evidence_lines(eid: str, label: str, role: str, lines: np.ndarray, mask: np.ndarray) -> dict:
+    """Line evidence: segments (x1, y1, x2, y2) on the mask grid, drawn 1 px wide; share from the drawn mask."""
+    return {"id": eid, "label": label, "role": role, "share": float(mask.mean()),
+            "lines": [[round(float(v), 1) for v in seg] for seg in lines]}
+
+
 def load_quality(data: AreaData) -> dict:
     path = OUT / f"{data.photo}.json"
     if path.exists():
@@ -74,6 +80,10 @@ def check_quality(path: Path) -> list[str]:
     problems = []
     for name, result in data["principles"].items():
         for ev in result["evidence"]:
+            if "lines" in ev:
+                if "rle" in ev or any(len(seg) != 4 for seg in ev["lines"]):
+                    problems.append(f"{name}/{ev['id']}: malformed lines")
+                continue
             if sum(ev["rle"]) != size:
                 problems.append(f"{name}/{ev['id']}: runs sum to {sum(ev['rle'])}, not {size}")
             elif abs(sum(ev["rle"][1::2]) / size - ev["share"]) > 1e-9:
