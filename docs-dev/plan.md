@@ -202,6 +202,7 @@ the same day (028 onwards) keep their own numbers.
 | 040 | `040_frontage_evidence.md`: `tools/qualities/`, active ground floor | From the existing area masks |
 | 040b | `040b_frontage_assumed_horizon.md`: Unclear when the horizon was assumed | Three ground floors covered whole façades |
 | 041 | `041_rhythm_evidence.md`: repeating layers and bays, variety | SAM 3 instances, line families |
+| 041b | `041b_rhythm_instance_threshold.md`: calibrate the SAM 3 score that counts | The calibration kept 0.65 |
 | 042 | `042_material_evidence.md`: materials near eye level | DMS46 |
 | 043 | `043_quality_checks.md`: checks against human labels, sensitivity, discrimination, expert-label template | Uses the eTRIMS and CMP downloads |
 | 044 | `044_vlm_panel_graded.md`: 0–4 ratings with evidence boxes | Laptop GPU |

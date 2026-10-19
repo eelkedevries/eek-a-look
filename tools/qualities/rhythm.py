@@ -38,7 +38,9 @@ TAU_GRID = np.round(np.arange(0.10, 0.901, 0.05), 2)
 MERGE_PX, MAX_CV = 3, 0.35
 ZONE_CUT, ZONE_MIN = 12.0, 0.10
 CALIBRATION = HERE / "rhythm_calibration.json"
-PHRASES = {"window": "windows", "balcony": "balconies"}  # SAM 3 phrase → element id for its threshold
+PHRASES = ("window", "balcony")
+SCORE_FLOOR = 0.05                                      # instances are cached down to this score
+INSTANCE_GRID = (0.20, 0.30, 0.40, 0.50, 0.65)          # prompt 041b: calibrated with τ
 # CMP classes: 3 window, 4 door, 5 cornice, 6 sill, 7 balcony, 10 molding, 11 pillar, 12 shop
 CMP_VERTICAL = (3, 4, 7, 11, 12)
 CMP_LAYER = (3, 7, 6, 5, 10)
@@ -46,11 +48,6 @@ RHYTHMIC, LAYERS, BAYS, PLAIN, IRREGULAR, NONE = 4, 3, 2, 1, 0, -1
 
 
 # --- items -----------------------------------------------------------------------
-
-def thresholds() -> dict[str, float]:
-    winners = json.loads((AREAS / "validation.json").read_text())["elements"]["winners"]
-    return {phrase: winners[eid]["threshold"] for phrase, eid in PHRASES.items()}
-
 
 class Sam3Instances:
     """SAM 3 instances for one phrase, at a score threshold, on the mask grid."""
@@ -81,7 +78,8 @@ class Sam3Instances:
 
 
 def instances_cached(name: str, compute) -> dict[str, list[dict]]:
-    path = CACHE / "instances" / f"{name}.json"
+    """SAM 3 instances down to SCORE_FLOOR, with their scores; filtered by the calibrated threshold when used."""
+    path = CACHE / "instances-scored" / f"{name}.json"
     if path.exists():
         return json.loads(path.read_text())
     found = compute()
@@ -250,7 +248,7 @@ def cmp_records(dev: torch.device) -> list[dict]:
     del model
     torch.cuda.empty_cache()
 
-    sam, tau_sam = None, thresholds()
+    sam = None
     records = []
     for label_path in labels:
         stored = np.load(cache / f"{label_path.stem}.npz")
@@ -263,7 +261,7 @@ def cmp_records(dev: torch.device) -> list[dict]:
             sam = sam or Sam3Instances(dev)
             zone = elements.facade_zone(cats)
             image = Image.open(image_path).convert("RGB")
-            return {p: sam(image, p, size, tau_sam[p], zone) for p in PHRASES}
+            return {p: sam(image, p, size, SCORE_FLOOR, zone) for p in PHRASES}
 
         found = instances_cached(f"cmp-{label_path.stem}", compute)
         number = int("".join(ch for ch in label_path.stem if ch.isdigit()))
@@ -274,12 +272,16 @@ def cmp_records(dev: torch.device) -> list[dict]:
     return records
 
 
-def cmp_windows(record: dict) -> list[dict]:
-    """Image periodicity and the human-label reference for every façade window of a CMP image."""
+def centres_above(found: dict[str, list[dict]], s: float) -> np.ndarray:
+    return np.array([[i["cx"], i["cy"]] for p in PHRASES for i in found[p] if i["score"] >= s]).reshape(-1, 2)
+
+
+def cmp_windows(record: dict, s: float) -> list[dict]:
+    """Image periodicity (instances scoring at least s) and the human-label reference for every façade window of a CMP image."""
     from common import CATEGORY_IDS
 
     facade = record["cats"] == CATEGORY_IDS.index("facade")
-    centres = np.array([[i["cx"], i["cy"]] for p in PHRASES for i in record["instances"][p]]).reshape(-1, 2)
+    centres = centres_above(record["instances"], s)
     cells = cell_periodicities(facade, centres)
     ref_centres = label_centres(record["label"])
     for cell in cells:
@@ -294,22 +296,34 @@ def balanced_accuracy(pred: np.ndarray, truth: np.ndarray) -> float:
 
 
 def calibrate(dev: torch.device) -> dict:
+    """τ per family and the instance threshold s, jointly, on the even CMP images (prompts 041, 041b)."""
     t0 = time.perf_counter()
     records = [r for r in cmp_records(dev) if r["split"] == "calibration"]
-    cells = [c for r in records for c in cmp_windows(r)]
+    by_s = {}
+    for s in INSTANCE_GRID:
+        cells = [c for r in records for c in cmp_windows(r, s)]
+        fits = {}
+        for family in ("vertical", "layer"):
+            p = np.array([c[family] for c in cells])
+            truth = np.array([c["reference"][family] for c in cells])
+            scores = [balanced_accuracy(p >= t, truth) for t in TAU_GRID]
+            k = int(np.argmax(scores))
+            pred = p >= TAU_GRID[k]
+            fits[family] = {
+                "tau": float(TAU_GRID[k]), "balancedAccuracy": scores[k],
+                "precision": float((pred & truth).sum() / max(pred.sum(), 1)),
+                "recall": float((pred & truth).sum() / max(truth.sum(), 1)),
+                "referenceRepeats": float(truth.mean()), "byTau": [round(v, 4) for v in scores]}
+        by_s[s] = {"meanBalancedAccuracy": float(np.mean([f["balancedAccuracy"] for f in fits.values()])),
+                   "families": fits, "windows": len(cells)}
+    best = max(INSTANCE_GRID, key=lambda s: (round(by_s[s]["meanBalancedAccuracy"], 6), s))  # a tie goes to the higher s
     result = {"date": time.strftime("%Y-%m-%d"), "dataset": "CMP Facade base, even image numbers",
-              "images": len(records), "windows": len(cells), "grid": TAU_GRID.tolist(), "families": {}}
-    for family in ("vertical", "layer"):
-        p = np.array([c[family] for c in cells])
-        truth = np.array([c["reference"][family] for c in cells])
-        scores = [balanced_accuracy(p >= t, truth) for t in TAU_GRID]
-        k = int(np.argmax(scores))
-        pred = p >= TAU_GRID[k]
-        result["families"][family] = {
-            "tau": float(TAU_GRID[k]), "balancedAccuracy": scores[k],
-            "precision": float((pred & truth).sum() / max(pred.sum(), 1)),
-            "recall": float((pred & truth).sum() / max(truth.sum(), 1)),
-            "referenceRepeats": float(truth.mean()), "byTau": [round(s, 4) for s in scores]}
+              "images": len(records), "windows": by_s[best]["windows"], "tauGrid": TAU_GRID.tolist(),
+              "instanceThreshold": best, "instanceGrid": list(INSTANCE_GRID),
+              "families": by_s[best]["families"],
+              "byInstanceThreshold": {str(s): {"meanBalancedAccuracy": v["meanBalancedAccuracy"],
+                                               **{f: {"tau": x["tau"], "balancedAccuracy": x["balancedAccuracy"]} for f, x in v["families"].items()}}
+                                      for s, v in by_s.items()}}
     result["seconds"] = round(time.perf_counter() - t0, 1)
     CALIBRATION.write_text(json.dumps(result, indent=1))
     return result
@@ -342,7 +356,7 @@ def zones(lab: np.ndarray) -> np.ndarray:
     return out
 
 
-def measure(photo: dict, data: AreaData, dev: torch.device, sam_holder: dict, tau: dict[str, float]) -> tuple[dict, dict]:
+def measure(photo: dict, data: AreaData, dev: torch.device, sam_holder: dict, tau: dict[str, float], s: float) -> tuple[dict, dict]:
     facade = data.category("facade")
     image = Image.open(EXAMPLES / photo["file"]).convert("RGB")
     size = (data.width, data.height)
@@ -350,11 +364,11 @@ def measure(photo: dict, data: AreaData, dev: torch.device, sam_holder: dict, ta
     def compute():
         sam_holder["sam"] = sam_holder.get("sam") or Sam3Instances(dev)
         zone = elements.facade_zone(data.categories)
-        tau_sam = thresholds()
-        return {p: sam_holder["sam"](image, p, size, tau_sam[p], zone) for p in PHRASES}
+        return {p: sam_holder["sam"](image, p, size, SCORE_FLOOR, zone) for p in PHRASES}
 
-    found = instances_cached(photo["id"], compute)
-    centres = np.array([[i["cx"], i["cy"]] for p in PHRASES for i in found[p]]).reshape(-1, 2)
+    scored = instances_cached(photo["id"], compute)
+    found = {p: [i for i in scored[p] if i["score"] >= s] for p in PHRASES}
+    centres = centres_above(scored, s)
     segs = segments(image, facade)
     cells = cell_periodicities(facade, centres)
     classes = np.array([classify(c, tau) for c in cells], int)

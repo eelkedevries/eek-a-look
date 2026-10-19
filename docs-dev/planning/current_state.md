@@ -180,5 +180,8 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   window and balcony instances in 160 px windows, τ calibrated on even CMP
   images (bays 0.15, floors 0.10; balanced accuracy 0.78 and 0.80), colour
   zones for variety. The prompt's 64 px windows and line segments failed on
-  the calibration images and were replaced there. 13 likely present, 5
-  unclear, 6 likely absent; glass façades and arcades read as plain)
+  the calibration images and were replaced there; glass façades and
+  arcades read as plain)
+- `041b_rhythm_instance_threshold.md` (spec 0.22: the SAM 3 score for
+  counting instances calibrated with τ; CMP kept 0.65. Rhythm: 11 likely
+  present, 7 unclear, 6 likely absent)

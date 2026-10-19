@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.21 · **Last updated:** 2026-10-19
+**Version:** 0.22 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -47,7 +47,8 @@ for variety (prompt 041; the window size, the items and the reference were
 corrected on the calibration images before the measure ran on the photos).
 0.21 lets visitors show the measured fixations as points over the "Measured
 gaze" layer, never over a model's map (prompt 030, owner's decision of
-2026-10-19).
+2026-10-19). 0.22 calibrates the SAM 3 score above which an instance counts
+for rhythm together with τ; the calibration kept 0.65 (prompt 041b).
 
 ## Scope
 
@@ -409,9 +410,11 @@ was run on the photos.
   pilasters) that repeat, with visible variation between façade zones, rather
   than a uniform or unarticulated surface. Rhythm is a relation between
   elements, so the measure looks at their spacing, not at single elements.
-  - Items, on the mask grid: SAM 3 instances for "window" and "balcony" at the
-    thresholds chosen for windows and balconies in *Automatic areas*, inside
-    the façade category. LSD line segments on façade pixels (at least 2% of
+  - Items, on the mask grid: SAM 3 instances for "window" and "balcony" inside
+    the façade category, scoring at least *s*. *s* is calibrated with τ (below)
+    from {0.20, 0.30, 0.40, 0.50, 0.65}, one value for both phrases, for the
+    highest mean balanced accuracy over the two families (a tie goes to the
+    higher *s*); the calibration chose 0.65. LSD line segments on façade pixels (at least 2% of
     the image width long; **vertical** within 8° of vertical, **layer** within
     60° of horizontal) are drawn as evidence but do not enter the
     periodicity: on the calibration images they pulled the agreement with the
@@ -434,8 +437,9 @@ was run on the photos.
     have a coefficient of variation ≤ 0.35; the layer family likewise for the
     y-centres of window, balcony, sill, cornice or moulding. τ is recorded in
     `tools/qualities/rhythm_calibration.json`. τ came out at the low end of
-    the grid (vertical 0.15, layer 0.10): three or more regularly placed
-    elements already carry most of the signal.
+    the grid (vertical 0.20, layer 0.10; balanced accuracy 0.78 and 0.80):
+    three or more regularly placed elements already carry most of the
+    signal.
   - Cell classes: *rhythmic* (both families repeat), *layers only*, *bays
     only*, *plain* (fewer than 3 items in both families) or *irregular*.
   - Variety: the façade cells are clustered by the mean CIELAB colour of

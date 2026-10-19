@@ -3,7 +3,7 @@
  "dataset": "CMP Facade base, even image numbers",
  "images": 189,
  "windows": 48193,
- "grid": [
+ "tauGrid": [
   0.1,
   0.15,
   0.2,
@@ -22,25 +22,33 @@
   0.85,
   0.9
  ],
+ "instanceThreshold": 0.65,
+ "instanceGrid": [
+  0.2,
+  0.3,
+  0.4,
+  0.5,
+  0.65
+ ],
  "families": {
   "vertical": {
-   "tau": 0.15,
-   "balancedAccuracy": 0.7811803139123423,
-   "precision": 0.39301018420613276,
-   "recall": 0.8367298578199052,
+   "tau": 0.2,
+   "balancedAccuracy": 0.7813384497613998,
+   "precision": 0.4005985956026246,
+   "recall": 0.8246445497630331,
    "referenceRepeats": 0.17512916813645135,
    "byTau": [
     0.78,
-    0.7812,
-    0.7809,
-    0.7651,
-    0.7335,
-    0.6962,
-    0.6844,
-    0.6676,
-    0.6532,
-    0.629,
-    0.5833,
+    0.7807,
+    0.7813,
+    0.7669,
+    0.7343,
+    0.6975,
+    0.6872,
+    0.6693,
+    0.6548,
+    0.6304,
+    0.5841,
     0.5257,
     0.5152,
     0.5053,
@@ -51,22 +59,22 @@
   },
   "layer": {
    "tau": 0.1,
-   "balancedAccuracy": 0.798937159310457,
-   "precision": 0.17905277742788764,
-   "recall": 0.8876053699656572,
+   "balancedAccuracy": 0.8023348339038396,
+   "precision": 0.18324505877793568,
+   "recall": 0.8857321261317515,
    "referenceRepeats": 0.06646193430581204,
    "byTau": [
-    0.7989,
-    0.7976,
-    0.7985,
-    0.7913,
-    0.7824,
-    0.752,
-    0.7216,
-    0.6937,
-    0.6644,
-    0.6392,
-    0.5926,
+    0.8023,
+    0.8009,
+    0.8018,
+    0.7951,
+    0.7857,
+    0.7529,
+    0.7233,
+    0.6948,
+    0.6654,
+    0.6394,
+    0.5927,
     0.521,
     0.5116,
     0.5005,
@@ -76,5 +84,62 @@
    ]
   }
  },
- "seconds": 13.3
+ "byInstanceThreshold": {
+  "0.2": {
+   "meanBalancedAccuracy": 0.7441629624276856,
+   "vertical": {
+    "tau": 0.15,
+    "balancedAccuracy": 0.724753289954092
+   },
+   "layer": {
+    "tau": 0.3,
+    "balancedAccuracy": 0.7635726349012792
+   }
+  },
+  "0.3": {
+   "meanBalancedAccuracy": 0.7577595372355932,
+   "vertical": {
+    "tau": 0.2,
+    "balancedAccuracy": 0.7479106691760007
+   },
+   "layer": {
+    "tau": 0.3,
+    "balancedAccuracy": 0.7676084052951858
+   }
+  },
+  "0.4": {
+   "meanBalancedAccuracy": 0.7713259379327544,
+   "vertical": {
+    "tau": 0.2,
+    "balancedAccuracy": 0.7603341033726865
+   },
+   "layer": {
+    "tau": 0.2,
+    "balancedAccuracy": 0.7823177724928223
+   }
+  },
+  "0.5": {
+   "meanBalancedAccuracy": 0.7798809460862568,
+   "vertical": {
+    "tau": 0.15,
+    "balancedAccuracy": 0.7691665942407637
+   },
+   "layer": {
+    "tau": 0.2,
+    "balancedAccuracy": 0.7905952979317499
+   }
+  },
+  "0.65": {
+   "meanBalancedAccuracy": 0.7918366418326197,
+   "vertical": {
+    "tau": 0.2,
+    "balancedAccuracy": 0.7813384497613998
+   },
+   "layer": {
+    "tau": 0.1,
+    "balancedAccuracy": 0.8023348339038396
+   }
+  }
+ },
+ "seconds": 780.8
 }

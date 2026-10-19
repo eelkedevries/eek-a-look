@@ -105,7 +105,7 @@ def main() -> int:
     run_all = not (args.ground_floor or args.rhythm or args.calibrate)
     (CACHE / "check").mkdir(parents=True, exist_ok=True)
 
-    tau, dev, sam_holder = None, None, {}
+    tau, instance_threshold, dev, sam_holder = None, None, None, {}
     if run_all or args.rhythm or args.calibrate:
         import torch
         import rhythm
@@ -114,11 +114,17 @@ def main() -> int:
         if args.calibrate or not rhythm.CALIBRATION.exists():
             result = rhythm.calibrate(dev)
             print(f"Calibration on {result['images']} CMP images, {result['windows']} windows, {result['seconds']} s:")
+            for s, v in result["byInstanceThreshold"].items():
+                print(f"  instances scoring at least {s}: mean balanced accuracy {v['meanBalancedAccuracy']:.3f} "
+                      f"(bays tau {v['vertical']['tau']:.2f} {v['vertical']['balancedAccuracy']:.3f}; "
+                      f"floors tau {v['layer']['tau']:.2f} {v['layer']['balancedAccuracy']:.3f})")
+            print(f"  chosen: instances scoring at least {result['instanceThreshold']}")
             for family, r in result["families"].items():
                 print(f"  {family:8} tau {r['tau']:.2f}  balanced accuracy {r['balancedAccuracy']:.3f}  "
                       f"precision {r['precision']:.2f}  recall {r['recall']:.2f}  reference repeats {r['referenceRepeats']:.0%}")
         calibration = json.loads(rhythm.CALIBRATION.read_text())
         tau = {f: calibration["families"][f]["tau"] for f in ("vertical", "layer")}
+        instance_threshold = calibration["instanceThreshold"]
         if dev.type == "cuda":
             torch.cuda.reset_peak_memory_stats()
 
@@ -139,10 +145,11 @@ def main() -> int:
         if run_all or args.rhythm:
             import rhythm
 
-            result, detail = rhythm.measure(photo, data, dev, sam_holder, tau)
+            result, detail = rhythm.measure(photo, data, dev, sam_holder, tau, instance_threshold)
             quality["principles"]["rhythm"] = result
             quality["models"]["rhythm"] = (f"cells and periodicity, tools/qualities/rhythm.py; tau vertical {tau['vertical']}, "
-                                          f"layer {tau['layer']} (CMP calibration); SAM 3 {rhythm.elements.CANDIDATES['D']['repos'][0][0]}@"
+                                          f"layer {tau['layer']}, instances scoring at least {instance_threshold} (CMP calibration); "
+                                          f"SAM 3 {rhythm.elements.CANDIDATES['D']['repos'][0][0]}@"
                                           f"{rhythm.elements.CANDIDATES['D']['repos'][0][1]}; OpenCV LSD")
             rhythm_overlay(photo, data, detail)
             counts.setdefault("rhythm", {}).setdefault(result["outcome"], 0)

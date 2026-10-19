@@ -74,8 +74,8 @@ variation between façade zones, rather than a uniform or unarticulated
 surface. Rhythm is a relation between elements, so the measure looks at their
 spacing; one window says nothing about rhythm.
 
-**Items:** SAM 3 instances for "window" and "balcony" (the thresholds of
-prompt 023), inside the façade. LSD line segments on the façade are drawn as
+**Items:** SAM 3 instances for "window" and "balcony" inside the façade,
+scoring at least *s*, where *s* is calibrated with τ (prompt 041b). LSD line segments on the façade are drawn as
 evidence ("Floor lines and bands", "Vertical divisions") but are not counted.
 
 **Cells and periodicity.** The façade is cut into 32 × 32 px cells (on the
@@ -89,10 +89,15 @@ local peak of the autocorrelation at lags of 5–100 px is the periodicity *p*
 images with even numbers, for the best balanced accuracy against the human
 labels (a family repeats if any one labelled class — window, door, balcony,
 pillar or shop across; window, balcony, sill, cornice or moulding up — has at
-least 3 regularly spaced centres in the window). Result: τ = 0.15 for bays
-(balanced accuracy 0.78) and 0.10 for floors (0.80), at the low end of the
-grid, so having three or more regularly placed elements carries most of the
-signal. The odd CMP images are kept for prompt 043.
+least 3 regularly spaced centres in the window). *s* is chosen from
+0.20, 0.30, 0.40, 0.50 and 0.65 jointly with τ, for the best mean balanced
+accuracy (prompt 041b, after weena-millenniumtoren's banded offices came out
+plain: SAM 3 finds 0 windows there at 0.65 but 53 at 0.30). The calibration
+kept 0.65 (mean balanced accuracy 0.792, against 0.744 at 0.20), so the
+limitation stays. τ = 0.20 for bays (balanced accuracy 0.78) and 0.10 for
+floors (0.80), at the low end of the grid, so having three or more regularly
+placed elements carries most of the signal. The odd CMP images are kept for
+prompt 043.
 
 The prompt's first design did not work on the calibration images and was
 changed there, before the measure ran on the example photos:
