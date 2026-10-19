@@ -71,8 +71,9 @@ Both Python tools read `comparisons.json` as well as `examples.json`.
 On a 4-core CPU without a GPU. DeepGaze took 178 s (IIE) and 192 s (MSDB) for
 the four images; OneFormer 6–82 s per image. Checks: recomputing zurich-42
 on this CPU reproduced the committed maps (DeepGaze IIE and MSDB r = 1.0) and
-its street categories (100% of pixels). SAM 3 is gated and was not available,
-so the edited images have no façade elements yet.
+its street categories (100% of pixels). SAM 3 is gated; the edited images'
+façade elements were added later by `elements.py --apply --only-missing` in a
+cloud session (prompt 072, `tools/areas/README.md`).
 
 Share of attention in the manipulated area, % (entrance as of prompt 071):
 

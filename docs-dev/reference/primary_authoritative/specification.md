@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.53 · **Last updated:** 2026-10-19
+**Version:** 0.54 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -121,6 +121,10 @@ precomputed data (owner's request of 2026-10-19). 0.53 removes the panorama
 rules and code (the `panorama` image kind, the equirectangular ground floor,
 the cube faces of 0.48) and recomputes the summaries over the remaining photos
 from the stored per-photo results (owner's request of 2026-10-19).
+0.54 adds SAM 3 façade elements to the four Andersson photos and the four
+edited Example images, run in a cloud session instead of on the laptop, and
+with them the Andersson photos' ground-floor and rhythm measures (prompt 072,
+owner's request of 2026-10-19).
 
 ## Scope
 
@@ -515,10 +519,9 @@ are not in the library.
 
 **Architectural qualities**
 
-The image measures cover every example photo, except that the photos of
-Andersson et al. (2017) have only tactile materials: their area files have no
-SAM 3 façade elements, which the ground-floor and rhythm measures need, until
-`elements.py --apply --only-missing` runs on the laptop (prompt 069). For the study images
+The image measures cover every example photo, the photos of Andersson et al.
+(2017) included since their SAM 3 façade elements were added (prompt 072).
+For the study images
 (`imageKind`, prompt 052) the rules are the same; the reasons add "A design
 rendering, not a photograph."
 The simulated panel judged only the 24 earlier photos.
@@ -925,8 +928,8 @@ was run on the photos.
   UNISAL by the app's own code in headless Chromium
   (`tools/comparisons/browser-models.mjs`, into
   `public/precomputed/comparisons/<model-id>/`), and the automatic areas by
-  `tools/areas/build.py` (categories and ground floor; SAM 3 façade elements
-  only when `elements.py --apply --only-missing` runs on the laptop).
+  `tools/areas/build.py` (categories and ground floor), with SAM 3 façade
+  elements by `elements.py --apply --only-missing` (prompt 072).
 - **Manipulated area** (prompt 067): the one area of interest of each
   comparison, the same pixels in A and B (`tools/comparisons/regions.py`,
   masks at 640 × 480 in `public/precomputed/comparisons/<id>.json`).

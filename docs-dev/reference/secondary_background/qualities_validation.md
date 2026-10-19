@@ -7,10 +7,9 @@ Made by `tools/qualities/checks.py` (prompt 043) on 2026-10-19. Figures in
 
 - **Checked:** whether each measure reads its *components* as people
   labelled them in public datasets, how much the outcomes depend on the
-  rule thresholds, and whether the measures tell the 34
+  rule thresholds, and whether the measures tell the 38
   example photos apart (the photos and the study images, design
-  renderings, separately; the four Andersson photos have the
-  materials measure only).
+  renderings, separately).
 - **Not checked:** the principles themselves. No experts have judged these
   photos, so agreement with experts has not been evaluated. Agreement
   between automated methods (below) is not validity.
@@ -80,7 +79,7 @@ Three photos, openings on the ground floor counted by eye, against the automatic
 | zurich-42 | 2–3 / 2 (one is a first-floor balcony door) | 3–4 / 0 | 3–4 / 12 | D |
 | zuidas-gershwinplein | 2–3 / 1 | 0 / 1 (a glazed lobby) | 0 / 0 | E |
 
-Doors are missed, so entrances per 100 m, the grade's main criterion, come out low and the grade tends to be too low. In the Zürich photos the estimated ground floor reaches the first-floor windows, so ground-floor windows are over-counted. Over the 34 photos: E 16, D 3, D–E 2, no grade 13 (no horizon found, or under 20 m of frontage within 60 m). The grade is shown as an estimate and changes no outcome.
+Doors are missed, so entrances per 100 m, the grade's main criterion, come out low and the grade tends to be too low. In the Zürich photos the estimated ground floor reaches the first-floor windows, so ground-floor windows are over-counted. Over the 38 photos: E 16, D 3, D–E 2, no grade 17 (no horizon found, or under 20 m of frontage within 60 m). The grade is shown as an estimate and changes no outcome.
 
 ## Materials: DMS46
 
@@ -116,7 +115,7 @@ Rule tested: pixels DMS46 calls plaster/paint or concrete with surface detail ab
 
 ## Sensitivity of the rules
 
-How many of the 34 outcomes change when one threshold is halved or multiplied by 1.5.
+How many of the 38 outcomes change when one threshold is halved or multiplied by 1.5.
 
 | Principle | Threshold | Value | × 0.5 | × 1.5 |
 |---|---|---|---|---|
@@ -125,8 +124,8 @@ How many of the 34 outcomes change when one threshold is halved or multiplied by
 | groundFloor | openAbsent | 0.1 | 3 | 2 |
 | groundFloor | closedAbsent | 0.6 | 0 | 4 |
 | rhythm | facadeCellsMin | 8 | 0 | 0 |
-| rhythm | rhythmicPresent | 0.25 | 6 | 5 |
-| rhythm | zonesPresent | 2 | 1 | 6 |
+| rhythm | rhythmicPresent | 0.25 | 6 | 6 |
+| rhythm | zonesPresent | 2 | 1 | 7 |
 | rhythm | rhythmicAbsent | 0.1 | 1 | 3 |
 | materials | zoneMin | 0.1 | 0 | 2 |
 | materials | texturedPresent | 0.25 | 7 | 5 |
@@ -137,9 +136,9 @@ How many of the 34 outcomes change when one threshold is halved or multiplied by
 
 | Principle | Photos | Likely present | Unclear | Likely absent |
 |---|---|---|---|---|
-| groundFloor | 24 photos | 1 | 10 | 13 |
+| groundFloor | 28 photos | 1 | 14 | 13 |
 | groundFloor | 10 study images | 2 | 3 | 5 |
-| rhythm | 24 photos | 11 | 7 | 6 |
+| rhythm | 28 photos | 12 | 9 | 7 |
 | rhythm | 10 study images | 3 | 3 | 4 |
 | materials | 28 photos | 6 | 14 | 8 |
 | materials | 10 study images | 1 | 9 | 0 |

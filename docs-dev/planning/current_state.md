@@ -53,8 +53,8 @@ wins and the gap is work still to be done.
   with fixations from hand labels (`fetch_andersson.py`,
   `build_andersson.py`). The layer's subtitle follows the photo's number of
   people; `city` is optional for this group; the rating page leaves it out.
-  Their area files have no SAM 3 elements yet and their quality files only
-  materials; no UP-CLIP scores or panel.
+  Their area files have SAM 3 façade elements and their quality files all
+  three measures since prompt 072; no UP-CLIP scores or panel.
 - Maps and models: `src/maps/saliency-map.ts` (grid, normalise, resample,
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
   drawing), `src/models/` (types, registry, classic salience in a Web Worker
@@ -88,8 +88,7 @@ wins and the gap is work still to be done.
   change them by `tools/comparisons/composite.py`. Since prompt 068: colour bars, A and B on one
   colour scale (`sharedRange()` in `src/render/heatmap.ts`), the selected
   model's Σ A, Σ B and B − A with its direction, and no measured gaze in the
-  section. The edited images have no SAM 3 façade elements yet (gated model;
-  laptop step).
+  section. The edited images have SAM 3 façade elements since prompt 072.
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
@@ -319,6 +318,11 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `071b_example_larger_edits.md` (spec 0.51: examples 2 and 3 enlarged with
   FLUX.1 Kontext once a Hugging Face token was added as a network secret for
   `*.hf.space`: hedge 17.8% and frontage 21.1% of the image)
+- `072_sam3_cloud_elements.md` (spec 0.54: SAM 3 façade elements for the four
+  Andersson photos and the four Example edits, run in a cloud session on a
+  CPU (39 min) with a Hugging Face network secret for `huggingface.co`; then
+  the Andersson ground-floor and rhythm measures: ground floor unclear ×4,
+  rhythm present (Colosseum), absent (planted façade), unclear ×2)
 - `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational
   symmetry S against held-out labels; balanced accuracy on odd CMP A 0.781, R 0.776,
   S 0.613, and R's precision lower, so A is kept and no quality file changed. A

@@ -94,19 +94,37 @@ The kind is recorded in the area file (`imageKind`).
 `build.py` and `elements.py --apply` also cover the edited images listed in
 `public/examples/comparisons.json` (`photos(include_edited=True)`); the other
 scripts use the example photos only. Their area files were built on a CPU on
-19 October 2026 without SAM 3, so they have categories and the ground floor
-but no façade elements until `elements.py --apply --only-missing` runs.
+19 October 2026 without SAM 3; its façade elements were added the same day by
+`elements.py --apply --only-missing` in a cloud session (prompt 072, below).
 
 ## Photos of Andersson et al. (2017) (prompt 069)
 
 The four photos with measured gaze from Andersson et al. (2017) were built
 with `build.py --only-missing` on a CPU on 19 October 2026 (about 15–19 s per
-photo), without SAM 3, so their area files have categories and the ground
-floor but no façade elements until `elements.py --apply --only-missing` runs
-on the laptop. No horizon was found on any of them (`assumed-level`): on the
+photo), without SAM 3; its façade elements were added later the same day
+(prompt 072, below). No horizon was found on any of them (`assumed-level`): on the
 Colosseum the ground floor therefore covers the whole façade, and the
 façade behind planting has no visible base, so no ground floor at all. The
 country path and the rabbits have no façade.
+
+## SAM 3 without the laptop (prompt 072)
+
+On 19 October 2026 `elements.py --apply --only-missing` ran in a cloud
+session on a 4-core CPU without a GPU, for the eight area files without
+façade elements (the four Andersson photos and the four edited images of the
+Example section): 39 minutes, about 4.3 GB of memory. Two things made it
+possible:
+- the gated download: the owner's Hugging Face token, granted SAM 3 access,
+  stored as a network secret for `huggingface.co` (the session never sees it);
+- the winners file: `--apply` reads `.cache/elements_comparison.json`, which
+  only the laptop had; it was rebuilt from the `elements` section of
+  `public/precomputed/areas/validation.json`, which `--compare` writes with
+  the same winners and thresholds (SAM 3 for all four elements).
+
+No other area file changed. Found: windows on the planted façade (7.9%) and
+the Colosseum (0.4%), nothing on the country path and the rabbits, and on the
+Example images windows, entrances and balconies, with shopfronts on the
+transparent frontage (27.3%) and none on the opaque one.
 
 ## Commands
 

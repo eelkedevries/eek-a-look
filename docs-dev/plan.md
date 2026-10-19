@@ -261,9 +261,9 @@ as the Zürich data of Wilming et al. (2017).
 |---|---|---|
 | 069 | `069_andersson_measured_gaze.md`: photos, maps, points, the four predictions, areas and materials; specification 0.46; deploy | Done |
 
-Laptop steps left for these photos: SAM 3 façade elements
-(`elements.py --apply --only-missing`), then the ground-floor and rhythm
-measures; the simulated panel and UP-CLIP were not extended.
+SAM 3 façade elements (`elements.py --apply --only-missing`) and then the
+ground-floor and rhythm measures were added in a cloud session instead of on
+the laptop (prompt 072); the simulated panel and UP-CLIP were not extended.
 
 ## Later
 

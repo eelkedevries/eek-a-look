@@ -75,8 +75,9 @@ for a range), counts entrances, shopfronts
 and ground-floor windows (SAM 3 instances ≥ 0.65 outside entrances and
 shopfronts) and grades: A entrances > 15, openings > 25, blind/passive < 10%;
 B ≥ 10, > 15, < 25%; C entrances ≥ 6, < 50%; D entrances ≥ 3; E otherwise.
-Entrances stand in for premises. Result over the 34 photos: E 16, D 3, D–E 2,
-none 13. A check by eye on three photos (`qualities_validation.md`) found
+Entrances stand in for premises. Result over the 38 photos (the four
+Andersson photos since prompt 072, all without a grade): E 16, D 3, D–E 2,
+none 17. A check by eye on three photos (`qualities_validation.md`) found
 doors missed and, in the Zürich photos, first-floor windows counted, so the
 grade tends to be too low.
 
@@ -237,6 +238,20 @@ FILE.csv`. The script reports, per method and principle, the percentage
 agreement and Cohen's kappa with the labels (majority label per photo when
 there are several raters). Its mappings for the graded panel and UP-CLIP are
 written in its docstring and were fixed before any labels exist.
+
+## Photos of Andersson et al. (2017) (prompts 069, 072)
+
+They had the materials measure only until SAM 3's façade elements were added
+in a cloud session (prompt 072, `tools/areas/README.md`). Their ground-floor
+and rhythm measures were then built with `build.py --ground-floor --rhythm`
+restricted to them, leaving every other quality file untouched, and the
+summaries in `checks.json` and `qualities_validation.md` (sensitivity,
+discrimination, panel cross-table) were recomputed from the stored results;
+the dataset checks were not rerun. Outcomes: ground floor unclear on all four
+(no horizon found: on the Colosseum the ground floor covers the whole façade,
+the other three have no visible base); rhythm likely present on the
+Colosseum, likely absent on the planted façade, unclear on the country path
+and the rabbits (no façade).
 
 ## Study images (prompt 052)
 

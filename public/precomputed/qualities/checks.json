@@ -190,12 +190,12 @@
    "rhythmicPresent": {
     "value": 0.25,
     "x0.5": 6,
-    "x1.5": 5
+    "x1.5": 6
    },
    "zonesPresent": {
     "value": 2,
     "x0.5": 1,
-    "x1.5": 6
+    "x1.5": 7
    },
    "rhythmicAbsent": {
     "value": 0.1,
@@ -230,16 +230,16 @@
   "groundFloor": {
    "outcomes": {
     "likely-present": 3,
-    "unclear": 13,
+    "unclear": 17,
     "likely-absent": 18
    },
    "indicator": "openShare",
    "byGroup": {
     "earlier": {
-     "photos": 24,
+     "photos": 28,
      "outcomes": {
       "likely-present": 1,
-      "unclear": 10,
+      "unclear": 14,
       "likely-absent": 13
      },
      "sameOnAllPhotos": false
@@ -354,6 +354,22 @@
      "outcome": "likely-absent",
      "value": 0.06875
     },
+    "andersson-rome": {
+     "outcome": "unclear",
+     "value": 0.0
+    },
+    "andersson-europe": {
+     "outcome": "unclear",
+     "value": null
+    },
+    "andersson-vy": {
+     "outcome": "unclear",
+     "value": null
+    },
+    "andersson-konijntjes": {
+     "outcome": "unclear",
+     "value": null
+    },
     "qinyang-01": {
      "outcome": "unclear",
      "value": 0.0
@@ -398,18 +414,18 @@
   },
   "rhythm": {
    "outcomes": {
-    "likely-present": 14,
-    "unclear": 10,
-    "likely-absent": 10
+    "likely-present": 15,
+    "unclear": 12,
+    "likely-absent": 11
    },
    "indicator": "rhythmicShare",
    "byGroup": {
     "earlier": {
-     "photos": 24,
+     "photos": 28,
      "outcomes": {
-      "likely-present": 11,
-      "unclear": 7,
-      "likely-absent": 6
+      "likely-present": 12,
+      "unclear": 9,
+      "likely-absent": 7
      },
      "sameOnAllPhotos": false
     },
@@ -522,6 +538,22 @@
     "zurich-53": {
      "outcome": "likely-present",
      "value": 0.4072164948453608
+    },
+    "andersson-rome": {
+     "outcome": "likely-present",
+     "value": 0.2535211267605634
+    },
+    "andersson-europe": {
+     "outcome": "likely-absent",
+     "value": 0.011627906976744186
+    },
+    "andersson-vy": {
+     "outcome": "unclear",
+     "value": null
+    },
+    "andersson-konijntjes": {
+     "outcome": "unclear",
+     "value": null
     },
     "qinyang-01": {
      "outcome": "likely-present",
