@@ -217,6 +217,18 @@ parts of 040 and 041). Results are summarised in
 `reference/secondary_background/qualities_validation.md` and
 `upclip_reproduction.md`.
 
+## Seventh round: study photos and glass façades (drafted 2026-10-19)
+
+Owner's request after the sixth round: measure the 25 "Published studies"
+photos too, and fix the rhythm measure's blind spot on glass and
+ribbon-window façades. Drafted, not run.
+
+| # | Prompt | Notes |
+|---|---|---|
+| 051 | `051_study_photo_areas.md`: areas for the 25 study photos; an `imageKind` field; a spherical ground-floor rule for 360° panoramas | The 24 existing area files stay unchanged |
+| 052 | `052_study_photo_qualities.md`: image measures for the study photos, tagged as renderings or panoramas on the page; deploy | No new rules; the panel and UP-CLIP unchanged |
+| 053 | `053_rhythm_glass_facades.md`: compare four ways of finding repeating elements on held-out CMP Facade and LabelMeFacade labels; adopt one only if it beats the current measure without losing accuracy on ordinary façades | Choice never made on the example photos |
+
 ## Later
 
 - **Mobile scene video.** Run the same area tool on scene-camera frames. Assign

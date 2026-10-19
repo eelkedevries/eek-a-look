@@ -86,6 +86,11 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
+Drafted, not run (2026-10-19): prompts 051–053 in `docs-dev/plan.md`
+(*Seventh round*): areas and image measures for the 25 study photos
+(renderings and 360° panoramas), and a held-out comparison of ways to see
+rhythm on glass and ribbon-window façades.
+
 Sixth round (2026-10-19, prompts 040–048, all run, `docs-dev/plan.md`): image measures
 with spatial evidence for the three design principles (`tools/qualities/`),
 checks against human labels, a graded simulated panel, and a reproduction of
