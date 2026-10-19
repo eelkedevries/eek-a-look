@@ -110,11 +110,22 @@
   color: var(--text-bright);
 }
 
-.comparison-question {
-  margin: 0 0 8px;
+.comparison-facts .comparison-question {
   font-size: 18px;
-  font-weight: 400;
   color: var(--text-bright);
+}
+
+.comparison-list {
+  margin: 0 0 6px;
+  padding-left: 1.4em;
+}
+
+.comparison-list li {
+  margin-bottom: 4px;
+}
+
+.comparison-facts dd p {
+  margin: 0;
 }
 
 .comparison-facts {

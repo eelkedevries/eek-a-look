@@ -226,9 +226,9 @@ function paint(fig: Figure, loaded: Loaded, condition: Condition, choice: MapCho
 }
 
 /**
- * The Example section (prompt 058): an overview of three design comparisons and, for the chosen one, its
- * question, the change, the expected pattern, what the models predict, and the two images with any map side
- * by side, as a slider or as a difference. Measured gaze appears only on untouched originals.
+ * The Example section (prompts 058, 066): an overview of three design comparisons and, for the chosen one, its
+ * question, background, conditions, two possible outcomes, what the models predict, and the two images with
+ * any map side by side, as a slider or as a difference. Measured gaze appears only on untouched originals.
  */
 export function mountExample(section: HTMLElement, manifest: ComparisonManifest, photoById: (id: string) => ExamplePhoto | undefined, open: (id: string) => void): void {
   const heading = el('h2', 'section-label', 'Example · three design comparisons');
@@ -323,14 +323,35 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
 
     const head = el('header', 'comparison-head');
     head.append(el('p', 'photo-place', `Example ${text.number} · ${text.place}`), el('h3', 'comparison-title', text.title));
-    const question = el('p', 'comparison-question', text.question);
-    const explanation = el('p', '', text.explanation);
     const facts = el('dl', 'comparison-facts');
+    const conditions = el('dd');
+    const conditionList = el('ul', 'comparison-list');
+    for (const [label, description] of [['A', text.conditionA], ['B', text.conditionB]] as const) {
+      const item = el('li');
+      item.append(el('strong', '', label), ` ${description}`);
+      conditionList.append(item);
+    }
+    const manipulated = el('p');
+    manipulated.append(el('em', '', 'Manipulated:'), ` ${text.manipulated}`);
+    conditions.append(conditionList, manipulated);
+    const outcomes = el('dd');
+    const outcomeList = el('ol', 'comparison-list');
+    for (const outcome of text.outcomes) outcomeList.append(el('li', '', outcome));
+    outcomes.append(outcomeList, el('p', 'muted', 'Hypotheses, not results.'));
     const result = el('dd', 'comparison-result');
     for (const m of text.measures) result.append(el('span', '', verdict(loaded, m)));
-    const expected = el('dd', '', text.expected);
-    expected.append(' ', el('span', 'muted', '(a hypothesis)'));
-    facts.append(el('dt', '', 'What changed'), el('dd', '', text.changed), el('dt', '', 'Expected pattern'), expected, el('dt', '', 'What the models predict'), result);
+    facts.append(
+      el('dt', '', 'Question'),
+      el('dd', 'comparison-question', text.question),
+      el('dt', '', 'Background'),
+      el('dd', '', text.background),
+      el('dt', '', 'Conditions'),
+      conditions,
+      el('dt', '', 'Possible outcomes'),
+      outcomes,
+      el('dt', '', 'What the models predict'),
+      result,
+    );
 
     // Controls: which map, how to compare, and which measure is outlined and tabulated.
     const controls = el('div', 'comparison-controls');
@@ -450,7 +471,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       .map((p) => `${p.condition}: ${p.changes}.`)
       .join(' ')}`;
 
-    detail.replaceChildren(head, question, explanation, facts, controls, stage, caption, tableWrap, notes, links, credit);
+    detail.replaceChildren(head, facts, controls, stage, caption, tableWrap, notes, links, credit);
 
     function update() {
       const model = models.find((m) => m.id === choice);

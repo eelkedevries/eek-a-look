@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.40 · **Last updated:** 2026-10-19
+**Version:** 0.41 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -86,6 +86,8 @@ agreement in `agreement.py` (prompt 059, owner's request of 2026-10-19).
 0.40 adds frontage density and a frontage grade adapted from the Urban Design
 Compendium to the ground-floor measure, as indicators that change no outcome
 (prompt 062, owner's request of 2026-10-19).
+0.41 describes each example comparison as question, background, conditions
+and two possible outcomes (prompt 066, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -811,11 +813,15 @@ was run on the photos.
   B. Also shown: the lower third of the image (greenery), the automatic
   ground floor found in A, used for both (entrance, glazing), and greenery
   found in each image separately, so that added planting counts (greenery).
+- Each comparison is described in a fixed format (prompt 066): **Question**
+  (one short sentence), **Background** (only what the question needs),
+  **Conditions** (A, B and what is manipulated) and **Possible outcomes**
+  (two that can be contrasted), followed by "What the models predict".
 - Per measure and layer: the share of attention in A and in B, B − A in
   percentage points and the Pearson r between the two maps. The sentence
   "What the models predict" is generated from these numbers: a change below
-  0.05 points counts as none. The expected pattern is labelled as a
-  hypothesis; a result against it is shown as it is.
+  0.05 points counts as none. The possible outcomes are labelled as
+  hypotheses; a result that matches neither is shown as it is.
 - Measured gaze appears only for an untouched original: as image A in the
   entrance and greenery comparisons, and for glazing only in a note on the
   untouched original. An edited image never shows a measured layer or
