@@ -104,11 +104,23 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
   slider.value = String(getViewState().opacity);
   slider.addEventListener('input', () => setViewState({ opacity: Number(slider.value) }));
   strength.append(strengthText, slider);
+  // Prompt 054: how strongly the fixation points are drawn, on photos with measured gaze only.
+  const dotStrength = el('label', 'strength');
+  const dotText = el('span', 'strength-text', 'Fixation points (raw data)');
+  const dotValue = el('span', 'strength-value');
+  dotText.append(dotValue);
+  const dotSlider = el('input');
+  dotSlider.type = 'range';
+  dotSlider.min = '0';
+  dotSlider.max = '100';
+  dotSlider.value = String(getViewState().fixationOpacity);
+  dotSlider.addEventListener('input', () => setViewState({ fixationOpacity: Number(dotSlider.value) }));
+  dotStrength.append(dotText, dotSlider);
   const legend = el('div', 'legend');
   const bar = el('span', 'legend-bar');
   bar.style.background = gradientCss();
   legend.append('less likely', bar, 'more likely');
-  display.section.append(strength, legend);
+  display.section.append(strength, dotStrength, legend);
 
   const gaze = section('Eye tracking');
   gaze.section.classList.add('measured');
@@ -138,6 +150,8 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
     gaze.section.hidden = !counts || !['overlay', 'side', 'contrast'].includes(getViewState().view);
     // The checkbox under the image (prompt 050) changes the same setting.
     fixationBox.checked = getViewState().fixations;
+    dotStrength.hidden = !counts;
+    dotValue.textContent = `${getViewState().fixationOpacity}%`;
     fixationNote.textContent = counts
       ? `${counts.fixations} fixations from ${counts.observers} people · on the Measured gaze layer`
       : '';

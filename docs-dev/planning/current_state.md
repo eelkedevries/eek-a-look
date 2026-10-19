@@ -234,3 +234,5 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   photos, the 24 earlier files unchanged; study images tagged on the page and
   grouped in the all-photos table. Panoramas: no façade elements found, so their
   ground floors read as closed)
+- `054_fixation_opacity_slider.md` (spec 0.34: a "Fixation points (raw data)" slider
+  below the heatmap strength, 65% by default, on photos with measured gaze)

@@ -42,7 +42,8 @@ Choose a view above the photo; the inspector on the right changes with it.
   the image and in the inspector (on by default) draws every fixation the
   measured map was built from as a semi-transparent cyan dot over the
   **Measured gaze** map, in all three views above. The dots are
-  never drawn over a model's map.
+  never drawn over a model's map. The **Fixation points** slider below
+  the heatmap strength sets how strongly they are drawn.
 - **Qualities:** for every example photo (study images are tagged as a design
   rendering or a 360° panorama), three design principles
   (rhythm and variety, an active ground floor, tactile materials) measured

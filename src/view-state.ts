@@ -10,11 +10,13 @@ export interface ViewState {
   /** 0–100. */
   opacity: number;
   fixations: boolean;
+  /** 0–100: how strongly the fixation points are drawn (prompt 054). */
+  fixationOpacity: number;
 }
 
 type Listener = (state: ViewState) => void;
 
-const state: ViewState = { view: 'overlay', model: 'measured', opacity: 100, fixations: true };
+const state: ViewState = { view: 'overlay', model: 'measured', opacity: 100, fixations: true, fixationOpacity: 65 };
 const listeners = new Set<Listener>();
 
 export function getViewState(): ViewState {

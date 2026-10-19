@@ -1329,6 +1329,10 @@ a:hover {
   color: var(--text-soft);
 }
 
+.strength[hidden] {
+  display: none;
+}
+
 .strength-text {
   display: flex;
   justify-content: space-between;

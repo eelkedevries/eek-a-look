@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.33 · **Last updated:** 2026-10-19
+**Version:** 0.34 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -68,7 +68,8 @@ panel there (prompt 047). 0.31 adds matching descriptions and photos with UP-CLI
 to the Qualities view (prompt 048). 0.32 names the study images' kind (rendering or 360°
 panorama) and computes their areas, with a ground-floor rule for panoramas
 (prompt 051). 0.33 computes the image measures for the study images too
-and tags them on the page (prompt 052).
+and tags them on the page (prompt 052). 0.34 adds a slider for the fixation points' opacity below
+the heatmap strength (prompt 054, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -343,7 +344,10 @@ interface ExamplePhoto {
   photos with measured data, and repeated directly under the image (both
   change the same setting; prompt 050), draws them as cyan dots over the "Measured gaze" map in
   "Single map", "Side by side" and "Contrast", and over no other map. The
-  heatmap strength does not dim them; they are drawn at 65% opacity.
+  heatmap strength does not dim them. Their opacity is set by a slider
+  "Fixation points (raw data)" directly below the heatmap strength in the
+  inspector's "Display" section, 65% by default, present only on photos with
+  measured data (prompt 054).
 
 **Automatic areas**
 
