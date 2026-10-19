@@ -22,7 +22,7 @@ fi
 commit="$(git rev-parse --short HEAD)"
 
 started="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-gh workflow run "$WORKFLOW" -R "$SITE_REPO"
+gh workflow run "$WORKFLOW" -R "$SITE_REPO" --ref main
 echo "Started $WORKFLOW for eek-a-look $commit."
 
 # The dispatch returns before the run exists, so poll for a run created after it.
