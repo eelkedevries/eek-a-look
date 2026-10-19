@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.50 · **Last updated:** 2026-10-19
+**Version:** 0.51 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -111,7 +111,11 @@ colour favours (prompt 070, owner's request of 2026-10-19).
 0.50 replaces example 1's image B with a much larger manipulation, the whole
 stone block around the entrance in blue-teal, recoloured by rule
 (`tools/comparisons/recolour.py`), changing nothing else (prompt 071,
-owner's request of 2026-10-19).
+owner's request of 2026-10-19). 0.51 does the same for examples 2 and 3: a
+hedge about 2 m tall along the base, and the whole ground-floor frontage
+opaque or transparent, edited with FLUX.1 Kontext and pasted over the
+original only where the edit changed it (prompt 071b, owner's request of
+2026-10-19).
 
 ## Scope
 
@@ -905,13 +909,20 @@ was run on the photos.
 
 - Three comparisons, A against B: entrance (zurich-42 against the same photo
   with the whole rusticated stone block around the entrance in blue-teal,
-  prompt 071), greenery (zurich-33 against low planting along the building
-  base) and glazing (opaque against transparent versions of the same three
-  window bays of zurich-53, both edited, both with the same unplanted
-  containers). Greenery and glazing come from the owner's package of
-  2026-10-19, made with AI image editing: 1448 × 1086 px, scaled to
-  1280 × 960 px, the size of the originals, so the two images share one grid
-  and one set of masks (alignment within about 3 px).
+  prompt 071), greenery (zurich-33 against a hedge about 2 m tall along the
+  base of all three blocks) and glazing (the whole ground-floor frontage of
+  zurich-53, either side of the red door, as opaque grey panels against
+  clear glass with a lit shop interior; both edited). All images are
+  1280 × 960 px and share one grid and one set of masks.
+- Greenery and glazing images (prompt 071b; they replaced the owner's low
+  planting and three window bays): FLUX.1 Kontext [dev] edits of the
+  untouched originals (prompts and seeds in
+  `tools/comparisons/edits/edits.json`), registered to the original by an
+  affine fit to block matches (residuals ≤ 1.3 px) and used only inside the
+  change mask (RGB difference inside a search box, cleaned and dilated,
+  softened by 3 px; one shared mask for the two glazing versions) by
+  `tools/comparisons/composite.py`. Outside it every pixel is the
+  original's, apart from JPEG re-encoding noise.
 - Entrance image B (prompt 071) is made by rule from the original by
   `tools/comparisons/recolour.py`: inside a hand-set rectangle around the
   block, with the door opening, steps, oval sign and coloured pixels (plants,
@@ -934,9 +945,9 @@ was run on the photos.
   masks at 640 × 480 in `public/precomputed/comparisons/<id>.json`).
   Entrance: the door and its recoloured surround, i.e. the bounding rectangle
   of the recoloured stone found from the change in blueness between A and B
-  (3.4% of the image). Greenery and
-  glazing: where the edit changed the image, from the pixel difference
-  between A and B inside a search box set around the described change. No
+  (3.4% of the image). Greenery (the added hedge) and glazing (the
+  ground-floor frontage): where A and B differ, from the pixel difference
+  inside a search box set around the described change. No
   other area (automatic areas, the lower third) is measured in this section.
 - Each comparison is described in a fixed format (prompt 066): **Question**
   (one short sentence), **Background** (only what the question needs),

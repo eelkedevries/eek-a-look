@@ -83,8 +83,8 @@ Choose a view above the photo; the inspector on the right changes with it.
 
 **Example** in the top bar opens three illustrations on Zürich photos: the
 stone block around an entrance in blue-teal (recoloured by rule), and, made
-with AI image editing, low planting along a building base and opaque against
-transparent ground-floor windows.
+with AI image editing, a tall hedge along a building base and an opaque
+against a transparent ground-floor frontage.
 Choose one to see its question, background, conditions and two possible
 outcomes. Images A and B and the difference between them appear side by side
 for the model you choose; A and B share one colour scale. In the difference,

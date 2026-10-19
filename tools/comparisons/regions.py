@@ -9,9 +9,10 @@ comparison is over identical pixels:
   bounding rectangle of the recoloured stone block, found from the change in
   blueness between A and B;
 - greenery: the changed pixels themselves along the building base (the added
-  planting), closed, filled and slightly dilated;
-- glazing: the bounding rectangles of the three largest changed patches (the
-  three window bays).
+  hedge, prompt 071b), closed, filled and slightly dilated;
+- glazing: the changed pixels between the opaque and the transparent version
+  (the whole ground-floor frontage, prompt 071b), closed, filled and slightly
+  dilated.
 
 Writes public/precomputed/comparisons/<example>.json (masks as row-major run
 lengths at 640 × 480, as in the area files) and check overlays in .cache/.
@@ -45,8 +46,8 @@ RECOLOUR_THRESHOLD = 15
 # Search boxes (x0, y0, x1, y1) in pixels of the 1280 × 960 images.
 REGIONS = {
     "entrance": [{"id": "entrance", "label": "Door and surround", "box": (300, 600, 580, 850), "shape": "frame"}],
-    "greenery": [{"id": "planting", "label": "Added planting", "box": (0, 740, 1280, 960), "shape": "mask"}],
-    "glazing": [{"id": "windows", "label": "Three window bays", "box": (640, 340, 1280, 600), "shape": "rectangles", "count": 3}],
+    "greenery": [{"id": "planting", "label": "Added hedge", "box": (0, 560, 1280, 960), "shape": "mask"}],
+    "glazing": [{"id": "frontage", "label": "Ground-floor frontage", "box": (180, 330, 1280, 760), "shape": "mask"}],
 }
 LAYERS = ["measured", "classic-salience", "unisal", "deepgaze-iie", "deepgaze-msdb"]
 

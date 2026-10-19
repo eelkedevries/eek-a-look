@@ -63,23 +63,23 @@ export const COMPARISONS: ComparisonText[] = [
     number: 2,
     title: 'Greenery',
     place: 'Zürich 33',
-    question: "Does low planting along a building's base shift attention towards pedestrian level?",
+    question: "Does planting along a building's base shift attention towards pedestrian level?",
     background:
-      'Planting at the foot of a building can soften a hard base and add detail at eye level. In the original photograph, residential tower blocks rise from a bare base above grass.',
-    manipulated: 'whether there is low planting at the base.',
+      'Planting at the foot of a building can soften a hard base and add detail at eye level. In the original photograph, residential tower blocks rise from a bare grey base above grass.',
+    manipulated: 'whether there is planting along the base.',
     conditionA: 'The original scene.',
-    conditionB: 'Low leafy planting along the building base; the existing grass kept.',
+    conditionB: 'A continuous hedge of dense shrubs, about 2 m tall, along the base of all three blocks; the rest of the scene unchanged.',
     outcomes: [
-      'Predicted gaze density shifts downwards: in B, a larger share of it falls on the planting.',
-      'The density stays much the same: the planting looks too much like the grass to stand out, and the density stays on the façades.',
+      'Predicted gaze density shifts downwards: in B, a larger share of it falls on the hedge.',
+      'The density on the hedge does not rise: a uniform green hedge does not stand out, and the density stays on the façades.',
     ],
     labelA: 'A · Original',
-    labelB: 'B · Low planting',
+    labelB: 'B · Hedge along the base',
     area: {
       id: 'planting',
-      label: 'Added planting',
-      phrase: 'the added planting',
-      note: 'The area is where the edit added planting, found from the pixel difference between A and B.',
+      label: 'Added hedge',
+      phrase: 'the added hedge',
+      note: 'The area is where the edit added the hedge, found from the pixel difference between A and B.',
     },
   },
   {
@@ -89,21 +89,21 @@ export const COMPARISONS: ComparisonText[] = [
     place: 'Zürich 53',
     question: 'Does transparent glazing draw more attention to a ground-floor frontage than opaque glazing?',
     background:
-      'Being able to see into a ground floor is often thought to make a frontage more engaging. To isolate transparency, both images are edited and neither is the untouched photograph: they differ only in three window bays, and both contain the same three unplanted containers.',
-    manipulated: 'the transparency of the glazing; everything else is held constant.',
-    conditionA: 'Three window bays made opaque.',
-    conditionB: 'The same three bays made transparent.',
+      'Being able to see into a ground floor is often thought to make a frontage more engaging. To isolate transparency, both images are edited from the same photograph and neither is the untouched one: they differ only in the ground-floor frontage.',
+    manipulated: 'whether the ground-floor frontage is opaque or transparent; everything else is held constant.',
+    conditionA: 'The whole ground-floor frontage, either side of the red door, as opaque grey panels.',
+    conditionB: 'The same frontage as clear glass, showing a lit shop interior.',
     outcomes: [
-      'B has a higher predicted gaze density on the window bays than A: the visible interior adds detail that draws the eye.',
-      'A and B do not differ meaningfully: reflections, the containers or other features outweigh the effect of transparency.',
+      'B has a higher predicted gaze density on the frontage than A: the visible interior adds detail that draws the eye.',
+      'A and B do not differ meaningfully: the frontage draws the eye in both, and the visible interior adds little.',
     ],
-    labelA: 'A · Opaque glazing',
-    labelB: 'B · Transparent glazing',
+    labelA: 'A · Opaque frontage',
+    labelB: 'B · Transparent frontage',
     area: {
-      id: 'windows',
-      label: 'Three window bays',
-      phrase: 'the three window bays',
-      note: 'The area is the three window bays, found from the pixel difference between the two versions.',
+      id: 'frontage',
+      label: 'Ground-floor frontage',
+      phrase: 'the ground-floor frontage',
+      note: 'The area is the ground-floor frontage, where the two versions differ, found from the pixel difference between them.',
     },
   },
 ];
@@ -112,7 +112,7 @@ export const COMPARISON_INTRO =
   'Three design changes to Zürich street photos: the first recoloured by rule, the other two made with AI image editing. Each example compares where people are predicted to look before and after the change. They are illustrations for discussing design and research questions, not studies.';
 
 export const COMPARISON_CAVEAT =
-  'The possible outcomes are hypotheses, not results; the numbers show what the models actually predict, even when the difference is small or matches neither outcome. A change in predicted gaze density does not show a change in wellbeing, preference or actual use. The AI image editing of examples 2 and 3 also made small unintended changes elsewhere; example 1 changes nothing outside the stone block apart from slight JPEG re-encoding noise.';
+  'The possible outcomes are hypotheses, not results; the numbers show what the models actually predict, even when the difference is small or matches neither outcome. A change in predicted gaze density does not show a change in wellbeing, preference or actual use. Outside the manipulated area every image keeps the original photograph’s pixels, apart from slight JPEG re-encoding noise; inside it, the AI edits of examples 2 and 3 may contain small unintended details.';
 
 export const MEASURED_NOTE =
   'All maps here are predictions. Measured gaze (48 people, six seconds of free viewing; Wilming et al. 2017) exists only for the untouched original photographs, so it cannot show the effect of an edit and is left out; the originals’ measured gaze can be seen in the workspace.';

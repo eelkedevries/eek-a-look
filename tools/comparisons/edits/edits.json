@@ -1,0 +1,26 @@
+{
+  "model": "FLUX.1 Kontext [dev], Hugging Face Space mcp-tools/FLUX.1-Kontext-Dev, endpoint /infer",
+  "date": "2026-10-19",
+  "settings": { "guidance_scale": 2.5, "steps": 28, "randomize_seed": false },
+  "prompt": "071b_example_larger_edits.md",
+  "edits": [
+    {
+      "file": "zurich-33-hedge.webp",
+      "source": "https://eelkedevries.com/eek-a-look/examples/zurich-33.jpg",
+      "seed": 7,
+      "prompt": "Add a wide planting bed along the entire base of all the apartment buildings: dense green shrubs and flowering bushes about 1.5 to 2 metres tall, in front of the grey ground-floor wall. Keep the buildings, windows, lawn, paths, sky, lighting and camera view exactly the same."
+    },
+    {
+      "file": "zurich-53-opaque-frontage.webp",
+      "source": "https://eelkedevries.com/eek-a-look/examples/zurich-53.jpg",
+      "seed": 11,
+      "prompt": "Make the whole ground-floor frontage under the canopy, from the red door to the right edge of the image, one continuous row of floor-to-ceiling opaque matt grey panels, with no glass and nothing visible behind them. Keep the red door, the canopy, the upper floors, the walkway, the shadows and the camera view exactly the same."
+    },
+    {
+      "file": "zurich-53-transparent-frontage.webp",
+      "source": "https://eelkedevries.com/eek-a-look/examples/zurich-53.jpg",
+      "seed": 11,
+      "prompt": "Make the whole ground-floor frontage under the canopy, from the red door to the right edge of the image, one continuous row of floor-to-ceiling clear glass shop windows showing a bright, lit shop interior with shelves and goods. Keep the red door, the canopy, the upper floors, the walkway, the shadows and the camera view exactly the same."
+    }
+  ]
+}

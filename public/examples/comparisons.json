@@ -17,57 +17,57 @@
       "changes": "Recoloured by rule with tools/comparisons/recolour.py (prompt 071): the rusticated stone block around the entrance, from the balcony slab to the pavement, in blue-teal, keeping the stone's lightness; the door, steps, sign and plants unchanged; outside the block only JPEG re-encoding noise (mean 0.5 of 255 levels). Saved as JPEG"
     },
     {
-      "id": "zurich-33-low-planting",
+      "id": "zurich-33-hedge",
       "editOf": "zurich-33",
-      "condition": "Added low planting",
+      "condition": "Hedge along the base",
       "area": "Zürich",
       "city": "Zürich",
-      "title": "Residential tower blocks with low planting along the base",
-      "file": "zurich-33-low-planting.jpg",
+      "title": "Residential tower blocks with a tall hedge along the base",
+      "file": "zurich-33-hedge.jpg",
       "width": 1280,
       "height": 960,
       "author": "Edited from Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
       "licence": "CC0 1.0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
-      "changes": "Edited with AI image editing (19 October 2026): low leafy planting along the building base, the existing grass kept; small unintended changes elsewhere. Scaled from 1448 × 1086 to 1280 × 960 px to match the original; converted from PNG to JPEG"
+      "changes": "Edited with FLUX.1 Kontext [dev]: a continuous hedge of dense shrubs, about 2 m tall, along the base of all three blocks (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
     },
     {
-      "id": "zurich-53-opaque-glazing",
+      "id": "zurich-53-opaque-frontage",
       "editOf": "zurich-53",
-      "condition": "Opaque glazing",
+      "condition": "Opaque frontage",
       "area": "Zürich",
       "city": "Zürich",
-      "title": "Walkway with opaque ground-floor windows",
-      "file": "zurich-53-opaque-glazing.jpg",
+      "title": "Walkway with an opaque ground-floor frontage",
+      "file": "zurich-53-opaque-frontage.jpg",
       "width": 1280,
       "height": 960,
       "author": "Edited from Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
       "licence": "CC0 1.0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
-      "changes": "Edited with AI image editing (19 October 2026): three ground-floor window bays made opaque, and three unplanted containers added; small unintended changes elsewhere. Scaled from 1448 × 1086 to 1280 × 960 px to match the original; converted from PNG to JPEG"
+      "changes": "Edited with FLUX.1 Kontext [dev]: the whole ground-floor frontage either side of the red door as opaque grey panels (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
     },
     {
-      "id": "zurich-53-transparent-glazing",
+      "id": "zurich-53-transparent-frontage",
       "editOf": "zurich-53",
-      "condition": "Transparent glazing",
+      "condition": "Transparent frontage",
       "area": "Zürich",
       "city": "Zürich",
-      "title": "Walkway with transparent ground-floor windows",
-      "file": "zurich-53-transparent-glazing.jpg",
+      "title": "Walkway with a transparent ground-floor frontage",
+      "file": "zurich-53-transparent-frontage.jpg",
       "width": 1280,
       "height": 960,
       "author": "Edited from Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
       "licence": "CC0 1.0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
-      "changes": "Edited with AI image editing (19 October 2026): the same three ground-floor window bays made transparent, with the same three unplanted containers; small unintended changes elsewhere. Scaled from 1448 × 1086 to 1280 × 960 px to match the original; converted from PNG to JPEG"
+      "changes": "Edited with FLUX.1 Kontext [dev]: the whole ground-floor frontage either side of the red door as clear glass with a lit shop interior (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
     }
   ],
   "examples": [
     { "id": "entrance", "a": "zurich-42", "b": "zurich-42-entrance-block" },
-    { "id": "greenery", "a": "zurich-33", "b": "zurich-33-low-planting" },
-    { "id": "glazing", "a": "zurich-53-opaque-glazing", "b": "zurich-53-transparent-glazing", "reference": "zurich-53" }
+    { "id": "greenery", "a": "zurich-33", "b": "zurich-33-hedge" },
+    { "id": "glazing", "a": "zurich-53-opaque-frontage", "b": "zurich-53-transparent-frontage", "reference": "zurich-53" }
   ]
 }
