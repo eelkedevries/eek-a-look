@@ -176,6 +176,38 @@ horizon that is not sky, people, vehicles or ground floor (street-space part).
 - DMS46 was trained on general photos; its published per-class test accuracy
   is quoted in prompt 043's report.
 
+## Checks (prompt 043)
+
+`checks.py` tests what can be tested without expert labels for these photos,
+and writes `public/precomputed/qualities/checks.json` and the report
+`docs-dev/reference/secondary_background/qualities_validation.md`:
+- **rhythm** on the CMP Facade images with odd numbers (not used for the
+  calibration): the measure's "repeats" against the human-label reference;
+- **frontage** on the odd CMP images that label doors or shops: `openShare`
+  from the human labels against `openShare` from SAM 3, in the same band (the
+  bottom quarter of the labelled façade stands in for the ground floor);
+- **materials**: DMS46's published per-class results, and the
+  textured / smooth / neutral grouping on outdoor DMS test images whose
+  original photos are still on Flickr (labels CC BY-NC 4.0, in `.cache/`,
+  never committed);
+- **sensitivity**: how many of the 24 outcomes change when one rule threshold
+  is halved or raised by half;
+- **discrimination**: outcomes per principle, and whether any measure says
+  the same on every photo;
+- the image measure against the simulated panel v1, labelled as two
+  automated methods.
+
+It needs `../areas/fetch_validation.py` (CMP Facade) and, for the material
+check, `dms_v1_labels.zip` unpacked in `.cache/dms-val/` (see `checks.py`).
+
+**Expert labels.** `labels_template.csv` has one row per photo and principle.
+A panel fills in `label` with `present`, `absent` or `ambiguous` (the scale of
+the 2020 panel), one row per rater, and runs `uv run agreement.py --labels
+FILE.csv`. The script reports, per method and principle, the percentage
+agreement and Cohen's kappa with the labels (majority label per photo when
+there are several raters). Its mappings for the graded panel and UP-CLIP are
+written in its docstring and were fixed before any labels exist.
+
 ## Output
 
 `public/precomputed/qualities/<photo-id>.json`, the `QualityFile` of the

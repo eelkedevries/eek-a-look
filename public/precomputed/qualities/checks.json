@@ -1,0 +1,627 @@
+{
+ "date": "2026-10-19",
+ "tool": "tools/qualities/checks.py",
+ "rhythm": {
+  "dataset": "CMP Facade base, odd image numbers",
+  "images": 189,
+  "windows": 48642,
+  "instanceThreshold": 0.65,
+  "families": {
+   "vertical": {
+    "tau": 0.2,
+    "balancedAccuracy": 0.786175862026053,
+    "precision": 0.4087772876371451,
+    "recall": 0.8338717120443009,
+    "referenceRepeats": 0.17819990954319312,
+    "measureRepeats": 0.36351301344517084
+   },
+   "layer": {
+    "tau": 0.1,
+    "balancedAccuracy": 0.7762564416222146,
+    "precision": 0.1851992891596852,
+    "recall": 0.8368224835101806,
+    "referenceRepeats": 0.07168701944821348,
+    "measureRepeats": 0.3239176020722832
+   }
+  },
+  "rhythmicShareSpearman": 0.6751778895633902,
+  "rhythmicShareMeanAbsDiff": 0.2810162856981085
+ },
+ "frontage": {
+  "dataset": "CMP Facade base, odd image numbers with door or shop labels",
+  "images": 158,
+  "groundFloorProxy": "the bottom quarter of the labelled façade (CMP has no horizon)",
+  "openShareSpearman": 0.6408168888130471,
+  "openShareMeanAbsDiff": 0.16400876597013014,
+  "outcomeAgreement": 0.6518987341772152,
+  "outcomes": {
+   "rows": "from the human labels",
+   "columns": "from the SAM 3 masks",
+   "table": {
+    "likely-present": {
+     "likely-present": 58,
+     "unclear": 13,
+     "likely-absent": 13
+    },
+    "unclear": {
+     "likely-present": 5,
+     "unclear": 28,
+     "likely-absent": 22
+    },
+    "likely-absent": {
+     "likely-present": 1,
+     "unclear": 1,
+     "likely-absent": 17
+    }
+   }
+  }
+ },
+ "materials": {
+  "note": "Per-class results of DMS46 on the DMS test set, from Upchurch & Niu (2022), Table 8. They describe the model on its own kind of photos, not on Dutch or Swiss street façades.",
+  "table8": {
+   "Brickwork": {
+    "group": "textured",
+    "accuracy": 0.746,
+    "iou": 0.491
+   },
+   "Stone, natural": {
+    "group": "textured",
+    "accuracy": 0.665,
+    "iou": 0.436
+   },
+   "Wood": {
+    "group": "textured",
+    "accuracy": 0.797,
+    "iou": 0.635
+   },
+   "Wood, tree": {
+    "group": "textured",
+    "accuracy": 0.428,
+    "iou": 0.261
+   },
+   "Tile": {
+    "group": "textured",
+    "accuracy": 0.722,
+    "iou": 0.55
+   },
+   "Wicker": {
+    "group": "textured",
+    "accuracy": 0.674,
+    "iou": 0.46
+   },
+   "Foliage": {
+    "group": "textured",
+    "accuracy": 0.902,
+    "iou": 0.761
+   },
+   "Glass": {
+    "group": "smooth",
+    "accuracy": 0.653,
+    "iou": 0.483
+   },
+   "Mirror": {
+    "group": "smooth",
+    "accuracy": 0.452,
+    "iou": 0.278
+   },
+   "Metal": {
+    "group": "smooth",
+    "accuracy": 0.575,
+    "iou": 0.303
+   },
+   "Stone, polished": {
+    "group": "smooth",
+    "accuracy": 0.379,
+    "iou": 0.236
+   },
+   "Paint/plaster/enamel": {
+    "group": "smooth",
+    "accuracy": 0.694,
+    "iou": 0.632
+   },
+   "Plastic, clear": {
+    "group": "smooth",
+    "accuracy": 0.36,
+    "iou": 0.222
+   },
+   "Plastic, non-clear": {
+    "group": "smooth",
+    "accuracy": 0.519,
+    "iou": 0.321
+   },
+   "Ceramic": {
+    "group": "smooth",
+    "accuracy": 0.757,
+    "iou": 0.427
+   },
+   "Concrete": {
+    "group": "neutral",
+    "accuracy": 0.603,
+    "iou": 0.304
+   },
+   "Asphalt": {
+    "group": "neutral",
+    "accuracy": 0.628,
+    "iou": 0.442
+   }
+  },
+  "dmsTest": {
+   "images": 85,
+   "originalsMissing": 391,
+   "selection": "DMS test split, by id: outdoor man-made, outdoor area or far outdoor, not rotated, at least 20% façade-like materials labelled; photos from their original Flickr URLs, MD5-checked",
+   "groupIou": {
+    "textured": 0.5679892055136694,
+    "smooth": 0.6351954638434344,
+    "neutral": 0.6651916102407486
+   },
+   "groupPixelAccuracy": 0.7712545634605522
+  },
+  "ownCheck": "Own check on 85 outdoor DMS test images (391 originals no longer available): the textured / smooth / neutral grouping agrees with the human labels on 77% of labelled pixels; IoU textured 0.57, smooth 0.64, neutral 0.67. These are the model's own kind of photos (in-domain), so on Dutch and Swiss streets it may do worse."
+ },
+ "sensitivity": {
+  "groundFloor": {
+   "frontageMin": {
+    "value": 0.05,
+    "x0.5": 0,
+    "x1.5": 0
+   },
+   "openPresent": {
+    "value": 0.3,
+    "x0.5": 3,
+    "x1.5": 0
+   },
+   "openAbsent": {
+    "value": 0.1,
+    "x0.5": 2,
+    "x1.5": 1
+   },
+   "closedAbsent": {
+    "value": 0.6,
+    "x0.5": 0,
+    "x1.5": 4
+   }
+  },
+  "rhythm": {
+   "facadeCellsMin": {
+    "value": 8,
+    "x0.5": 0,
+    "x1.5": 0
+   },
+   "rhythmicPresent": {
+    "value": 0.25,
+    "x0.5": 5,
+    "x1.5": 3
+   },
+   "zonesPresent": {
+    "value": 2,
+    "x0.5": 1,
+    "x1.5": 5
+   },
+   "rhythmicAbsent": {
+    "value": 0.1,
+    "x0.5": 0,
+    "x1.5": 1
+   }
+  },
+  "materials": {
+   "zoneMin": {
+    "value": 0.1,
+    "x0.5": 0,
+    "x1.5": 2
+   },
+   "texturedPresent": {
+    "value": 0.25,
+    "x0.5": 1,
+    "x1.5": 5
+   },
+   "texturedAbsent": {
+    "value": 0.1,
+    "x0.5": 2,
+    "x1.5": 0
+   },
+   "smoothRatio": {
+    "value": 2.0,
+    "x0.5": 2,
+    "x1.5": 1
+   }
+  }
+ },
+ "discrimination": {
+  "groundFloor": {
+   "outcomes": {
+    "likely-present": 1,
+    "unclear": 10,
+    "likely-absent": 13
+   },
+   "indicator": "openShare",
+   "min": 0.0,
+   "max": 0.638671875,
+   "sameOnAllPhotos": false,
+   "perPhoto": {
+    "zuidas-gershwinplein": {
+     "outcome": "unclear",
+     "value": 0.11727416798732171
+    },
+    "zuidas-mahlerplein": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "zuidas-strawinskylaan": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "weena-stationsplein": {
+     "outcome": "likely-present",
+     "value": 0.638671875
+    },
+    "weena-millenniumtoren": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "weena-delftse-poort": {
+     "outcome": "unclear",
+     "value": 0.4609375
+    },
+    "wilhelminapier-hotel-new-york": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "wilhelminapier-dolf-henkesplein": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "wilhelminapier-towers": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "beatrixkwartier-tram-viaduct": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "beatrixkwartier-wtc": {
+     "outcome": "unclear",
+     "value": 0.0
+    },
+    "beatrixkwartier-juliana-van-stolberglaan": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "zurich-18": {
+     "outcome": "unclear",
+     "value": 0.23125
+    },
+    "zurich-19": {
+     "outcome": "unclear",
+     "value": 0.20854271356783918
+    },
+    "zurich-22": {
+     "outcome": "unclear",
+     "value": 0.0
+    },
+    "zurich-23": {
+     "outcome": "unclear",
+     "value": null
+    },
+    "zurich-24": {
+     "outcome": "unclear",
+     "value": 0.2078125
+    },
+    "zurich-27": {
+     "outcome": "likely-absent",
+     "value": 0.05573248407643312
+    },
+    "zurich-30": {
+     "outcome": "unclear",
+     "value": null
+    },
+    "zurich-33": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "zurich-42": {
+     "outcome": "likely-absent",
+     "value": 0.040625
+    },
+    "zurich-46": {
+     "outcome": "unclear",
+     "value": null
+    },
+    "zurich-51": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "zurich-53": {
+     "outcome": "likely-absent",
+     "value": 0.06875
+    }
+   }
+  },
+  "rhythm": {
+   "outcomes": {
+    "likely-present": 11,
+    "unclear": 7,
+    "likely-absent": 6
+   },
+   "indicator": "rhythmicShare",
+   "min": 0.0,
+   "max": 0.8981481481481481,
+   "sameOnAllPhotos": false,
+   "perPhoto": {
+    "zuidas-gershwinplein": {
+     "outcome": "unclear",
+     "value": 0.23684210526315788
+    },
+    "zuidas-mahlerplein": {
+     "outcome": "unclear",
+     "value": 0.10434782608695652
+    },
+    "zuidas-strawinskylaan": {
+     "outcome": "unclear",
+     "value": 0.22330097087378642
+    },
+    "weena-stationsplein": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "weena-millenniumtoren": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "weena-delftse-poort": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "wilhelminapier-hotel-new-york": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "wilhelminapier-dolf-henkesplein": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "wilhelminapier-towers": {
+     "outcome": "likely-present",
+     "value": 0.5657894736842105
+    },
+    "beatrixkwartier-tram-viaduct": {
+     "outcome": "likely-present",
+     "value": 0.7818181818181819
+    },
+    "beatrixkwartier-wtc": {
+     "outcome": "likely-present",
+     "value": 0.28865979381443296
+    },
+    "beatrixkwartier-juliana-van-stolberglaan": {
+     "outcome": "unclear",
+     "value": 0.16326530612244897
+    },
+    "zurich-18": {
+     "outcome": "likely-present",
+     "value": 0.33014354066985646
+    },
+    "zurich-19": {
+     "outcome": "likely-present",
+     "value": 0.34210526315789475
+    },
+    "zurich-22": {
+     "outcome": "unclear",
+     "value": 0.22023809523809523
+    },
+    "zurich-23": {
+     "outcome": "likely-present",
+     "value": 0.8981481481481481
+    },
+    "zurich-24": {
+     "outcome": "likely-present",
+     "value": 0.6020408163265306
+    },
+    "zurich-27": {
+     "outcome": "unclear",
+     "value": 0.22289156626506024
+    },
+    "zurich-30": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "zurich-33": {
+     "outcome": "likely-present",
+     "value": 0.6205357142857143
+    },
+    "zurich-42": {
+     "outcome": "likely-present",
+     "value": 0.6869565217391305
+    },
+    "zurich-46": {
+     "outcome": "unclear",
+     "value": 0.7619047619047619
+    },
+    "zurich-51": {
+     "outcome": "likely-present",
+     "value": 0.7738095238095238
+    },
+    "zurich-53": {
+     "outcome": "likely-present",
+     "value": 0.4072164948453608
+    }
+   }
+  },
+  "materials": {
+   "outcomes": {
+    "likely-present": 6,
+    "unclear": 10,
+    "likely-absent": 8
+   },
+   "indicator": "texturedShare",
+   "min": 0.0,
+   "max": 0.7007009882785566,
+   "sameOnAllPhotos": false,
+   "perPhoto": {
+    "zuidas-gershwinplein": {
+     "outcome": "likely-present",
+     "value": 0.2549915075045929
+    },
+    "zuidas-mahlerplein": {
+     "outcome": "unclear",
+     "value": 0.08211981438385753
+    },
+    "zuidas-strawinskylaan": {
+     "outcome": "likely-absent",
+     "value": 0.008037973266462172
+    },
+    "weena-stationsplein": {
+     "outcome": "likely-absent",
+     "value": 0.00978196221353277
+    },
+    "weena-millenniumtoren": {
+     "outcome": "likely-present",
+     "value": 0.7007009882785566
+    },
+    "weena-delftse-poort": {
+     "outcome": "unclear",
+     "value": 0.20522370871473603
+    },
+    "wilhelminapier-hotel-new-york": {
+     "outcome": "unclear",
+     "value": 0.2290837496824456
+    },
+    "wilhelminapier-dolf-henkesplein": {
+     "outcome": "likely-absent",
+     "value": 0.0802952388262082
+    },
+    "wilhelminapier-towers": {
+     "outcome": "likely-present",
+     "value": 0.3060792268225749
+    },
+    "beatrixkwartier-tram-viaduct": {
+     "outcome": "unclear",
+     "value": 0.07362068122953623
+    },
+    "beatrixkwartier-wtc": {
+     "outcome": "unclear",
+     "value": 0.49801402705217207
+    },
+    "beatrixkwartier-juliana-van-stolberglaan": {
+     "outcome": "likely-absent",
+     "value": 0.019898121617319325
+    },
+    "zurich-18": {
+     "outcome": "likely-present",
+     "value": 0.34098946337570957
+    },
+    "zurich-19": {
+     "outcome": "likely-absent",
+     "value": 0.0
+    },
+    "zurich-22": {
+     "outcome": "unclear",
+     "value": 0.0011268323273496905
+    },
+    "zurich-23": {
+     "outcome": "unclear",
+     "value": 0.010468744126602264
+    },
+    "zurich-24": {
+     "outcome": "likely-absent",
+     "value": 0.01233398927980371
+    },
+    "zurich-27": {
+     "outcome": "likely-absent",
+     "value": 0.06067000192855279
+    },
+    "zurich-30": {
+     "outcome": "unclear",
+     "value": 0.0024192996854055532
+    },
+    "zurich-33": {
+     "outcome": "likely-present",
+     "value": 0.26829474813189297
+    },
+    "zurich-42": {
+     "outcome": "likely-absent",
+     "value": 0.012019172084923547
+    },
+    "zurich-46": {
+     "outcome": "unclear",
+     "value": 0.4816674263345577
+    },
+    "zurich-51": {
+     "outcome": "unclear",
+     "value": 0.01958434380463595
+    },
+    "zurich-53": {
+     "outcome": "likely-present",
+     "value": 0.31276869534700086
+    }
+   }
+  }
+ },
+ "panelCrossTable": {
+  "groundFloor": {
+   "rows": "image measure",
+   "columns": "simulated panel v1",
+   "table": {
+    "present": {
+     "present": 1,
+     "ambiguous": 0,
+     "absent": 0
+    },
+    "ambiguous": {
+     "present": 6,
+     "ambiguous": 0,
+     "absent": 4
+    },
+    "absent": {
+     "present": 5,
+     "ambiguous": 0,
+     "absent": 8
+    }
+   },
+   "agreement": 0.375
+  },
+  "rhythm": {
+   "rows": "image measure",
+   "columns": "simulated panel v1",
+   "table": {
+    "present": {
+     "present": 11,
+     "ambiguous": 0,
+     "absent": 0
+    },
+    "ambiguous": {
+     "present": 7,
+     "ambiguous": 0,
+     "absent": 0
+    },
+    "absent": {
+     "present": 6,
+     "ambiguous": 0,
+     "absent": 0
+    }
+   },
+   "agreement": 0.4583333333333333
+  },
+  "materials": {
+   "rows": "image measure",
+   "columns": "simulated panel v1",
+   "table": {
+    "present": {
+     "present": 6,
+     "ambiguous": 0,
+     "absent": 0
+    },
+    "ambiguous": {
+     "present": 10,
+     "ambiguous": 0,
+     "absent": 0
+    },
+    "absent": {
+     "present": 8,
+     "ambiguous": 0,
+     "absent": 0
+    }
+   },
+   "agreement": 0.25
+  }
+ },
+ "seconds": 139.8
+}

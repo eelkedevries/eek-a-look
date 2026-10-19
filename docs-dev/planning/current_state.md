@@ -188,3 +188,9 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `042_material_evidence.md` (spec 0.23: DMS46 materials near eye level,
   textured / smooth / neutral groups. 6 likely present, 10 unclear, 8 likely
   absent; dark brick façades can read as plaster)
+- `043_quality_checks.md` (`checks.json`, `qualities_validation.md`: rhythm
+  on odd CMP balanced accuracy 0.79 / 0.78; frontage open share ρ 0.64 with
+  labels, 65% same outcome, SAM 3 leans to closed; DMS grouping 77% of
+  pixels on 85 DMS test photos; at most 5 of 24 outcomes change per
+  threshold; every measure separates the photos. Expert-label template and
+  `agreement.py`)
