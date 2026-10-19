@@ -226,11 +226,19 @@ variant did better on held-out labels). Owner's interface requests 054–057
 followed (fixation slider, the three principles at once, fixations over the
 model maps, display settings above the image).
 
-Next, proposed and not drafted: prompts 059–065 in
-`docs-dev/reference/secondary_background/qualities_improvement_research.md`
-(human ratings with a rubric first, then a panel that observes rather than
-judges, panoramas in perspective views, an adapted frontage grade, a
-surface-detail indicator, an outcome scale, rhythm on rectified façades).
+Eighth round (drafted 2026-10-19, owner's request "use your recommendations.
+Run all prompts"), from
+`docs-dev/reference/secondary_background/qualities_improvement_research.md`:
+
+| # | Prompt | Notes |
+|---|---|---|
+| 059 | `059_rating_page.md`: rubric, a rating page and inter-rater alpha in `agreement.py` | Raters recruited by the owner |
+| 060 | `060_panel_observations.md`: the panel answers observable questions; ratings by a fixed rule; probability-weighted graded ratings | Questions and rule fixed before the run |
+| 061 | `061_panoramas_perspective.md`: elements and rhythm in cube faces of the 360° panoramas | Only the 15 panoramas rebuilt |
+| 062 | `062_frontage_grade.md`: openings per 100 m and a grade adapted from the Urban Design Compendium | Outcome rule unchanged |
+| 063 | `063_surface_detail.md`: a surface-detail indicator, checked on DMS labels; used in the rule only if it helps there | Decision rule fixed in the prompt |
+| 064 | `064_outcome_scale.md`: each outcome's indicator on a scale with its bands; method disagreement marked | Display only |
+| 065 | `065_rhythm_rectified.md`: rectified spacing and translational symmetry against held-out labels | As 053: keep A unless better |
 
 | # | Prompt | Notes |
 |---|---|---|

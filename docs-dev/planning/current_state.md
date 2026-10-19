@@ -94,11 +94,10 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Seventh round run (2026-10-19, prompts 051–057). Proposed next, awaiting the
-owner's choice: prompts 059–065 in
-`docs-dev/reference/secondary_background/qualities_improvement_research.md`;
-human ratings with a rubric come first, because no outcome has been checked
-against people yet.
+Seventh round run (2026-10-19, prompts 051–057). Eighth round drafted and
+running (prompts 059–065, `docs-dev/plan.md`), from
+`qualities_improvement_research.md`; human ratings with a rubric come first,
+because no outcome has been checked against people yet.
 
 Sixth round (2026-10-19, prompts 040–048, all run, `docs-dev/plan.md`): image measures
 with spatial evidence for the three design principles (`tools/qualities/`),
