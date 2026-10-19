@@ -226,7 +226,7 @@ variant did better on held-out labels). Owner's interface requests 054–057
 followed (fixation slider, the three principles at once, fixations over the
 model maps, display settings above the image).
 
-Eighth round (drafted 2026-10-19, owner's request "use your recommendations.
+Eighth round (run 2026-10-19, owner's request "use your recommendations.
 Run all prompts"), from
 `docs-dev/reference/secondary_background/qualities_improvement_research.md`:
 
