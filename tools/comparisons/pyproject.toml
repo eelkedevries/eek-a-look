@@ -1,0 +1,13 @@
+[project]
+name = "comparisons"
+version = "0.1.0"
+description = "Regions and a summary table for the three design comparisons in eek-a-look's Example section."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "numpy",
+  "scipy",
+  "pillow",
+]
+
+[tool.uv]
+package = false

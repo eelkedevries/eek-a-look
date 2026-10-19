@@ -69,6 +69,17 @@ Choose a view above the photo; the inspector on the right changes with it.
   correlations between each pair of maps for this photo (n/a where a model
   does not cover the photo).
 
+## Example: three design comparisons
+
+**Example** in the top bar opens three illustrations: a coloured entrance
+surround, low planting along a building base, and opaque against transparent
+ground-floor windows, each on a Zürich photo edited with AI image editing.
+Choose one to see its question, what changed, the expected pattern and what
+the models predict. Compare the two images side by side, with a slider or as
+a difference map, for any model, and choose which area the table measures.
+Measured gaze appears only on the untouched original photos. The links under
+the table open either image in the workspace.
+
 The About section explains the models, their scores on a standard lab test,
 and what the maps cannot tell you.
 

@@ -19,16 +19,33 @@ export interface ExamplePhoto {
   study?: { citation: string; heatmapFigure: string; heatmapUrl: string; viewing: string };
   /** Study images only (prompt 051): a design rendering or a 360° panorama. */
   imageKind?: 'render' | 'panorama';
+  /** Edited images of the Example section only (prompt 058): the photo it was edited from, and what was changed. */
+  editOf?: string;
+  condition?: string;
+}
+
+/** The Example section's edited images and its three comparisons, each of image `a` against image `b`. */
+export interface ComparisonManifest {
+  images: ExamplePhoto[];
+  examples: { id: string; a: string; b: string; reference?: string }[];
 }
 
 const EXAMPLES_URL = `${import.meta.env.BASE_URL}examples/`;
 
 /** Content hash of examples.json, set by vite.config.ts, so a stale cached copy is never used. */
 declare const __EXAMPLES_VERSION__: string;
+/** Content hash of comparisons.json and public/precomputed/comparisons/, set by vite.config.ts. */
+declare const __COMPARISONS_VERSION__: string;
 
 export async function loadExamples(): Promise<ExamplePhoto[]> {
   const response = await fetch(`${EXAMPLES_URL}examples.json?v=${__EXAMPLES_VERSION__}`);
   if (!response.ok) throw new Error(`Could not load the example photos (HTTP ${response.status}).`);
+  return response.json();
+}
+
+export async function loadComparisons(): Promise<ComparisonManifest> {
+  const response = await fetch(`${EXAMPLES_URL}comparisons.json?v=${__COMPARISONS_VERSION__}`);
+  if (!response.ok) throw new Error(`Could not load the comparisons (HTTP ${response.status}).`);
   return response.json();
 }
 

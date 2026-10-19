@@ -1,4 +1,4 @@
-"""Pre-compute DeepGaze IIE and MSDB maps for every example photo.
+"""Pre-compute DeepGaze IIE and MSDB maps for every example photo and every edited image of comparisons.json.
 
 Writes public/precomputed/<model-id>/<photo-id>.json. Models run one after
 the other so both fit in 8 GB of GPU memory. With --only-missing, photos that
@@ -30,6 +30,8 @@ def main() -> int:
     dev = device()
     print(f"Device: {dev} ({torch.cuda.get_device_name(0) if dev.type == 'cuda' else 'CPU'})")
     photos = json.loads((EXAMPLES / "examples.json").read_text())
+    # Prompt 058: the edited images of the Example section, outside the photo library.
+    photos += json.loads((EXAMPLES / "comparisons.json").read_text())["images"]
     template = centerbias_template()
     timings: dict[str, dict[str, float]] = {}
 

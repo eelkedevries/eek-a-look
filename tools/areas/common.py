@@ -97,5 +97,9 @@ def write_area_file(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")))
 
 
-def photos() -> list[dict]:
-    return json.loads((EXAMPLES / "examples.json").read_text())
+def photos(include_edited: bool = False) -> list[dict]:
+    """The example photos; with include_edited, also the edited images of the Example section (prompt 058)."""
+    photos = json.loads((EXAMPLES / "examples.json").read_text())
+    if include_edited:
+        photos += json.loads((EXAMPLES / "comparisons.json").read_text())["images"]
+    return photos

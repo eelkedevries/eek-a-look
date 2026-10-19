@@ -361,13 +361,13 @@ def apply(dev: torch.device, only_missing: bool = False) -> None:
     by_candidate: dict[str, list[str]] = {}
     for eid, w in winners.items():
         by_candidate.setdefault(w["candidate"], []).append(eid)
-    files = {p["id"]: json.loads((OUT / f"{p['id']}.json").read_text()) for p in photos()}
+    files = {p["id"]: json.loads((OUT / f"{p['id']}.json").read_text()) for p in photos(include_edited=True)}
     if only_missing:  # prompt 051: leave photos that already have their element masks untouched
         files = {pid: data for pid, data in files.items() if not any(a["id"] in ELEMENTS for a in data["areas"])}
     found: dict[str, dict[str, np.ndarray]] = {pid: {} for pid in files}
     for key, eids in by_candidate.items():
         candidate = load_candidate(key, dev)
-        for photo in photos():
+        for photo in photos(include_edited=True):
             if photo["id"] not in files:
                 continue
             data = files[photo["id"]]
@@ -406,7 +406,7 @@ COLOURS = {"ground-floor": (255, 0, 255), "windows": (86, 180, 233), "entrances"
 
 
 def overlay(pid: str, data: dict) -> None:
-    photo = next(p for p in photos() if p["id"] == pid)
+    photo = next(p for p in photos(include_edited=True) if p["id"] == pid)
     w, h = data["width"], data["height"]
     base = np.asarray(Image.open(EXAMPLES / photo["file"]).convert("L").resize((w * 2, h * 2)).convert("RGB"), dtype=np.float32) * 0.6
     for area in data["areas"]:

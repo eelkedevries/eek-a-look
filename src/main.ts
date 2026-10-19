@@ -6,7 +6,7 @@ import '@fontsource/spectral/latin-500.css';
 import '@fontsource/jetbrains-mono/latin-400.css';
 import './style.css';
 
-import { loadExamples, mountLibraryFilter, renderCredit, renderPicker, showExample, type ExamplePhoto } from './examples';
+import { loadComparisons, loadExamples, mountLibraryFilter, renderCredit, renderPicker, showExample, type ExamplePhoto } from './examples';
 import { decodeUpload, ImageInputError } from './image-input';
 import { modelsFor, onResults } from './results';
 import { onImageChange, setImage } from './state';
@@ -17,6 +17,8 @@ import { mountAgreement } from './views/agreement';
 import { mountAreas } from './views/areas';
 import { contrastWith, mountContrast } from './views/contrast';
 import { mountDisplaySettings } from './views/display-settings';
+import { mountExample } from './views/example';
+import './views/example.css';
 import { mountInspector } from './views/inspector';
 import { mountPanel } from './views/panel';
 import { mountQualities } from './views/qualities';
@@ -80,7 +82,13 @@ onImageChange((image) => {
   if (photo) {
     renderCredit(credit, photo);
     photoTitle.textContent = photo.title;
-    photoPlace.textContent = photo.measured ? `${photo.city} · measured eye tracking` : photo.study ? `${photo.city} · published study, predictions only` : `${photo.area} · ${photo.city}`;
+    photoPlace.textContent = photo.measured
+      ? `${photo.city} · measured eye tracking`
+      : photo.study
+        ? `${photo.city} · published study, predictions only`
+        : photo.editOf
+          ? `${photo.city} · edited for the Example section, predictions only`
+          : `${photo.area} · ${photo.city}`;
   } else {
     credit.textContent = 'Your photo (stays on this device)';
     photoTitle.textContent = 'Your photo';
@@ -128,12 +136,28 @@ if (import.meta.env.DEV && new URLSearchParams(location.search).get('check') ===
 
 const about = $('#about');
 
+/** The Example section (prompt 058); its edited images open in the workspace but stay out of the library. */
+function mountComparisons(): void {
+  loadComparisons()
+    .then((manifest) => {
+      for (const photo of manifest.images) photosById.set(photo.id, photo);
+      mountExample($('#example'), manifest, (id) => photosById.get(id), (id) => {
+        pickById(id);
+        $('#workspace').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    })
+    .catch(() => {
+      $('#example').textContent = 'The examples could not be loaded.';
+    });
+}
+
 loadExamples()
   .then((photos) => {
     for (const photo of photos) photosById.set(photo.id, photo);
     markSelected = renderPicker(examples, photos, pick);
     mountLibraryFilter(examples, photos, document.querySelector<HTMLInputElement>('#photo-search')!, $('#photo-filters'), $('#library-count'));
     renderAbout(about, photos);
+    mountComparisons();
     if (photos.length) return pick(photos[0]);
   })
   .catch(() => {

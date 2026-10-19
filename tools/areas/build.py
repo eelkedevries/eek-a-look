@@ -83,7 +83,7 @@ def main() -> int:
     header = f"{'photo':42} {'horizon':>15} {'head%':>6} " + " ".join(f"{c[:6]:>6}" for c in CATEGORY_IDS) + f" {'ground':>6} {'s':>5}"
     print(header)
     failures = 0
-    for photo in photos():
+    for photo in photos(include_edited=True):
         if args.only_missing and (OUT / f"{photo['id']}.json").exists():
             continue
         t0 = time.perf_counter()

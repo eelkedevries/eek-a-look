@@ -59,8 +59,36 @@ for (const [index, photo] of photos.entries()) {
   }
 }
 
+// Prompt 058: the Example section's edited images and comparisons. Edited images never carry measured gaze.
+const comparisons = JSON.parse(await readFile(join(DIR, 'comparisons.json'), 'utf8'));
+const byId = new Map(photos.map((p) => [p.id, p]));
+for (const [index, image] of comparisons.images.entries()) {
+  const where = `comparisons.json image ${index} (${image.id ?? 'no id'})`;
+  for (const field of [...FIELDS, 'editOf', 'condition']) {
+    if (image[field] === undefined || image[field] === '') errors.push(`${where}: missing ${field}`);
+  }
+  if (byId.has(image.id) || ids.has(image.id)) errors.push(`${where}: duplicate id`);
+  ids.add(image.id);
+  const source = byId.get(image.editOf);
+  if (!source) errors.push(`${where}: editOf ${image.editOf} is not an example photo`);
+  else if (source.width !== image.width || source.height !== image.height) errors.push(`${where}: not the size of ${image.editOf}`);
+  if (image.measured !== undefined || image.study !== undefined) errors.push(`${where}: an edited image cannot have measured gaze or a study`);
+  for (const file of [image.file, image.file.replace(/\.jpg$/, '-thumb.jpg')]) {
+    try {
+      await access(join(DIR, file));
+    } catch {
+      errors.push(`${where}: file ${file} not found`);
+    }
+  }
+}
+for (const example of comparisons.examples) {
+  for (const key of ['a', 'b', 'reference']) {
+    if (example[key] !== undefined && !ids.has(example[key])) errors.push(`comparison ${example.id}: ${key} ${example[key]} is unknown`);
+  }
+}
+
 if (errors.length) {
   console.error(`Example manifest has ${errors.length} problem(s):\n  ${errors.join('\n  ')}`);
   process.exit(1);
 }
-console.log(`Example manifest OK: ${photos.length} photos.`);
+console.log(`Example manifest OK: ${photos.length} photos, ${comparisons.images.length} edited images in ${comparisons.examples.length} comparisons.`);

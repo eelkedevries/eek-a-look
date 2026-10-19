@@ -38,7 +38,7 @@ export function fixationLayer(): HTMLCanvasElement {
 }
 
 /** Cyan dots with a dark edge, about 1.25–3 CSS pixels in radius depending on the displayed width. */
-function drawFixations(target: HTMLCanvasElement, fixations: Fixations, width: number, height: number, displayed: number): void {
+export function drawFixations(target: HTMLCanvasElement, fixations: Fixations, width: number, height: number, displayed: number): void {
   const ctx = target.getContext('2d')!;
   ctx.clearRect(0, 0, width, height);
   const cssRadius = displayed > 0 ? Math.min(3, Math.max(1.25, displayed / 300)) : 2;

@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.37 · **Last updated:** 2026-10-19
+**Version:** 0.38 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -77,7 +77,10 @@ earlier rule of drawing them over the measured map only (prompt 056, owner's
 request of 2026-10-19). 0.37 moves the heatmap strength, the fixation points'
 slider and the fixation checkboxes from the inspector and from under the image
 into one foldable "Display settings" section between the view tabs and the
-image (prompt 057, owner's request of 2026-10-19).
+image (prompt 057, owner's request of 2026-10-19). 0.38 adds an "Example"
+section with three design comparisons on edited Zürich photos (entrance,
+greenery, glazing): every map and the areas computed in advance, measured
+gaze on untouched originals only (prompt 058, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -111,6 +114,9 @@ In scope for v1:
   measures for three design principles with their evidence on the photo, the
   definitions behind them, the other methods' judgements of the same photo,
   and attention ÷ size for the evidence regions;
+- an **Example** section (prompt 058): three design comparisons, each of two
+  images of the same Zürich scene, one or both edited with AI image editing
+  (see *Example comparisons*);
 - a short About section covering the models, honesty, privacy and credits.
 
 Out of scope for v1: drawing areas of interest, server-hosted models, languages
@@ -298,8 +304,17 @@ interface ExamplePhoto {
     heatmapUrl: string;    // the publisher's figure file
     viewing: string;       // the study's viewing set-up, one line
   };
+  editOf?: string;         // edited images only (comparisons.json): the photo it was edited from
+  condition?: string;      // edited images only: what the edit made, e.g. "Added low planting"
 }
 ```
+
+The Example section's manifest is `public/examples/comparisons.json`:
+`images`, the edited images as `ExamplePhoto` entries with `editOf` and
+`condition` and without `measured` (same size as the photo they come from),
+and `examples`, each `{ id, a, b, reference? }` naming the two images
+compared and, where neither is the untouched photo, that photo. Edited images
+are not in the library.
 
 ## Domain rules
 
@@ -740,6 +755,44 @@ was run on the photos.
     in a second run for stability. Neither its ratings nor its boxes are ever
     combined with gaze statistics.
 
+**Example comparisons** (prompt 058)
+
+- Three comparisons, A against B, from the owner's package of 2026-10-19:
+  entrance (zurich-42 against a blue-teal surround around the doorway),
+  greenery (zurich-33 against low planting along the building base) and
+  glazing (opaque against transparent versions of the same three window
+  bays of zurich-53, both edited, both with the same unplanted containers).
+  The edited images were 1448 × 1086 px and are scaled to 1280 × 960 px, the
+  size of the originals, so the two images share one grid and one set of
+  masks (alignment within about 3 px).
+- Every map is computed in advance, so nothing runs when the section opens:
+  DeepGaze IIE and MSDB by `tools/deepgaze-local/`, Classic salience and
+  UNISAL by the app's own code in headless Chromium
+  (`tools/comparisons/browser-models.mjs`, into
+  `public/precomputed/comparisons/<model-id>/`), and the automatic areas by
+  `tools/areas/build.py` (categories and ground floor; SAM 3 façade elements
+  only when `elements.py --apply --only-missing` runs on the laptop).
+- **Changed region**: where the edit changed the image, from the pixel
+  difference between A and B inside a search box set around the described
+  change (`tools/comparisons/regions.py`, masks at 640 × 480 in
+  `public/precomputed/comparisons/<id>.json`). The same pixels count in A and
+  B. Also shown: the lower third of the image (greenery), the automatic
+  ground floor found in A, used for both (entrance, glazing), and greenery
+  found in each image separately, so that added planting counts (greenery).
+- Per measure and layer: the share of attention in A and in B, B − A in
+  percentage points and the Pearson r between the two maps. The sentence
+  "What the models predict" is generated from these numbers: a change below
+  0.05 points counts as none. The expected pattern is labelled as a
+  hypothesis; a result against it is shown as it is.
+- Measured gaze appears only for an untouched original: as image A in the
+  entrance and greenery comparisons, and for glazing only in a note on the
+  untouched original. An edited image never shows a measured layer or
+  fixation points, and its place line reads "edited for the Example section,
+  predictions only".
+- Views: side by side, a slider between A and B, and the difference B − A of
+  a predicted map (blue–orange, as in Contrast). Each image opens in the
+  workspace, where every view works on it.
+
 **Honesty** (binding on all visitor-facing text)
 
 - Every predicted heatmap carries the label **"Predicted"**. The measured map
@@ -768,6 +821,9 @@ was run on the photos.
   | DeepGaze MSDB | 0.8832 | 0.8942 |
 
   Display these to two decimals.
+- The Example section says that its comparisons are illustrations, not
+  studies, and that a change in predicted attention does not show a change in
+  wellbeing, preference or actual use.
 - **No claim** that any model is valid for Dutch streetscapes, for real
   street walking (rather than viewing a photo on a screen), or for
   individuals.

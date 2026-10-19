@@ -23,9 +23,10 @@ uv run precompute.py
 ```
 
 This writes `public/precomputed/<model>/<photo>.json` for every photo in
-`public/examples/examples.json`: a probability map on the app's 128-cell grid,
-stored as little-endian uint16 (scaled to the maximum) in base64. Re-run it
-after adding or replacing example photos.
+`public/examples/examples.json` and every edited image in
+`public/examples/comparisons.json` (prompt 058): a probability map on the
+app's 128-cell grid, stored as little-endian uint16 (scaled to the maximum)
+in base64. Re-run it after adding or replacing example photos.
 
 The first run downloads about 2 GB of weights: CLIP RN50x64 from OpenAI,
 DINOv2 ViT-B/14 from Meta, ImageNet backbones from PyTorch and DeepGaze's own

@@ -65,3 +65,7 @@ tools/qualities/.venv/
 # UP-CLIP: the authors' repository, sample images, captions and weights (never published)
 tools/up-clip/.cache/
 tools/up-clip/.venv/
+
+# Comparisons: check overlays
+tools/comparisons/.cache/
+tools/comparisons/.venv/

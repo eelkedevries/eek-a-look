@@ -95,6 +95,14 @@ The 25 images "From published studies" carry `imageKind` in the manifest:
 
 Both kinds are recorded in the area file (`imageKind`).
 
+## Edited images of the Example section (prompt 058)
+
+`build.py` and `elements.py --apply` also cover the edited images listed in
+`public/examples/comparisons.json` (`photos(include_edited=True)`); the other
+scripts use the example photos only. Their area files were built on a CPU on
+19 October 2026 without SAM 3, so they have categories and the ground floor
+but no façade elements until `elements.py --apply --only-missing` runs.
+
 ## Commands
 
 ```sh

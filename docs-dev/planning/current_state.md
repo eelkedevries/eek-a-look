@@ -66,6 +66,14 @@ wins and the gap is work still to be done.
 - Study images (prompt 031): 25 CC BY images from two published eye-tracking
   studies, group "From published studies", with predictions only; the `study`
   field links each to its published heat map, which is never made a layer.
+- Example section (prompt 058, `src/views/example.ts`, `example.css`, text in
+  `src/content/comparisons.ts`): three design comparisons (entrance,
+  greenery, glazing) on four edited Zürich images listed in
+  `public/examples/comparisons.json`, outside the library. All maps and
+  areas are pre-computed; Classic salience and UNISAL by the app's code in
+  headless Chromium and the changed regions by `tools/comparisons/`. Measured
+  gaze only on untouched originals. The edited images have no SAM 3 façade
+  elements yet (gated model; laptop step).
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
@@ -254,3 +262,6 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   checkboxes in one foldable "Display settings" section between the view tabs and
   the image, `src/views/display-settings.ts`; gone from the inspector and from
   under the image, `fixation-toggle.ts` removed)
+- `058_example_comparisons.md` (spec 0.38: the Example section, from the
+  owner's package of 2026-10-19; computed on a CPU in a cloud session, which
+  reproduced committed DeepGaze maps and OneFormer categories exactly)
