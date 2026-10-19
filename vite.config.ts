@@ -92,6 +92,8 @@ export default defineConfig({
   preview: { proxy: localApi },
   build: {
     sourcemap: false,
+    // The rating page for human raters (prompt 059), not linked from the main page.
+    rollupOptions: { input: { main: 'index.html', rate: 'rate.html' } },
   },
   // onnxruntime-web loads its WebAssembly at run time; pre-bundling breaks those paths.
   optimizeDeps: {

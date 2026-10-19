@@ -264,3 +264,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `058_example_comparisons.md` (spec 0.38: the Example section, from the
   owner's package of 2026-10-19; computed on a CPU in a cloud session, which
   reproduced committed DeepGaze maps and OneFormer categories exactly)
+- `059_rating_page.md` (spec 0.39: `rate.html`, a rating page for human raters with
+  the rubric of `rating_rubric.md`, ratings downloaded as CSV; `agreement.py`
+  takes several files and reports Krippendorff's alpha among raters; template
+  for 49 photos. No ratings collected yet)

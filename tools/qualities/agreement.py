@@ -1,13 +1,16 @@
 """Agreement of each method with expert labels (prompt 043).
 
-  uv run agreement.py --labels FILE.csv
+  uv run agreement.py --labels FILE.csv [FILE.csv ...]
   uv run agreement.py --template     rewrite labels_template.csv
 
-FILE.csv has the columns photo, principle, label, rater, note, where label is
-present, absent or ambiguous (the scale of the 2020 panel) and principle is
-rhythm, groundFloor or materials. Rows with an empty label are skipped. With
-several raters per photo and principle, their majority label counts (a tie is
-ambiguous).
+Each FILE.csv has the columns photo, principle, label, rater, note, where label
+is present, absent or ambiguous (the scale of the 2020 panel) and principle is
+rhythm, groundFloor or materials; the rating page (rate.html, prompt 059)
+downloads this format. Rows with an empty label are skipped; an empty rater
+is named after its file. With several raters, the script first reports how
+far they agree with each other: Krippendorff's alpha per principle, nominal
+and ordinal (absent < ambiguous < present). Their majority label then counts
+per photo and principle (a tie is ambiguous).
 
 For each method that has a file, the script reports per principle the
 percentage agreement and Cohen's kappa with the labels, with n:
@@ -47,16 +50,56 @@ def write_template() -> None:
                 w.writerow([photo["id"], principle, "", "", ""])
 
 
-def read_labels(path: Path) -> dict[tuple[str, str], str]:
-    votes: dict[tuple[str, str], list[str]] = {}
-    with path.open(newline="") as f:
-        for row in csv.DictReader(f):
-            label = row["label"].strip().lower()
-            if not label:
-                continue
-            if label not in LABELS or row["principle"] not in PRINCIPLES:
-                raise SystemExit(f"Unknown label or principle in row: {row}")
-            votes.setdefault((row["photo"], row["principle"]), []).append(label)
+def read_votes(paths: list[Path]) -> dict[tuple[str, str], dict[str, str]]:
+    """(photo, principle) → {rater: label}; a rater's later row for the same pair replaces the earlier one."""
+    votes: dict[tuple[str, str], dict[str, str]] = {}
+    for path in paths:
+        with path.open(newline="") as f:
+            for row in csv.DictReader(f):
+                label = row["label"].strip().lower()
+                if not label:
+                    continue
+                if label not in LABELS or row["principle"] not in PRINCIPLES:
+                    raise SystemExit(f"Unknown label or principle in row: {row}")
+                rater = (row.get("rater") or "").strip() or path.stem
+                votes.setdefault((row["photo"], row["principle"]), {})[rater] = label
+    return votes
+
+
+ORDER = {"absent": 0, "ambiguous": 1, "present": 2}
+
+
+def krippendorff(units: list[list[str]], ordinal: bool) -> float | None:
+    """Krippendorff's alpha for units with two or more values; nominal, or ordinal on absent < ambiguous < present."""
+    units = [u for u in units if len(u) >= 2]
+    if not units:
+        return None
+    k = len(ORDER)
+    o = np.zeros((k, k))
+    for u in units:
+        values = [ORDER[v] for v in u]
+        m = len(values)
+        for i, a in enumerate(values):
+            for j, b in enumerate(values):
+                if i != j:
+                    o[a, b] += 1 / (m - 1)
+    n_c = o.sum(1)
+    n = n_c.sum()
+    if ordinal:
+        delta = np.zeros((k, k))
+        for c in range(k):
+            for d in range(k):
+                lo, hi = min(c, d), max(c, d)
+                delta[c, d] = (n_c[lo:hi + 1].sum() - (n_c[c] + n_c[d]) / 2) ** 2
+    else:
+        delta = 1 - np.eye(k)
+    d_o = (o * delta).sum() / n
+    d_e = (np.outer(n_c, n_c) * delta).sum() / (n * (n - 1))
+    return float(1 - d_o / d_e) if d_e > 0 else None
+
+
+def read_labels(paths: list[Path]) -> dict[tuple[str, str], str]:
+    votes = {key: list(by_rater.values()) for key, by_rater in read_votes(paths).items()}
     out = {}
     for key, labels in votes.items():
         top = Counter(labels).most_common()
@@ -104,7 +147,7 @@ def cohen_kappa(a: list[str], b: list[str]) -> float | None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--labels", type=Path)
+    parser.add_argument("--labels", type=Path, nargs="+")
     parser.add_argument("--template", action="store_true")
     args = parser.parse_args()
     if args.template:
@@ -112,8 +155,17 @@ def main() -> int:
         print(f"wrote {TEMPLATE.relative_to(REPO)}")
     if not args.labels:
         return 0
+    votes = read_votes(args.labels)
+    raters = sorted({r for by_rater in votes.values() for r in by_rater})
+    print(f"Raters: {', '.join(raters)} ({len(args.labels)} file(s))")
+    if len(raters) >= 2:
+        f = lambda v: "–" if v is None else f"{v:.2f}"
+        print(f"\n{'principle':12} {'pairs':>5} {'alpha nominal':>14} {'alpha ordinal':>14}")
+        for principle in PRINCIPLES:
+            units = [list(v.values()) for k, v in votes.items() if k[1] == principle and len(v) >= 2]
+            print(f"{principle:12} {len(units):>5} {f(krippendorff(units, False)):>14} {f(krippendorff(units, True)):>14}")
     labels = read_labels(args.labels)
-    print(f"{len(labels)} labelled photo × principle pairs from {args.labels}\n")
+    print(f"\n{len(labels)} labelled photo × principle pairs (majority label)\n")
     print(f"{'method':34} {'principle':12} {'n':>3} {'agree':>6} {'kappa':>6}")
     for name, values in methods().items():
         for principle in PRINCIPLES:

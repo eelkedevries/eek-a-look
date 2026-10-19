@@ -1,0 +1,207 @@
+/* The rating page (prompt 059). Shares the tokens and base styles of style.css. */
+.rate-topbar {
+  justify-content: flex-start;
+}
+
+.rate {
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 24px var(--gutter) 64px;
+}
+
+.rate-heading {
+  margin: 0 0 10px;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  font-size: 28px;
+  line-height: 1.2;
+  color: var(--text-bright);
+}
+
+.rate-intro p,
+.rate-scale {
+  color: var(--text-soft);
+}
+
+.rate-scale {
+  padding-left: 20px;
+}
+
+.rate-rubric {
+  margin: 16px 0;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.rate-rubric summary {
+  min-height: 28px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.rate-rubric p,
+.rate-rubric li {
+  font-size: 15px;
+  color: var(--text-soft);
+}
+
+.rate-rubric li + li {
+  margin-top: 8px;
+}
+
+.rate-rubric strong,
+.rate-scale strong {
+  color: var(--text-bright);
+  font-weight: 400;
+}
+
+.rate-initials {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 12px;
+  margin: 20px 0;
+  font-size: 15px;
+}
+
+.rate-initials input {
+  width: 8em;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-bright);
+  font: inherit;
+}
+
+.rate-initials small {
+  flex-basis: 100%;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.rate-card {
+  scroll-margin-top: 12px;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.rate-status {
+  margin: 0 0 10px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.rate-figure {
+  margin: 0 0 16px;
+}
+
+.rate-figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 70vh;
+  object-fit: contain;
+  border-radius: 8px;
+  background: var(--stage);
+}
+
+.rate-figure figcaption {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.rate-place {
+  color: var(--text-soft);
+}
+
+.rate-question {
+  margin: 0 0 12px;
+  padding: 0;
+  border: 0;
+}
+
+.rate-question legend {
+  margin-bottom: 6px;
+  font-size: 15px;
+  color: var(--text-bright);
+}
+
+.rate-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rate-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.rate-option:has(input:checked) {
+  border-color: var(--gold);
+  color: var(--text-bright);
+}
+
+.rate-option input {
+  margin: 0;
+  accent-color: var(--gold);
+}
+
+.rate-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.rate-note textarea {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.rate-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.rate-finish {
+  margin-top: 24px;
+}
+
+.rate-finish-note {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.rate-error {
+  color: var(--gold);
+}

@@ -239,6 +239,16 @@ A's settings. The rule kept A. The glazed or banded subset has only 4 images
 not settle glass façades. Figures in `rhythm_calibration.json`
 (`glassComparison`) and `qualities_validation.md`.
 
+## Human ratings (prompt 059)
+
+Raters use `/eek-a-look/rate.html` and send back the CSV it downloads; the
+rubric is in `docs-dev/reference/secondary_background/rating_rubric.md`.
+`uv run agreement.py --labels a.csv b.csv c.csv` reports Krippendorff's alpha
+among the raters per principle (nominal and ordinal), then each method's
+agreement and Cohen's kappa with the majority label. Checked on synthetic
+files: identical raters 1.00, one with 20% of labels redrawn 0.74–0.88, a
+random one about 0.
+
 ## Output
 
 `public/precomputed/qualities/<photo-id>.json`, the `QualityFile` of the

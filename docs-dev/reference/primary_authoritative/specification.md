@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.38 · **Last updated:** 2026-10-19
+**Version:** 0.39 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -81,6 +81,8 @@ image (prompt 057, owner's request of 2026-10-19). 0.38 adds an "Example"
 section with three design comparisons on edited Zürich photos (entrance,
 greenery, glazing): every map and the areas computed in advance, measured
 gaze on untouched originals only (prompt 058, owner's request of 2026-10-19).
+0.39 adds a rating page for human raters, with a rubric, and inter-rater
+agreement in `agreement.py` (prompt 059, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -792,6 +794,30 @@ was run on the photos.
 - Views: side by side, a slider between A and B, and the difference B − A of
   a predicted map (blue–orange, as in Contrast). Each image opens in the
   workspace, where every view works on it.
+
+**Rating page** (prompt 059)
+
+- `/eek-a-look/rate.html` (`rate.html`, `src/rate.ts`, `src/rate.css`), built
+  with the site, not linked from the main page, `noindex`. Raters judge each
+  of the 49 example photos on the three principles on the 2020 panel's scale
+  (present, ambiguous, absent), in their own professional judgement.
+- It shows: an introduction, the scale, the rubric "What to look at"
+  (collapsible; the wording of `rating_rubric.md` in the developer notes), a
+  field for the rater's initials, one photo at a time with its place, its
+  kind for study images (design rendering, 360° panorama) and its credit,
+  the three questions and an optional note, "Previous", "Next", "Next
+  unrated" and "Photo n of 49 · k of 49 rated".
+- The order is shuffled per rater, seeded by the initials. Answers are kept
+  in the browser (`localStorage`); the page works without it.
+- "Download ratings (CSV)" (needs initials) gives the labels format of
+  `agreement.py`: photo, principle, label, rater, note; one row per photo and
+  principle. No ratings leave the browser otherwise.
+- The page shows no photo title, outcome, measure, panel answer, UP-CLIP
+  score, heatmap or gaze.
+- `agreement.py --labels` takes one or more files and reports Krippendorff's
+  alpha among raters per principle (nominal, and ordinal with absent <
+  ambiguous < present) before each method's agreement with the majority
+  label.
 
 **Honesty** (binding on all visitor-facing text)
 

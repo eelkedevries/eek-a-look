@@ -83,6 +83,16 @@ the table open either image in the workspace.
 The About section explains the models, their scores on a standard lab test,
 and what the maps cannot tell you.
 
+## For raters
+
+If you were asked to rate the photos, open
+<https://eelkedevries.com/eek-a-look/rate.html>. Enter your initials, then
+judge each photo on the three design principles: present, ambiguous or
+absent, in your own judgement ("What to look at" explains the principles).
+Your answers stay in your browser, so you can stop and continue later. When
+you are done, press **Download ratings (CSV)** and send the file back. The
+page shows none of the site's results, so they cannot steer you.
+
 ## The first UNISAL map takes a moment
 
 The neural network and its runtime (about 10 MB together) are downloaded
