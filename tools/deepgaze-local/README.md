@@ -46,6 +46,15 @@ CPU (a 22-thread laptop, run with `CUDA_VISIBLE_DEVICES=` to hide the GPU),
 the 12 Zürich photos took 7 min 14 s in all: IIE about 1.8 s and MSDB about
 33 s per photo, with a peak of 6.2 GB of RAM.
 
+In a cloud session whose proxy blocks `api.github.com`, `torch.hub` cannot
+check the repositories DeepGaze loads and stops with HTTP 403. Cloning
+`pytorch/vision` at tag `v0.6.0` into `~/.cache/torch/hub/pytorch_vision_v0.6.0`
+and `facebookresearch/dinov2` at `6a62615` into
+`~/.cache/torch/hub/facebookresearch_dinov2_6a62615` (without `.git`) lets it
+use those copies instead. On 19 October 2026 the four photos of Andersson et
+al. (2017) took 7 min 34 s in all on a 4-core cloud CPU, including the
+downloads: IIE about 6 s and MSDB about 86 s per photo.
+
 The printed table gives each model's time per photo and the correlation
 between the two models. For photos with a measured eye-tracking map
 (`tools/measured-gaze/`), a second table gives the Pearson r of each model

@@ -113,7 +113,7 @@ export interface UpClipFile {
 export interface PhotoInfo {
   id: string;
   title: string;
-  city: string;
+  city?: string;
   file: string;
   width: number;
   height: number;
@@ -477,7 +477,11 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       const r = current!.file.principles[id];
       const card = el('section', 'quality-card');
       card.append(el('h3', 'quality-card-title', name));
-      if (!r) return card;
+      // Prompt 069: the Andersson et al. photos have materials only until their façade elements are computed.
+      if (!r) {
+        card.append(el('p', 'agreement-caption', 'Not measured for this photo yet: it needs the façade elements, which have not been computed for it.'));
+        return card;
+      }
       const verdict = el('p', 'quality-verdict');
       verdict.append(el('strong', undefined, OUTCOME_TEXT[r.outcome]));
       const reasons = el('ul', 'quality-reasons');

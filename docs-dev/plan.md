@@ -246,6 +246,25 @@ Run all prompts"), from
 | 052 | `052_study_photo_qualities.md`: image measures for the study photos, tagged as renderings or panoramas on the page; deploy | No new rules; the panel and UP-CLIP unchanged |
 | 053 | `053_rhythm_glass_facades.md`: compare four ways of finding repeating elements on held-out CMP Facade and LabelMeFacade labels; adopt one only if it beats the current measure without losing accuracy on ordinary façades | Choice never made on the example photos |
 
+## Ninth round: a second measured-gaze dataset (2026-10-19)
+
+Owner's request: add the eye-tracking data of Andersson et al. (2017), treated
+as the Zürich data of Wilming et al. (2017).
+
+| | |
+|---|---|
+| Source | Andersson et al. (2017), *Behavior Research Methods* 49, 616–637; data and photos GNU GPL 3.0 (`richardandersson/EyeMovementDetectorEvaluation`, pinned commit) |
+| Photos | The four photos with recordings (Colosseum, planted façade, country path, rabbits); 2–5 people each, about 10 s free viewing, fixations labelled by hand |
+| Not used | Videos and moving dots (not static); the photo `Blad` (no recordings); the 6 extra recordings the authors call partly wrong |
+
+| # | Prompt | Status |
+|---|---|---|
+| 069 | `069_andersson_measured_gaze.md`: photos, maps, points, the four predictions, areas and materials; specification 0.46; deploy | Done |
+
+Laptop steps left for these photos: SAM 3 façade elements
+(`elements.py --apply --only-missing`), then the ground-floor and rhythm
+measures; the simulated panel and UP-CLIP were not extended.
+
 ## Later
 
 - **Mobile scene video.** Run the same area tool on scene-camera frames. Assign

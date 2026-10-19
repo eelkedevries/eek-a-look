@@ -147,10 +147,13 @@ function rubric(): HTMLElement {
   return details;
 }
 
+/** The rating set is the 49 photos of prompt 059; the photos of Andersson et al. (2017), added in prompt 069, are not rated. */
+const NOT_RATED = 'Andersson et al. (2017)';
+
 async function loadPhotos(): Promise<ExamplePhoto[]> {
   const response = await fetch(`${import.meta.env.BASE_URL}examples/examples.json?v=${__EXAMPLES_VERSION__}`);
   if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  return response.json();
+  return ((await response.json()) as ExamplePhoto[]).filter((photo) => photo.area !== NOT_RATED);
 }
 
 async function mount(root: HTMLElement): Promise<void> {

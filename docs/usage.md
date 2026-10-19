@@ -5,10 +5,11 @@ Open <https://eelkedevries.com/eek-a-look/>.
 ## Choose a photo
 
 The library on the left lists the twelve Dutch example photos (Zuidas, Weena,
-Wilhelminapier, Beatrixkwartier) and twelve Zürich photos; a blue dot marks
-the Zürich photos, which have measured eye tracking. Search by street or
-place, or show only the photos with measured gaze or the Dutch high-rise
-photos. On a phone the library is one row that scrolls sideways.
+Wilhelminapier, Beatrixkwartier), twelve Zürich photos, four photos from
+Andersson et al. (2017) and the images from published studies; a blue dot
+marks the photos with measured eye tracking (the Zürich photos and the
+Andersson et al. photos). Search by street or place, or show only the photos
+with measured gaze or the Dutch high-rise photos. On a phone the library is one row that scrolls sideways.
 
 Or press **Use your own photo** at the top and choose a JPEG or PNG. It is
 processed on your device and never uploaded. Large photos are scaled down to
@@ -25,7 +26,7 @@ page shows UNISAL in their place and says so.
 
 Choose a view above the photo; the inspector on the right changes with it.
 
-- **Single map:** one layer on the photo. On the Zürich photos it opens on
+- **Single map:** one layer on the photo. On photos with measured gaze it opens on
   **Measured gaze**, with the fixations as dots; elsewhere on the best model.
   Choose another layer in the inspector; **Heatmap strength** fades it in and
   out. The warmer an area, the more likely people are to look there.
@@ -33,15 +34,15 @@ Choose a view above the photo; the inspector on the right changes with it.
   any map to mark the same spot in all of them. Each map shows its match (r)
   with the reference: measured gaze where the photo has it, otherwise the best
   available model. **Contrast** under a map opens it in the Contrast view.
-- **Contrast:** one map minus another. By default, measured gaze (on the
-  Zürich photos) or the next-best model against the best available model;
+- **Contrast:** one map minus another. By default, measured gaze (on photos
+  that have it) or the next-best model against the best available model;
   choose any two maps in the inspector, swap them, or reset to the best model.
   Orange marks where the first map expects more looking, blue where the second
   does. Both maps are shown underneath.
 - **Display settings:** directly below the view buttons and above the
-  image, a section you can fold away with **Heatmap strength** and, on the
-  Zürich photos, the fixation settings below.
-- **Show fixations (raw data):** on the Zürich photos, this checkbox in the
+  image, a section you can fold away with **Heatmap strength** and, on
+  photos with measured gaze, the fixation settings below.
+- **Show fixations (raw data):** on photos with measured gaze, this checkbox in the
   display settings (on by default) draws every fixation the
   measured map was built from as a semi-transparent cyan dot over the
   **Measured gaze** map, in all three views above. Tick **Also over the
@@ -63,9 +64,12 @@ Choose a view above the photo; the inspector on the right changes with it.
   attention the evidence regions receive. At the end, **Descriptions and
   photos** shows which short descriptions UP-CLIP matches with the photo,
   and which example photos it matches with a description you choose. None
-  of it is an expert judgement.
+  of it is an expert judgement. The photos of Andersson et al. (2017) have
+  the materials measure only so far, and no AI panel or UP-CLIP scores.
 - **Areas:** automatic areas for the example photos, with how much of each
-  map's attention falls inside them relative to their size.
+  map's attention falls inside them relative to their size (on the photos of
+  Andersson et al. 2017, street categories and the ground floor, without
+  windows, entrances, balconies or shopfronts so far).
 - **Match with …** (inspector): each layer's correlation with the reference,
   highest first (0 = unrelated, 1 = same pattern).
 - **How much the models agree** (below the workspace): a table of

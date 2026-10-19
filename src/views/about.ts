@@ -1,4 +1,4 @@
-import type { ExamplePhoto } from '../examples';
+import { titleAndPlace, type ExamplePhoto } from '../examples';
 import { loadPanel } from './panel';
 import { models } from '../models/registry';
 import { MIT300_RETRIEVED, MIT300_SOURCE } from '../models/types';
@@ -31,7 +31,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
 
   const intro = el(
     'p',
-    'eek-a-look shows four predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model. The exception is the Zürich photos: for those, an extra layer, “Measured gaze”, shows where 48 people actually looked, recorded with an eye tracker. The images under “From published studies” are taken from two eye-tracking articles: they show predictions only, and each links to the heat map its study measured, which is not turned into a layer here. How each method works is explained at the bottom of the page.',
+    'eek-a-look shows four predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model. The exceptions are the photos with measured eye tracking: for the Zürich photos and those from Andersson et al. (2017), an extra layer, “Measured gaze”, shows where people actually looked, recorded with an eye tracker (48 people per Zürich photo, two to five per photo in the second set). The images under “From published studies” are taken from two eye-tracking articles: they show predictions only, and each links to the heat map its study measured, which is not turned into a layer here. How each method works is explained at the bottom of the page.',
     'about-lead',
   );
 
@@ -125,7 +125,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
   for (const photo of photos) {
     const item = el('li');
     const changes = photo.changes.charAt(0).toLowerCase() + photo.changes.slice(1);
-    item.append(`${photo.title}, ${photo.city}: `, link(photo.sourceUrl, photo.author), ', ', link(photo.licenceUrl, photo.licence), ` (${changes}).`);
+    item.append(`${titleAndPlace(photo)}: `, link(photo.sourceUrl, photo.author), ', ', link(photo.licenceUrl, photo.licence), ` (${changes}).`);
     creditList.append(item);
   }
   const dataset = el('li');
@@ -140,7 +140,19 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     link('https://doi.org/10.1371/journal.pone.0093254', 'PLoS ONE 9, e93254'),
     '.',
   );
-  creditList.append(dataset);
+  const andersson = el('li');
+  andersson.append(
+    'Measured gaze and photos from Andersson, Larsson, Holmqvist, Stridh and Nyström (2017), “One algorithm to rule them all? An evaluation and discussion of ten eye movement event-detection algorithms”, ',
+    link('https://doi.org/10.3758/s13428-016-0738-9', 'Behavior Research Methods 49, 616–637'),
+    '; data and photos ',
+    link('https://www.gnu.org/licenses/gpl-3.0.html', 'GNU GPL 3.0'),
+    ', from ',
+    link('https://github.com/richardandersson/EyeMovementDetectorEvaluation/tree/3e12416ab3fd6254c81811cf03f8e5d67c5d7129', 'the authors’ repository'),
+    ', with the fixations hand-labelled by coder MN and one file corrected by Zemblys et al. (2018). The photos and every file derived from them here are under the same licence (',
+    link(`${base}examples/andersson-2017-NOTICE.txt`, 'notice'),
+    ').',
+  );
+  creditList.append(dataset, andersson);
   const deepgaze = el('li');
   deepgaze.append(
     'DeepGaze IIE and DeepGaze MSDB by Matthias Kümmerer and colleagues (',

@@ -83,7 +83,7 @@ onImageChange((image) => {
     renderCredit(credit, photo);
     photoTitle.textContent = photo.title;
     photoPlace.textContent = photo.measured
-      ? `${photo.city} · measured eye tracking`
+      ? `${photo.city && photo.city !== photo.area ? `${photo.area} · ${photo.city}` : photo.area} · measured eye tracking`
       : photo.study
         ? `${photo.city} · published study, predictions only`
         : photo.editOf

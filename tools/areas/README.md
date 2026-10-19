@@ -103,6 +103,17 @@ scripts use the example photos only. Their area files were built on a CPU on
 19 October 2026 without SAM 3, so they have categories and the ground floor
 but no façade elements until `elements.py --apply --only-missing` runs.
 
+## Photos of Andersson et al. (2017) (prompt 069)
+
+The four photos with measured gaze from Andersson et al. (2017) were built
+with `build.py --only-missing` on a CPU on 19 October 2026 (about 15–19 s per
+photo), without SAM 3, so their area files have categories and the ground
+floor but no façade elements until `elements.py --apply --only-missing` runs
+on the laptop. No horizon was found on any of them (`assumed-level`): on the
+Colosseum the ground floor therefore covers the whole façade, and the
+façade behind planting has no visible base, so no ground floor at all. The
+country path and the rabbits have no façade.
+
 ## Commands
 
 ```sh

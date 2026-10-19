@@ -48,6 +48,13 @@ wins and the gap is work still to be done.
   matrix. The agreement view adds "Match with measured gaze". Since prompt
   030 the inspector's "Show fixations (raw data)" draws the fixations
   (`<id>.points.json`, `src/render/fixations.ts`) over the measured map only.
+  Since prompt 069 a second source, Andersson et al. (2017, GNU GPL 3.0): four
+  photos (`andersson-*`, group "Andersson et al. (2017)", 2–5 people each)
+  with fixations from hand labels (`fetch_andersson.py`,
+  `build_andersson.py`). The layer's subtitle follows the photo's number of
+  people; `city` is optional for this group; the rating page leaves it out.
+  Their area files have no SAM 3 elements yet and their quality files only
+  materials; no UP-CLIP scores or panel.
 - Maps and models: `src/maps/saliency-map.ts` (grid, normalise, resample,
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
   drawing), `src/models/` (types, registry, classic salience in a Web Worker
@@ -300,3 +307,10 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   on DMS labels it did not separate textured from smooth (AUC 0.44, brick
   against plaster 0.27) and the rule change lowered accuracy, so it was not
   adopted; outcomes unchanged)
+- `069_andersson_measured_gaze.md` (spec 0.46: four photos of Andersson et al.
+  (2017, GNU GPL 3.0) with measured gaze from coder MN's hand labels, 2–5
+  people and 64–144 fixations each; RA's labels give maps with r 0.98–1.00.
+  DeepGaze, areas and materials computed on a cloud CPU with `--only-missing`,
+  no existing file changed; MSDB r with measured gaze 0.43–0.80. No horizon
+  was found on any of the four, so materials read Unclear; SAM 3 elements,
+  ground floor and rhythm, the panel and UP-CLIP are left for the laptop)

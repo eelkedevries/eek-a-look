@@ -2,8 +2,9 @@ import { setImage } from './state';
 
 export interface ExamplePhoto {
   id: string;
-  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich' | 'From published studies';
-  city: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Qinyang' | 'Guangzhou';
+  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich' | 'Andersson et al. (2017)' | 'From published studies';
+  /** Absent only for photos of Andersson et al. (2017) whose place is not certain (prompt 069). */
+  city?: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Rome' | 'Qinyang' | 'Guangzhou';
   title: string;
   file: string;
   width: number;
@@ -50,7 +51,10 @@ export async function loadComparisons(): Promise<ComparisonManifest> {
 }
 
 /** The small text after an area heading: the city, or what the group is when the area is not a place. Matches vite.config.ts. */
-const areaNote = (photo: ExamplePhoto) => (photo.measured ? 'measured eye tracking' : photo.study ? 'predictions only' : photo.city);
+const areaNote = (photo: ExamplePhoto) => (photo.measured ? 'measured eye tracking' : photo.study ? 'predictions only' : (photo.city ?? ''));
+
+/** "Title, City", or the title alone where the place is not known. */
+export const titleAndPlace = (photo: { title: string; city?: string }) => (photo.city ? `${photo.title}, ${photo.city}` : photo.title);
 
 const thumbUrl = (photo: ExamplePhoto) => EXAMPLES_URL + photo.file.replace(/\.jpg$/, '-thumb.jpg');
 
@@ -115,7 +119,7 @@ export function renderPicker(
         button.setAttribute('aria-pressed', 'false');
         const img = document.createElement('img');
         img.src = thumbUrl(photo);
-        img.alt = `${photo.title}, ${photo.city}`;
+        img.alt = titleAndPlace(photo);
         img.loading = 'lazy';
         img.width = 320;
         img.height = Math.round((320 * photo.height) / photo.width);
@@ -145,7 +149,7 @@ const kind = (photo: ExamplePhoto): Filter => (photo.measured ? 'measured' : pho
 export function mountLibraryFilter(container: HTMLElement, photos: ExamplePhoto[], search: HTMLInputElement, filterGroup: HTMLElement, count: HTMLElement): void {
   let filter: Filter = 'all';
   const byId = new Map(photos.map((p) => [p.id, p]));
-  const haystack = (p: ExamplePhoto) => `${p.title} ${p.area} ${p.city}`.toLocaleLowerCase('en-GB');
+  const haystack = (p: ExamplePhoto) => `${p.title} ${p.area} ${p.city ?? ''}`.toLocaleLowerCase('en-GB');
 
   const buttons = FILTERS.map(([id, label]) => {
     const button = document.createElement('button');
@@ -195,7 +199,7 @@ export function renderCredit(element: HTMLElement, photo: ExamplePhoto): void {
     return a;
   };
   element.replaceChildren(
-    `${photo.title}, ${photo.city}. ${photo.study ? 'Image' : 'Photo'}: `,
+    `${titleAndPlace(photo)}. ${photo.study ? 'Image' : 'Photo'}: `,
     link(photo.sourceUrl, photo.author),
     ', ',
     link(photo.licenceUrl, photo.licence),

@@ -408,6 +408,83 @@
     }
   },
   {
+    "id": "andersson-rome",
+    "area": "Andersson et al. (2017)",
+    "city": "Rome",
+    "title": "The Colosseum with visitors",
+    "file": "andersson-rome.jpg",
+    "width": 1024,
+    "height": 768,
+    "author": "Andersson et al. (2017), Lund University Humanities Lab",
+    "licence": "GNU GPL 3.0",
+    "licenceUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
+    "sourceUrl": "https://github.com/richardandersson/EyeMovementDetectorEvaluation/blob/3e12416ab3fd6254c81811cf03f8e5d67c5d7129/Stimuli/images/Rome1024x768.png",
+    "changes": "Converted from PNG to JPEG on 19 October 2026",
+    "measured": {
+      "observers": 2,
+      "fixations": 64,
+      "viewingSeconds": 10,
+      "citation": "Andersson, Larsson, Holmqvist, Stridh & Nyström (2017), Behavior Research Methods 49, 616–637; hand labels of coder MN"
+    }
+  },
+  {
+    "id": "andersson-europe",
+    "area": "Andersson et al. (2017)",
+    "title": "Stone building behind a planted steel façade",
+    "file": "andersson-europe.jpg",
+    "width": 1024,
+    "height": 768,
+    "author": "Andersson et al. (2017), Lund University Humanities Lab",
+    "licence": "GNU GPL 3.0",
+    "licenceUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
+    "sourceUrl": "https://github.com/richardandersson/EyeMovementDetectorEvaluation/blob/3e12416ab3fd6254c81811cf03f8e5d67c5d7129/Stimuli/images/Europe1024x768.png",
+    "changes": "Converted from PNG to JPEG on 19 October 2026",
+    "measured": {
+      "observers": 4,
+      "fixations": 116,
+      "viewingSeconds": 10,
+      "citation": "Andersson, Larsson, Holmqvist, Stridh & Nyström (2017), Behavior Research Methods 49, 616–637; hand labels of coder MN"
+    }
+  },
+  {
+    "id": "andersson-vy",
+    "area": "Andersson et al. (2017)",
+    "title": "Cycle path beside a horse pasture",
+    "file": "andersson-vy.jpg",
+    "width": 1024,
+    "height": 768,
+    "author": "Andersson et al. (2017), Lund University Humanities Lab",
+    "licence": "GNU GPL 3.0",
+    "licenceUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
+    "sourceUrl": "https://github.com/richardandersson/EyeMovementDetectorEvaluation/blob/3e12416ab3fd6254c81811cf03f8e5d67c5d7129/Stimuli/images/vy1024x768.png",
+    "changes": "Converted from PNG to JPEG on 19 October 2026",
+    "measured": {
+      "observers": 3,
+      "fixations": 65,
+      "viewingSeconds": 10,
+      "citation": "Andersson, Larsson, Holmqvist, Stridh & Nyström (2017), Behavior Research Methods 49, 616–637; hand labels of coder MN"
+    }
+  },
+  {
+    "id": "andersson-konijntjes",
+    "area": "Andersson et al. (2017)",
+    "title": "Two rabbits in a wicker basket",
+    "file": "andersson-konijntjes.jpg",
+    "width": 1024,
+    "height": 768,
+    "author": "Andersson et al. (2017), Lund University Humanities Lab",
+    "licence": "GNU GPL 3.0",
+    "licenceUrl": "https://www.gnu.org/licenses/gpl-3.0.html",
+    "sourceUrl": "https://github.com/richardandersson/EyeMovementDetectorEvaluation/blob/3e12416ab3fd6254c81811cf03f8e5d67c5d7129/Stimuli/images/konijntjes1024x768.png",
+    "changes": "Converted from PNG to JPEG on 19 October 2026",
+    "measured": {
+      "observers": 5,
+      "fixations": 144,
+      "viewingSeconds": 10,
+      "citation": "Andersson, Larsson, Holmqvist, Stridh & Nyström (2017), Behavior Research Methods 49, 616–637; hand labels of coder MN"
+    }
+  },
+  {
     "id": "qinyang-01",
     "area": "From published studies",
     "city": "Qinyang",

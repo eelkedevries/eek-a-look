@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.45 · **Last updated:** 2026-10-19
+**Version:** 0.46 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -97,6 +97,12 @@ with its direction, and leaves measured gaze out of the Example section
 (prompt 068, owner's request of 2026-10-19).
 0.44 adds the simulated panel as observer: answers to visible questions rated by a fixed rule, and probability-weighted graded ratings (prompt 060, owner's request of 2026-10-19).
 0.45 adds a surface-detail indicator to the materials measure; checked on DMS labels, it did not separate textured from smooth materials, so the rule is unchanged (prompt 063, owner's request of 2026-10-19).
+0.46 adds four photos with measured gaze from Andersson et al. (2017, GNU GPL
+3.0) as a library group of their own, treated as the Zürich photos: hand-labelled
+fixations, the "Measured gaze" layer with the photo's number of people, all
+four predictions, areas without façade elements and the materials measure;
+`city` becomes optional where a place is not certain (prompt 069, owner's
+request of 2026-10-19).
 
 ## Scope
 
@@ -117,6 +123,10 @@ In scope for v1:
 - twelve Zürich street photos from the eye-tracking dataset of Wilming et al.
   (2017, CC0 1.0), each with a **measured** eye-tracking map
   (`tools/measured-gaze/`);
+- four photos from Andersson et al. (2017, GNU GPL 3.0), in the group
+  "Andersson et al. (2017)", each with a **measured** eye-tracking map from
+  two to five people's hand-labelled fixations (`tools/measured-gaze/`,
+  prompt 069);
 - 25 images from two published eye-tracking studies (CC BY 4.0), in a group
   "From published studies" with **predictions only**: each credit line links to
   the heat map the study published, which is not digitised, reconstructed or
@@ -299,16 +309,18 @@ The example photo manifest is `public/examples/examples.json`, an array of:
 ```ts
 interface ExamplePhoto {
   id: string;             // kebab-case, unique
-  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich' | 'From published studies';
-  city: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Qinyang' | 'Guangzhou';
+  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich' | 'Andersson et al. (2017)' | 'From published studies';
+  city?: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Rome' | 'Qinyang' | 'Guangzhou';
+                          // required, except in 'Andersson et al. (2017)', where a place
+                          // is named only when the photo shows it beyond doubt (prompt 069)
   title: string;          // short caption
   file: string;           // path relative to public/examples/
   width: number;
   height: number;
   author: string;
-  licence: string;        // e.g. "CC BY-SA 4.0"
+  licence: string;        // e.g. "CC BY-SA 4.0"; "GNU GPL 3.0" for Andersson et al.
   licenceUrl: string;
-  sourceUrl: string;      // Commons file page, or the dataset's DOI
+  sourceUrl: string;      // Commons file page, the dataset's DOI, or the original file at a pinned commit
   changes: string;        // e.g. "Resized and recompressed"
   imageKind?: 'render' | 'panorama'; // study images only (required there): a design
                           // rendering, or a 360° panorama in equirectangular projection;
@@ -377,9 +389,39 @@ are not in the library.
   - a Gaussian blur of σ = 1° = 45.6 px, zero outside the image;
   - summed into 10 × 10 px cells, which is the shared 128 × 96 grid, and
     normalised to sum 1.
+- Second source (prompt 069): Andersson, Larsson, Holmqvist, Stridh & Nyström
+  (2017, *Behavior Research Methods* 49, 616–637), data and photos under the
+  GNU GPL 3.0 (the authors' `README.docx`: "The software, data, and stimuli
+  were released under the GNU General Public License v. 3"), from
+  `richardandersson/EyeMovementDetectorEvaluation@3e12416`: students at Lund
+  University, free viewing, SMI Hi-Speed 1250, right eye, about 10 s per
+  recording, photos of 1024 × 768 filling a 1024 × 768 screen of 0.38 ×
+  0.30 m at 0.67 m. Every photo that has recordings is used (four; the fifth,
+  `Blad`, has none; videos and moving dots are not static). Group "Andersson
+  et al. (2017)", ids `andersson-<stimulus name>`, after the Zürich photos.
+  - recordings: the 14 photo recordings of `data used in the article`, as
+    labelled by hand by coder MN, with Zemblys et al.'s (2018) correction of
+    one file; coder RA's labels of the same recordings are a check only. The
+    6 extra recordings of `originally uploaded data` are not used (the
+    authors call that folder partly wrong);
+  - a fixation is a run of samples labelled 1, at the mean of its samples
+    with gaze; the first fixation of each recording is dropped (every viewing
+    starts at the screen centre); the floor of the position is the 0-based
+    pixel; points outside the photo are dropped;
+  - one count per fixation, not weighted by duration; a Gaussian blur of 1°,
+    from the recorded geometry 31.5 px across and 29.9 px down, zero outside
+    the image; summed into 8 × 8 px cells (the shared 128 × 96 grid) and
+    normalised to sum 1;
+  - the licence travels with the files: each credit line names the licence,
+    the original PNG at the pinned commit and the date of the conversion to
+    JPEG, and `public/examples/andersson-2017-NOTICE.txt` lists the derived
+    files with the full licence text.
 - Shown as the layer **"Measured gaze"** (registry kind `'measured'`, runtime
-  `'precomputed'`, licence CC0 1.0), listed first as the reference, only on
-  photos with measured data. On other photos and on uploads it is left out of
+  `'precomputed'`; CC0 1.0 for Wilming et al., GNU GPL 3.0 for Andersson et
+  al.), listed first as the reference, only on photos with measured data. Its
+  subtitle gives the photo's number of people: "48 people, eye tracking" on
+  the Zürich photos, "2 people, eye tracking" to "5 people, eye tracking" on
+  the Andersson et al. photos. On other photos and on uploads it is left out of
   every view, with no "unavailable" note. It is never in the neural preference
   (MSDB, IIE, UNISAL) and never in the agreement matrix.
 - **Fixation points:** the fixations behind each map (after steps 1–2 of the
@@ -463,7 +505,10 @@ are not in the library.
 
 **Architectural qualities**
 
-The image measures cover every example photo. For the study images
+The image measures cover every example photo, except that the photos of
+Andersson et al. (2017) have only tactile materials: their area files have no
+SAM 3 façade elements, which the ground-floor and rhythm measures need, until
+`elements.py --apply --only-missing` runs on the laptop (prompt 069). For the study images
 (`imageKind`, prompt 052) the rules are the same; the reasons add "A design
 rendering, not a photograph." or "A 360° panorama: straight lines curve and
 distant surfaces are small, so repetition and texture are harder to see."
@@ -625,7 +670,9 @@ was run on the photos.
   location in the photo.
 - Principle score = mean similarity with the positive sentences minus mean
   similarity with the negative ones.
-- Every example photo is scored (`public/precomputed/up-clip/scores.json`).
+- Every example photo is scored (`public/precomputed/up-clip/scores.json`),
+  except the photos of Andersson et al. (2017), added in prompt 069 while
+  the reproduction's weights stay on the laptop.
   Comparisons with the image measures and the graded panel cover the photos
   that have them and are labelled exploratory. UP-CLIP scores are never
   combined with gaze statistics.
@@ -886,7 +933,8 @@ was run on the photos.
 
 - `/eek-a-look/rate.html` (`rate.html`, `src/rate.ts`, `src/rate.css`), built
   with the site, not linked from the main page, `noindex`. Raters judge each
-  of the 49 example photos on the three principles on the 2020 panel's scale
+  of the 49 example photos (not the photos of Andersson et al. 2017, added
+  later) on the three principles on the 2020 panel's scale
   (present, ambiguous, absent), in their own professional judgement.
 - It shows: an introduction, the scale, the rubric "What to look at"
   (collapsible; the wording of `rating_rubric.md` in the developer notes), a
@@ -913,7 +961,8 @@ was run on the photos.
   prediction. A predicted map with the measured fixation points over it adds
   **"with measured fixations"** to its label (prompt 056).
 - The page states, near the top, that these are predictions, not measured gaze,
-  except the "Measured gaze" layer on the Zürich photos.
+  except the "Measured gaze" layer on the Zürich photos and the photos from
+  Andersson et al. (2017).
 - The Areas view carries the label **"Automatic areas · not an expert
   judgement"** and the caption "Areas are found automatically and can be
   wrong."
@@ -978,7 +1027,7 @@ was run on the photos.
 - The product name is always lower case: **eek-a-look**.
 - Visitor-facing model names: "Classic salience" and "UNISAL"
   (subtitle "small neural network"). The measured layer is "Measured gaze"
-  (subtitle "48 people, eye tracking").
+  (subtitle "<n> people, eye tracking", with the photo's number of people).
 - A vision-language model's verdict is called an **"AI judgement"**, never an
   expert judgement or an assessment.
 - The outcome of a rule in *Architectural qualities* is called an **"image

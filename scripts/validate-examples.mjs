@@ -9,9 +9,12 @@ const AREAS = { Zuidas: 'Amsterdam', Weena: 'Rotterdam', Wilhelminapier: 'Rotter
 // Images from published eye-tracking studies form one group across several cities.
 const STUDY_AREA = 'From published studies';
 const STUDY_CITIES = ['Qinyang', 'Guangzhou'];
+// Prompt 069: photos with measured gaze from a lab study; a place is named only where the photo shows it beyond doubt.
+const MEASURED_AREA = 'Andersson et al. (2017)';
+const MEASURED_AREA_CITIES = ['Rome'];
 const isCount = (n) => Number.isInteger(n) && n > 0;
 const IMAGE_KINDS = ['render', 'panorama'];
-const LICENCES = /^(CC0 1\.0|Public domain|CC BY(-SA)? [0-9.]+)$/;
+const LICENCES = /^(CC0 1\.0|Public domain|CC BY(-SA)? [0-9.]+|GNU GPL 3\.0)$/;
 const FIELDS = ['id', 'area', 'city', 'title', 'file', 'width', 'height', 'author', 'licence', 'licenceUrl', 'sourceUrl', 'changes'];
 
 const photos = JSON.parse(await readFile(join(DIR, 'examples.json'), 'utf8'));
@@ -21,6 +24,7 @@ const ids = new Set();
 for (const [index, photo] of photos.entries()) {
   const where = `entry ${index} (${photo.id ?? 'no id'})`;
   for (const field of FIELDS) {
+    if (field === 'city' && photo.area === MEASURED_AREA && photo.city === undefined) continue;
     if (photo[field] === undefined || photo[field] === '') errors.push(`${where}: missing ${field}`);
   }
   if (ids.has(photo.id)) errors.push(`${where}: duplicate id`);
@@ -37,6 +41,10 @@ for (const [index, photo] of photos.entries()) {
     // Prompt 051: renderings and 360° panoramas are named, so the area tool can treat them apart.
     if (!IMAGE_KINDS.includes(photo.imageKind)) errors.push(`${where}: imageKind must be one of ${IMAGE_KINDS.join(', ')}`);
   } else if (photo.study !== undefined) errors.push(`${where}: study is only for ${STUDY_AREA}`);
+  else if (photo.area === MEASURED_AREA) {
+    if (photo.city !== undefined && !MEASURED_AREA_CITIES.includes(photo.city)) errors.push(`${where}: unknown city ${photo.city}`);
+    if (photo.measured === undefined) errors.push(`${where}: ${MEASURED_AREA} photos need measured gaze`);
+  }
   else if (AREAS[photo.area] === undefined) errors.push(`${where}: unknown area ${photo.area}`);
   else if (AREAS[photo.area] !== photo.city) errors.push(`${where}: ${photo.area} is not in ${photo.city}`);
   if (photo.imageKind !== undefined && !IMAGE_KINDS.includes(photo.imageKind)) errors.push(`${where}: unknown imageKind ${photo.imageKind}`);

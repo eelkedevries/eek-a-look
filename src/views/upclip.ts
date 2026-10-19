@@ -1,3 +1,4 @@
+import { titleAndPlace } from '../examples';
 import { onResults } from '../results';
 import { loadUpClip, type PhotoInfo, type UpClipFile } from './qualities';
 
@@ -137,7 +138,7 @@ export function mountUpClip(container: HTMLElement, pickPhoto: (id: string) => v
         if (p) {
           const img = el('img');
           img.src = `${BASE}examples/${p.file.replace(/\.jpg$/, '-thumb.jpg')}`;
-          img.alt = `${p.title}, ${p.city}`;
+          img.alt = titleAndPlace(p);
           img.loading = 'lazy';
           img.width = 320;
           img.height = Math.round((320 * p.height) / p.width);

@@ -7,7 +7,7 @@ const BASE = '/eek-a-look/';
 interface Photo {
   id: string;
   area: string;
-  city: string;
+  city?: string;
   title: string;
   file: string;
   width: number;
@@ -38,10 +38,10 @@ function prerenderPicker(): Plugin {
               const thumb = `${BASE}examples/${p.file.replace(/\.jpg$/, '-thumb.jpg')}`;
               const h = Math.round((320 * p.height) / p.width);
               const measured = p.measured ? ' data-measured=""' : '';
-              return `<button type="button" class="example" data-id="${escape(p.id)}"${measured} title="${escape(p.title)}" aria-pressed="false"><img src="${thumb}" alt="${escape(`${p.title}, ${p.city}`)}" width="320" height="${h}"></button>`;
+              return `<button type="button" class="example" data-id="${escape(p.id)}"${measured} title="${escape(p.title)}" aria-pressed="false"><img src="${thumb}" alt="${escape(p.city ? `${p.title}, ${p.city}` : p.title)}" width="320" height="${h}"></button>`;
             })
             .join('');
-          const note = inArea[0].measured ? 'measured eye tracking' : inArea[0].study ? 'predictions only' : inArea[0].city;
+          const note = inArea[0].measured ? 'measured eye tracking' : inArea[0].study ? 'predictions only' : (inArea[0].city ?? '');
           return `<div class="example-group"><h3 class="example-area">${escape(area)} <span>${escape(note)}</span></h3><div class="example-list">${buttons}</div></div>`;
         })
         .join('');
