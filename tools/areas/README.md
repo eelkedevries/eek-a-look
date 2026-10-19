@@ -83,8 +83,8 @@ The 25 images "From published studies" carry `imageKind` in the manifest:
   ordinary rule; their virtual camera height is unknown, so 1.6 m is an
   assumption. Two of them (qinyang-01, qinyang-10) fall back to the middle
   row and so get a ground floor covering the whole façade.
-- **`panorama`** (15 Guangzhou 360° panoramas, equirectangular, 648 × 325
-  px): a level capture is assumed, so the horizon is the middle row
+- **`panorama`** (360° panoramas, equirectangular; the 15 Guangzhou
+  panoramas, 648 × 325 px, were removed on 2026-10-19): a level capture is assumed, so the horizon is the middle row
   (`equirectangular`). Rows are elevation angles, π over the image height
   *R*: a base row *y<sub>0</sub>* lies at depression *φ* = π (*y<sub>0</sub>* −
   *y<sub>h</sub>*) / *R*, at distance *d* = *c* / tan *φ*, and the ground floor

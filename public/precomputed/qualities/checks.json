@@ -393,66 +393,6 @@
     "qinyang-10": {
      "outcome": "unclear",
      "value": 0.0
-    },
-    "guangzhou-tabebuia-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-tabebuia-2": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-tabebuia-3": {
-     "outcome": "unclear",
-     "value": 0.0
-    },
-    "guangzhou-hydrangea-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-hydrangea-2": {
-     "outcome": "unclear",
-     "value": null
-    },
-    "guangzhou-hydrangea-3": {
-     "outcome": "unclear",
-     "value": null
-    },
-    "guangzhou-swietenia-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-swietenia-2": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-swietenia-3": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-mangifera-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-mangifera-2": {
-     "outcome": "likely-absent",
-     "value": 0.0031847133757961785
-    },
-    "guangzhou-mangifera-3": {
-     "outcome": "likely-absent",
-     "value": 0.021798365122615803
-    },
-    "guangzhou-ficus-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-ficus-2": {
-     "outcome": "unclear",
-     "value": null
-    },
-    "guangzhou-ficus-3": {
-     "outcome": "likely-absent",
-     "value": 0.0
     }
    }
   },
@@ -620,66 +560,6 @@
      "value": 0.0
     },
     "qinyang-10": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-tabebuia-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-tabebuia-2": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-tabebuia-3": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-hydrangea-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-hydrangea-2": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-hydrangea-3": {
-     "outcome": "unclear",
-     "value": null
-    },
-    "guangzhou-swietenia-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-swietenia-2": {
-     "outcome": "likely-absent",
-     "value": 0.057692307692307696
-    },
-    "guangzhou-swietenia-3": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-mangifera-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-mangifera-2": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-mangifera-3": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-ficus-1": {
-     "outcome": "likely-absent",
-     "value": 0.0
-    },
-    "guangzhou-ficus-2": {
-     "outcome": "unclear",
-     "value": null
-    },
-    "guangzhou-ficus-3": {
      "outcome": "likely-absent",
      "value": 0.0
     }
@@ -867,66 +747,6 @@
     "qinyang-10": {
      "outcome": "unclear",
      "value": 0.2983201462566685
-    },
-    "guangzhou-tabebuia-1": {
-     "outcome": "unclear",
-     "value": 0.07371002550519913
-    },
-    "guangzhou-tabebuia-2": {
-     "outcome": "unclear",
-     "value": 0.03661736641221374
-    },
-    "guangzhou-tabebuia-3": {
-     "outcome": "unclear",
-     "value": 0.07057458261819316
-    },
-    "guangzhou-hydrangea-1": {
-     "outcome": "unclear",
-     "value": 0.01730497000279268
-    },
-    "guangzhou-hydrangea-2": {
-     "outcome": "unclear",
-     "value": 0.152841796875
-    },
-    "guangzhou-hydrangea-3": {
-     "outcome": "unclear",
-     "value": 0.01814453125
-    },
-    "guangzhou-swietenia-1": {
-     "outcome": "unclear",
-     "value": 0.24459194651502345
-    },
-    "guangzhou-swietenia-2": {
-     "outcome": "unclear",
-     "value": 0.19813779539002627
-    },
-    "guangzhou-swietenia-3": {
-     "outcome": "unclear",
-     "value": 0.21159253831834923
-    },
-    "guangzhou-mangifera-1": {
-     "outcome": "unclear",
-     "value": 0.032483098026553955
-    },
-    "guangzhou-mangifera-2": {
-     "outcome": "unclear",
-     "value": 0.13491214975894136
-    },
-    "guangzhou-mangifera-3": {
-     "outcome": "likely-absent",
-     "value": 0.03225094324476198
-    },
-    "guangzhou-ficus-1": {
-     "outcome": "likely-present",
-     "value": 0.3365033621517771
-    },
-    "guangzhou-ficus-2": {
-     "outcome": "likely-present",
-     "value": 0.28870616072039657
-    },
-    "guangzhou-ficus-3": {
-     "outcome": "likely-present",
-     "value": 0.3947634890785477
     }
    }
   }

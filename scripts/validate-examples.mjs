@@ -8,7 +8,7 @@ const DIR = 'public/examples';
 const AREAS = { Zuidas: 'Amsterdam', Weena: 'Rotterdam', Wilhelminapier: 'Rotterdam', Beatrixkwartier: 'The Hague', Zürich: 'Zürich' };
 // Images from published eye-tracking studies form one group across several cities.
 const STUDY_AREA = 'From published studies';
-const STUDY_CITIES = ['Qinyang', 'Guangzhou'];
+const STUDY_CITIES = ['Qinyang'];
 // Prompt 069: photos with measured gaze from a lab study; a place is named only where the photo shows it beyond doubt.
 const MEASURED_AREA = 'Andersson et al. (2017)';
 const MEASURED_AREA_CITIES = ['Rome'];

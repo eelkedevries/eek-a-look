@@ -4,7 +4,7 @@ export interface ExamplePhoto {
   id: string;
   area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich' | 'Andersson et al. (2017)' | 'From published studies';
   /** Absent only for photos of Andersson et al. (2017) whose place is not certain (prompt 069). */
-  city?: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Rome' | 'Qinyang' | 'Guangzhou';
+  city?: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Rome' | 'Qinyang';
   title: string;
   file: string;
   width: number;

@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.51 · **Last updated:** 2026-10-19
+**Version:** 0.52 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -116,6 +116,9 @@ hedge about 2 m tall along the base, and the whole ground-floor frontage
 opaque or transparent, edited with FLUX.1 Kontext and pasted over the
 original only where the edit changed it (prompt 071b, owner's request of
 2026-10-19).
+0.52 removes the 15 Guangzhou panoramas (Wang, Hu & Ma, 2025) and all their
+precomputed data; no current image is a panorama, but the panorama rules stay
+(owner's request of 2026-10-19).
 
 ## Scope
 
@@ -323,7 +326,7 @@ The example photo manifest is `public/examples/examples.json`, an array of:
 interface ExamplePhoto {
   id: string;             // kebab-case, unique
   area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich' | 'Andersson et al. (2017)' | 'From published studies';
-  city?: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Rome' | 'Qinyang' | 'Guangzhou';
+  city?: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Rome' | 'Qinyang';
                           // required, except in 'Andersson et al. (2017)', where a place
                           // is named only when the photo shows it beyond doubt (prompt 069)
   title: string;          // short caption
