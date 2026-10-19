@@ -133,6 +133,49 @@ plain (fewer than 3 instances), irregular.
 - "Irregular" hardly occurs: with τ this low, three instances almost always
   count as repeating.
 
+## Tactile materials (prompt 042)
+
+**Definition (this project's):** surfaces near eye level, on the street façade
+and in the street space, whose material shows visible texture or detail
+(brickwork, natural stone, wood, tiles and setts, wicker, planting), as
+opposed to smooth, uniform surfaces. This is **visible texture in a photo,
+not touch**.
+
+**Model:** DMS46 (Upchurch & Niu, ECCV 2022), the pre-trained model of
+<https://github.com/apple/ml-dms-dataset> (Apple sample-code licence; trained
+on labels under CC BY-NC 4.0). `fetch_dms.py` downloads it into `.cache/dms/`
+and checks its SHA-256; it is never committed. It runs as the repository's
+`inference.py` does (long side 512, ImageNet normalisation); the labels are
+resized to the mask grid. About 0.07 s per photo, 0.45 GB on the RTX 4070.
+
+**Groups:** textured = Brickwork, Stone (natural), Wood, Wood (tree), Tile,
+Wicker, Foliage (also reported as planting); smooth = Glass, Mirror, Metal,
+Stone (polished), Paint/plaster/enamel, Plastic (clear and non-clear),
+Ceramic; neutral = the rest, including Concrete and Asphalt.
+
+**Eye-level zone:** the ground floor (façade part) plus every pixel below the
+horizon that is not sky, people, vehicles or ground floor (street-space part).
+
+**Rule:**
+- horizon method `assumed-level` → Unclear (as for the ground floor since
+  040b; added before this measure was run);
+- `zoneShare` < 0.10 → Unclear ("Too little is visible near eye level");
+- `texturedShare` ≥ 0.25 → Likely present;
+- `texturedShare` < 0.10 and `smoothShare` ≥ 2 × `texturedShare` → Likely
+  absent;
+- otherwise Unclear ("Some textured surfaces").
+
+**Limits** (from the check overlays):
+- dark brick façades can come out as Paint/plaster (zuidas-gershwinplein), so
+  brick buildings may count as smooth;
+- stucco and rusticated bases are Paint/plaster, which the groups call
+  smooth (zurich-24);
+- distance hides texture; reflections in glass show other materials;
+- a grass tram track counts as planting (weena-millenniumtoren), which is
+  what the model sees but not what a designer means by tactile;
+- DMS46 was trained on general photos; its published per-class test accuracy
+  is quoted in prompt 043's report.
+
 ## Output
 
 `public/precomputed/qualities/<photo-id>.json`, the `QualityFile` of the
@@ -148,6 +191,8 @@ uv run build.py                 # every measure implemented so far
 uv run build.py --ground-floor  # the active ground floor only
 uv run build.py --rhythm        # rhythm and variety (calibrates on CMP Facade first if needed)
 uv run build.py --calibrate     # re-run the rhythm calibration
+uv run fetch_dms.py             # DMS46 model, once
+uv run build.py --materials     # tactile materials
 ```
 
 Check overlays go to `.cache/check/` (ignored by git).

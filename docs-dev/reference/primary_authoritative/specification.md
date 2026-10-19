@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.22 · **Last updated:** 2026-10-19
+**Version:** 0.23 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -48,7 +48,9 @@ corrected on the calibration images before the measure ran on the photos).
 0.21 lets visitors show the measured fixations as points over the "Measured
 gaze" layer, never over a model's map (prompt 030, owner's decision of
 2026-10-19). 0.22 calibrates the SAM 3 score above which an instance counts
-for rhythm together with τ; the calibration kept 0.65 (prompt 041b).
+for rhythm together with τ; the calibration kept 0.65 (prompt 041b). 0.23
+adds the image measure for tactile materials: visible texture near eye level
+from the DMS46 material model (prompt 042).
 
 ## Scope
 
@@ -461,6 +463,41 @@ was run on the photos.
     windows); glass curtain walls, where SAM 3 finds no windows, read as
     plain even when mullions divide them; sun and shade can split one façade
     into two colour zones.
+- **Tactile materials** (operational definition): surfaces near eye level, on
+  the street façade and in the street space, whose material shows visible
+  texture or detail (brickwork, natural stone, wood, tiles and setts, wicker,
+  planting), as opposed to smooth, uniform surfaces. This is **visible
+  texture, not touch**: a photo cannot show how a surface feels.
+  - Model: DMS46 (Upchurch & Niu, ECCV 2022; `apple/ml-dms-dataset`, Apple
+    sample-code licence; trained on labels under CC BY-NC 4.0), run as its
+    `inference.py` does (long side 512, ImageNet normalisation), labels
+    resized to the mask grid (nearest). Weights stay on the laptop.
+  - Groups: *textured* = Brickwork, Stone (natural), Wood, Wood (tree), Tile,
+    Wicker, Foliage (also reported alone as "planting"); *smooth* = Glass,
+    Mirror, Metal, Stone (polished), Paint/plaster/enamel, Plastic (clear),
+    Plastic (non-clear), Ceramic; *neutral* = every other class, including
+    Concrete and Asphalt, whose texture a photo cannot decide.
+  - Eye-level zone: the ground floor (*façade part*) plus every pixel below
+    the horizon row that is not sky, people, vehicles or ground floor
+    (*street-space part*).
+  - Indicators: `zoneShare` (zone ÷ photo); `texturedShare`, `smoothShare`,
+    `neutralShare`, `plantingShare` (÷ zone); the same three shares for the
+    façade part (`facade…`) and the street-space part (`street…`); the three
+    most common materials in the zone (`material: <name>`); and
+    `texturedFurniture` (textured share of all street-furniture pixels).
+  - Rule: horizon method `assumed-level` → Unclear ("The horizon could not be
+    found, so the eye-level zone is uncertain"); else `zoneShare` < 0.10 →
+    Unclear ("Too little is visible near eye level"); else `texturedShare` ≥
+    0.25 → Likely present; else `texturedShare` < 0.10 and `smoothShare` ≥ 2 ×
+    `texturedShare` → Likely absent; else Unclear ("Some textured
+    surfaces"). The reasons name the ground floor or the street space when
+    one of them alone reaches 0.25 textured.
+  - Evidence: "Textured surfaces" (without planting) and "Planting"
+    (supports); "Smooth surfaces" (against); "Eye-level zone" (context).
+  - Limits: distance hides texture; reflections in glass show other
+    materials; wet or dark surfaces; DMS46 was trained on general photos, not
+    street façades (its published test accuracy per class ranges from about
+    0.38 for polished stone to 0.90 for foliage).
 
 **Derived views**
 

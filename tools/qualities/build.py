@@ -6,6 +6,7 @@
                                   τ on CMP Facade first if rhythm_calibration.json
                                   is missing
   uv run build.py --calibrate     re-run the rhythm calibration
+  uv run build.py --materials     tactile materials only (prompt 042; run fetch_dms.py first)
 
 Writes public/precomputed/qualities/<photo-id>.json (QualityFile in the
 specification), keeping the principles not re-run, and a check overlay per
@@ -90,6 +91,51 @@ def rhythm_overlay(photo: dict, data: AreaData, detail: dict) -> None:
     sheet.save(CACHE / "check" / f"{photo['id']}-rhythm.png")
 
 
+MATERIAL_COLOURS = {"textured": (0, 158, 115), "planting": (240, 228, 66), "smooth": (213, 94, 0), "neutral": (154, 154, 164)}
+
+
+def materials_overlay(photo: dict, data: AreaData, detail: dict) -> None:
+    import materials
+
+    w, h = data.width * 2, data.height * 2
+    names = detail["names"]
+    group = np.array(["planting" if n == materials.PLANTING else "textured" if n in materials.TEXTURED
+                      else "smooth" if n in materials.SMOOTH else "neutral" for n in names])
+    labels = np.kron(detail["labels"], np.ones((2, 2), np.uint8))
+    zone = np.kron(detail["zone"], np.ones((2, 2), bool))
+    panels = []
+    for kind in ("groups", "materials"):
+        base = greyed(photo, w, h)
+        if kind == "groups":
+            for g, colour in MATERIAL_COLOURS.items():
+                m = zone & (group[labels] == g)
+                base[m] = base[m] * 0.35 + np.array(colour) * 0.65
+        else:
+            palette = np.array([[int(c) for c in materials_colour(k)] for k in range(len(names))], np.float32)
+            base = base * 0.35 + palette[labels] * 0.65
+        out = Image.fromarray(base.astype(np.uint8))
+        draw = ImageDraw.Draw(out)
+        if kind == "groups":
+            for k, (g, colour) in enumerate(MATERIAL_COLOURS.items()):
+                draw.rectangle((8, 8 + 18 * k, 22, 22 + 18 * k), fill=colour)
+                draw.text((28, 9 + 18 * k), f"{g} (eye-level zone only)", fill=(255, 255, 255))
+        else:
+            counts = np.bincount(detail["labels"].ravel(), minlength=len(names))
+            for k, idx in enumerate(np.argsort(-counts)[:8]):
+                draw.rectangle((8, 8 + 18 * k, 22, 22 + 18 * k), fill=tuple(int(c) for c in materials_colour(idx)))
+                draw.text((28, 9 + 18 * k), f"{names[idx]} {counts[idx] / counts.sum():.0%}", fill=(255, 255, 255))
+        panels.append(out)
+    sheet = Image.new("RGB", (w * 2 + 8, h), (20, 20, 20))
+    sheet.paste(panels[0], (0, 0)); sheet.paste(panels[1], (w + 8, 0))
+    sheet.save(CACHE / "check" / f"{photo['id']}-materials.png")
+
+
+def materials_colour(k: int) -> tuple[int, int, int]:
+    """A fixed, well-spread colour per material index, for the check overlay only."""
+    rng = np.random.default_rng(k * 7919 + 11)
+    return tuple(int(v) for v in rng.integers(40, 255, 3))
+
+
 def fmt(value) -> str:
     if value is None:
         return "–"
@@ -101,8 +147,9 @@ def main() -> int:
     parser.add_argument("--ground-floor", action="store_true")
     parser.add_argument("--rhythm", action="store_true")
     parser.add_argument("--calibrate", action="store_true")
+    parser.add_argument("--materials", action="store_true")
     args = parser.parse_args()
-    run_all = not (args.ground_floor or args.rhythm or args.calibrate)
+    run_all = not (args.ground_floor or args.rhythm or args.calibrate or args.materials)
     (CACHE / "check").mkdir(parents=True, exist_ok=True)
 
     tau, instance_threshold, dev, sam_holder = None, None, None, {}
@@ -128,9 +175,20 @@ def main() -> int:
         if dev.type == "cuda":
             torch.cuda.reset_peak_memory_stats()
 
+    dms = None
+    if run_all or args.materials:
+        import torch
+        import materials
+
+        dev = dev or torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        dms = materials.Dms46(dev)
+        if dev.type == "cuda":
+            torch.cuda.reset_peak_memory_stats()
+        material_seconds = []
+
     failures = 0
     counts: dict[str, dict[str, int]] = {}
-    rows, rhythm_rows = [], []
+    rows, rhythm_rows, material_rows = [], [], []
     for photo in photos():
         data = AreaData(photo["id"])
         quality = load_quality(data)
@@ -155,19 +213,39 @@ def main() -> int:
             counts.setdefault("rhythm", {}).setdefault(result["outcome"], 0)
             counts["rhythm"][result["outcome"]] += 1
             rhythm_rows.append((photo["id"], result))
+        if run_all or args.materials:
+            import time
+            import materials
+            from fetch_dms import COMMIT, FILES
+
+            t0 = time.perf_counter()
+            result, detail = materials.measure(photo, data, dms)
+            material_seconds.append(time.perf_counter() - t0)
+            quality["principles"]["materials"] = result
+            quality["models"]["materials"] = (f"DMS46 (Upchurch & Niu 2022), dms46_v1.zip sha256 {FILES['dms46_v1.zip'][1]}, "
+                                             f"apple/ml-dms-dataset@{COMMIT}; groups and eye-level zone, tools/qualities/materials.py")
+            materials_overlay(photo, data, detail)
+            counts.setdefault("materials", {}).setdefault(result["outcome"], 0)
+            counts["materials"][result["outcome"]] += 1
+            material_rows.append((photo["id"], result))
         path = write_quality(quality)
         problems = check_quality(path)
         failures += bool(problems)
         if problems:
             print(f"{photo['id']}: PROBLEM {'; '.join(problems)}")
 
-    for table in (rows, rhythm_rows):
+    for table in (rows, rhythm_rows, material_rows):
         if not table:
             continue
-        keys = list(table[0][1]["indicators"])
+        keys = [k for k in table[0][1]["indicators"] if not k.startswith("material: ")]
         print(f"\n{'photo':42} {'outcome':8} " + " ".join(f"{k[:11]:>11}" for k in keys))
         for pid, result in table:
             print(f"{pid:42} {OUTCOME[result['outcome']]:8} " + " ".join(f"{fmt(result['indicators'][k]):>11}" for k in keys))
+    for pid, result in material_rows:
+        top = ", ".join(f"{k[10:]} {v:.0%}" for k, v in result["indicators"].items() if k.startswith("material: "))
+        print(f"{pid:42} {top}")
+    if material_rows:
+        print(f"\nDMS46: {np.mean(material_seconds):.2f} s per photo")
     if dev is not None and dev.type == "cuda":
         import torch
         print(f"\nPeak GPU memory: {torch.cuda.max_memory_allocated() / 1e9:.2f} GB")

@@ -49,6 +49,9 @@ systems or future prompts.
    three most common materials in the zone with their shares; and
    `texturedFurniture` (share of street-furniture pixels that are textured).
 6. **Rule** (in the specification before running on the photos):
+   - horizon method `assumed-level` → Unclear ("The horizon could not be
+     found, so the eye-level zone is uncertain"), as for the ground floor
+     since 040b (added before this prompt was run);
    - `zoneShare` < 0.10 → Unclear ("Too little is visible near eye level");
    - `texturedShare` ≥ 0.25 → Likely present;
    - `texturedShare` < 0.10 and `smoothShare` ≥ 2 × `texturedShare` → Likely

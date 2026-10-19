@@ -185,3 +185,6 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `041b_rhythm_instance_threshold.md` (spec 0.22: the SAM 3 score for
   counting instances calibrated with τ; CMP kept 0.65. Rhythm: 11 likely
   present, 7 unclear, 6 likely absent)
+- `042_material_evidence.md` (spec 0.23: DMS46 materials near eye level,
+  textured / smooth / neutral groups. 6 likely present, 10 unclear, 8 likely
+  absent; dark brick façades can read as plaster)
