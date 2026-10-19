@@ -83,6 +83,39 @@ Neither the ratings nor the boxes are combined with gaze statistics.
 uv run panel.py --graded   # writes public/precomputed/vlm-panel/panel-graded.json
 ```
 
+## As observer (prompt 060)
+
+`uv run panel.py --observe` asks the same model what it *sees*
+(`prompt_observe.md`): doors and shop windows at street level, a blank
+stretch, use in front; buildings, repeating bays, repeating floors, variety;
+materials named within about 3 m of the ground, visible texture. Four sampled
+runs per photo (seeds 11, 23, 37, 41): counts take the median, yes/no the
+majority (a tie is no), a material counts if named in at least two runs. A
+rule fixed before the run turns the answers into ratings 0–4:
+
+- ground floor = [doors ≥ 1] + [doors ≥ 3] + [shop windows ≥ 1] + [no blank
+  stretch] + [use in front], at most 4;
+- rhythm = [bays repeat] + [floors repeat] + [variety] + [buildings ≥ 3];
+- materials = textured materials named (brick, natural stone, wood, tiles or
+  setts, planting) + [visible texture], at most 4.
+
+It also re-asks the graded prompt once per role without sampling and takes
+the expected rating from the probabilities of the tokens 0–4 (G-Eval style),
+so ratings no longer tie. Results (49 photos, 75–100 s per photo, peak 7.3 GB):
+
+| Principle | Observed (sd) | On the 24 photos | Weighted: distinct (range) | Graded medians | ρ observed / weighted with the image measure |
+|---|---|---|---|---|---|
+| ground floor | 0–4 (0.91) | 1 ×13, 2 ×5, 3 ×3, 4 ×2, 0 ×1 | 37 (0.4–3.3) | 1–3 | 0.68 / 0.61 |
+| rhythm | 0–4 (1.83) | 4 ×21, 3 ×2, 2 ×1 | 37 (1.2–4.0) | 3–4 | 0.56 / 0.45 |
+| materials | 0–4 (1.15) | 1 ×9, 2 ×7, 3 ×6, 0 ×1, 4 ×1 | 21 (1.7–3.0) | 2–3 | 0.08 / −0.17 |
+
+The observed rule separates the photos on the ground floor and materials,
+and the weighted ratings no longer tie. On rhythm the model still says yes to
+repetition and variety on almost every ordinary photo; the spread comes from
+the renderings and panoramas. The links with the image measures are between
+automated methods, not a validation. All four runs agree on 71–96% of the
+photos per question, but on the full materials list only on 35%.
+
 ## Caveats
 
 - VLM judgements can track crowd ratings of general attractiveness (Zhou,
@@ -99,7 +132,9 @@ Sources: `docs-dev/reference/secondary_background/areas_sources.md`.
 
 ```sh
 cd tools/vlm-panel
-uv run panel.py   # writes public/precomputed/vlm-panel/panel.json
+uv run panel.py             # writes public/precomputed/vlm-panel/panel.json
+uv run panel.py --graded    # ratings 0–4 with boxes, panel-graded.json (prompt 044)
+uv run panel.py --observe   # observations, rule ratings, weighted ratings, panel-observed.json (prompt 060)
 ```
 
 The first run downloads the model (about 17 GB for the 8B version) into the

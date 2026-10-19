@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.43 · **Last updated:** 2026-10-19
+**Version:** 0.44 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -95,6 +95,7 @@ request of 2026-10-19). 0.43 adds colour bars, draws A and B on one colour
 scale, reports only the selected model as Σ A, Σ B and the contrast B − A
 with its direction, and leaves measured gaze out of the Example section
 (prompt 068, owner's request of 2026-10-19).
+0.44 adds the simulated panel as observer: answers to visible questions rated by a fixed rule, and probability-weighted graded ratings (prompt 060, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -795,6 +796,23 @@ was run on the photos.
     (ordinal) for agreement among members and the share of medians within 0.5
     in a second run for stability. Neither its ratings nor its boxes are ever
     combined with gaze statistics.
+  - the panel **as observer** (`panel-observed.json`, prompt 060;
+    `tools/vlm-panel/prompt_observe.md`, fixed before the run): the same model
+    answers visible questions per photo in four sampled runs (doors and shop
+    windows at street level, a blank stretch, use in front; buildings,
+    repeating bays, repeating floors, variety; materials named within about 3 m
+    of the ground, visible texture). Counts take the median, yes/no the
+    majority, a material counts if named in at least two runs. Ratings 0–4
+    come from a rule fixed in the prompt file, not from the model, and map to
+    present (≥ 3), ambiguous or absent (≤ 1). Also per photo a
+    **probability-weighted** graded rating: one greedy pass of the graded
+    prompt per role, the expected rating from the probabilities of the tokens
+    0–4, averaged over the four roles. An AI judgement too; never combined
+    with gaze statistics.
+  - "Methods for this photo" shows the weighted rating in the "Simulated
+    panel, rated 0–4" row ("weighted 2.7") and a row "Simulated panel,
+    observed (rule)" with the rating and its main answers; the all-photos
+    table adds "observed: n".
 
 **Example comparisons** (prompt 058)
 

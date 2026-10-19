@@ -299,6 +299,35 @@ def rectified_section() -> list[str]:
     return lines
 
 
+def observed_section() -> list[str]:
+    """The observing panel of prompt 060 (tools/vlm-panel), if it ran: spread, stability and its link with the measures."""
+    path = REPO / "public" / "precomputed" / "vlm-panel" / "panel-observed.json"
+    if not path.exists():
+        return []
+    o = json.loads(path.read_text())
+    kinds = {p["id"]: p.get("imageKind", "photo") for p in photos()}
+    lines = ["", "## The simulated panel as observer (prompt 060)", "",
+             "Qwen3-VL answered visible questions (counts and yes/no; four sampled runs per photo); ratings 0–4 come from a rule "
+             "fixed before the run. Weighted: the graded prompt's expected rating from the probabilities of 0–4, mean over four roles. "
+             "Automated against automated, not a validation.", "",
+             "| Principle | Observed: values (sd) | On the 24 photos | Weighted: distinct (range) | Graded medians (24 photos) | ρ observed / weighted with the measure |",
+             "|---|---|---|---|---|---|"]
+    for p in PRINCIPLES:
+        d, s = o["discrimination"][p], o["spearmanWithImageMeasure"][p]
+        on_photos = sorted(e["ratings"][p] for pid, e in o["photos"].items() if e["ratings"] and kinds.get(pid) == "photo")
+        counts = ", ".join(f"{v}: {on_photos.count(v)}" for v in sorted(set(on_photos)))
+        g = d["graded (prompt 044, medians)"]
+        f = lambda v: "–" if v is None else f"{v:.2f}"
+        lines.append(f"| {p} | {d['observed']['min']}–{d['observed']['max']} ({d['observed']['sd']:.2f}) | {counts} | "
+                     f"{d['weighted']['distinct']} ({d['weighted']['min']:.1f}–{d['weighted']['max']:.1f}) | "
+                     f"{g['distinct']} ({g['min']:.0f}–{g['max']:.0f}) | {f(s['observed']['rho'])} / {f(s['weighted']['rho'])} ({s['indicator']}) |")
+    stab = ", ".join(f"{k} {v['allRunsAgree']:.0%}" for k, v in o["stability"].items() if v["allRunsAgree"] is not None)
+    lines += ["", f"All four runs give the same answer: {stab}.",
+              "On the ordinary photos the model answers yes to the rhythm questions almost every time, so rhythm still hardly "
+              "separates them; its spread comes from the renderings and panoramas."]
+    return lines
+
+
 def report(result: dict) -> str:
     r, f, s, d, x = result["rhythm"], result["frontage"], result["sensitivity"], result["discrimination"], result["panelCrossTable"]
     pct = lambda v: f"{v:.0%}"
@@ -379,10 +408,10 @@ def report(result: dict) -> str:
         for a, row in v["table"].items():
             lines.append(f"| {a} | " + " | ".join(str(c) for c in row.values()) + " |")
         lines.append("")
-    lines += ["## Expert labels later", "",
-              "`tools/qualities/labels_template.csv` has one row per photo and principle. An expert panel fills in",
-              "`present`, `absent` or `ambiguous` (the 2020 panel's scale) and runs",
-              "`uv run agreement.py --labels <file>` for each method's agreement with them.", ""]
+    lines += [*observed_section()[1:], "", "## Expert labels later", "",
+              "Raters judge the photos on `/eek-a-look/rate.html` (prompt 059) on the 2020 panel's scale (`present`, `ambiguous`,",
+              "`absent`) and send back its CSV; `uv run agreement.py --labels a.csv b.csv …` reports their agreement with each",
+              "other (Krippendorff's alpha) and each method's agreement with their majority label.", ""]
     return "\n".join(lines)
 
 

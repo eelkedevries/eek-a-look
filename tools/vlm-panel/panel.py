@@ -10,6 +10,9 @@ panel's was without consensus. This is an AI judgement, not an expert one.
   uv run panel.py            writes public/precomputed/vlm-panel/panel.json
   uv run panel.py --graded   ratings 0–4 with evidence boxes (prompt 044, prompt_graded.md);
                              writes public/precomputed/vlm-panel/panel-graded.json
+  uv run panel.py --observe  observable questions, ratings by a fixed rule and probability-weighted
+                             graded ratings (prompt 060, prompt_observe.md);
+                             writes public/precomputed/vlm-panel/panel-observed.json
 """
 
 import argparse
@@ -379,11 +382,211 @@ def main_graded() -> int:
     return 0
 
 
+# --- observation mode (prompt 060) ----------------------------------------------
+
+OUT_OBSERVED = OUT.with_name("panel-observed.json")
+OBSERVE_SEEDS = [11, 23, 37, 41]
+OBSERVE_TOKENS = 200
+COUNTS = ["entrances", "shopWindows", "buildings"]
+YES_NO = ["blankStretch", "streetUse", "repeatedBays", "repeatedFloors", "variety", "texturedSurfaces"]
+MATERIALS = ["brick", "natural stone", "wood", "tiles or setts", "planting", "plaster or paint", "glass", "metal", "concrete", "asphalt"]
+TEXTURED = ["brick", "natural stone", "wood", "tiles or setts", "planting"]
+MAIN_INDICATOR = {"groundFloor": "openShare", "rhythm": "rhythmicShare", "materials": "texturedShare"}
+
+
+def parse_observe(text: str) -> dict | None:
+    """Counts, yes/no answers and the materials named from the fixed list (other names are ignored)."""
+    match = re.search(r"\{.*\}", text, re.S)
+    if not match:
+        return None
+    try:
+        data = json.loads(match.group(0))
+    except json.JSONDecodeError:
+        return None
+    out = {}
+    for key in COUNTS:
+        value = data.get(key)
+        if isinstance(value, bool) or not isinstance(value, (int, float)) or value < 0 or value != int(value):
+            return None
+        out[key] = int(value)
+    for key in YES_NO:
+        value = data.get(key)
+        if isinstance(value, bool):
+            out[key] = value
+        elif isinstance(value, str) and value.strip().lower() in ("yes", "no"):
+            out[key] = value.strip().lower() == "yes"
+        else:
+            return None
+    named = data.get("materials")
+    if not isinstance(named, list):
+        return None
+    names = {str(n).strip().lower() for n in named}
+    out["materials"] = [m for m in MATERIALS if m in names]
+    return out
+
+
+def combine(runs: list[dict]) -> dict | None:
+    """Median count, majority yes (a tie is no), materials named in at least 2 runs; None under 2 valid runs."""
+    runs = [r for r in runs if r]
+    if len(runs) < 2:
+        return None
+    out = {key: float(np.median([r[key] for r in runs])) for key in COUNTS}
+    out |= {key: sum(r[key] for r in runs) * 2 > len(runs) for key in YES_NO}
+    out["materials"] = [m for m in MATERIALS if sum(m in r["materials"] for r in runs) >= 2]
+    return out
+
+
+def observed_ratings(a: dict) -> dict[str, int]:
+    """The rule of prompt 060, fixed before the run."""
+    ground = (a["entrances"] >= 1) + (a["entrances"] >= 3) + (a["shopWindows"] >= 1) + (not a["blankStretch"]) + a["streetUse"]
+    rhythm = a["repeatedBays"] + a["repeatedFloors"] + a["variety"] + (a["buildings"] >= 3)
+    materials = sum(m in a["materials"] for m in TEXTURED) + a["texturedSurfaces"]
+    return {"rhythm": int(rhythm), "groundFloor": int(min(4, ground)), "materials": int(min(4, materials))}
+
+
+def to_label(rating: float) -> str:
+    return "present" if rating >= 3 else "absent" if rating <= 1 else "ambiguous"
+
+
+@torch.no_grad()
+def ask_weighted(model, processor, image: Image.Image, system: str, instruction: str) -> tuple[dict, dict | None]:
+    """One greedy pass of the graded prompt; at each rating, the probabilities of the tokens 0–4 give an expected rating."""
+    from transformers import LogitsProcessor, LogitsProcessorList
+
+    tokenizer = processor.tokenizer
+    digits = [tokenizer.convert_tokens_to_ids(str(d)) for d in range(5)]
+
+    class Capture(LogitsProcessor):
+        def __init__(self):
+            self.steps = []
+
+        def __call__(self, input_ids, scores):
+            self.steps.append(scores[0, digits].float().cpu())
+            return scores
+
+    capture = Capture()
+    messages = [
+        {"role": "system", "content": [{"type": "text", "text": system}]},
+        {"role": "user", "content": [{"type": "image", "image": image}, {"type": "text", "text": instruction}]},
+    ]
+    inputs = processor.apply_chat_template(messages, tokenize=True, add_generation_prompt=True, return_dict=True, return_tensors="pt").to(model.device)
+    ids = model.generate(**inputs, max_new_tokens=GRADED_TOKENS, do_sample=False, temperature=None, top_p=None, top_k=None,
+                         logits_processor=LogitsProcessorList([capture]))
+    generated = ids[0, inputs["input_ids"].shape[1]:].tolist()
+    text, expected = "", {}
+    for step, token in enumerate(generated):
+        if token in digits and re.search(r'"rating"\s*:\s*$', text):
+            keys = re.findall(r'"(rhythm|groundFloor|materials)"', text)
+            if keys and keys[-1] not in expected and step < len(capture.steps):
+                p = torch.softmax(capture.steps[step], 0)
+                expected[keys[-1]] = {"expected": float((p * torch.arange(5)).sum()), "probabilities": [round(float(v), 4) for v in p]}
+        text += tokenizer.decode([token])
+    return expected, parse_graded(text)
+
+
+def spread(values: list[float]) -> dict:
+    values = [v for v in values if v is not None]
+    return {"photos": len(values), "distinct": len({round(v, 2) for v in values}), "min": min(values), "max": max(values),
+            "sd": float(np.std(values))} if values else {"photos": 0}
+
+
+def main_observe() -> int:
+    system, instruction, digest = prompt_parts("prompt_observe.md")
+    g_system, g_instruction, g_digest = prompt_parts("prompt_graded.md")
+    photos = json.loads((EXAMPLES / "examples.json").read_text())
+    probe = fit(Image.open(EXAMPLES / photos[0]["file"]).convert("RGB"))
+    model, processor, (repo, rev, quant) = load_model(probe, system, instruction)
+    print(f"Model: {repo}@{rev} ({quant}); peak after a probe {torch.cuda.max_memory_allocated() / 1e9:.2f} GB")
+    answer = ask(model, processor, probe, system, instruction, 0, parser=parse_observe, max_new_tokens=OBSERVE_TOKENS)
+    print(f"Probe on {photos[0]['id']} (format check only): {json.dumps(answer, ensure_ascii=False)}", flush=True)
+
+    out_photos = {}
+    t_start = time.perf_counter()
+    for photo in photos:
+        pid = photo["id"]
+        image = fit(Image.open(EXAMPLES / photo["file"]).convert("RGB"))
+        t0 = time.perf_counter()
+        runs = [ask(model, processor, image, system, instruction, seed, parser=parse_observe, max_new_tokens=OBSERVE_TOKENS)
+                for seed in OBSERVE_SEEDS]
+        combined = combine(runs)
+        ratings = observed_ratings(combined) if combined else None
+        by_role = {}
+        for role in ROLES:
+            expected, parsed = ask_weighted(model, processor, image, g_system.format(role=role), g_instruction)
+            by_role[role] = {"expected": {p: v["expected"] for p, v in expected.items()},
+                             "probabilities": {p: v["probabilities"] for p, v in expected.items()},
+                             "rating": {p: parsed[p]["rating"] for p in PRINCIPLES} if parsed else None}
+        weighted = {p: (float(np.mean(v)) if (v := [r["expected"][p] for r in by_role.values() if p in r["expected"]]) else None)
+                    for p in PRINCIPLES}
+        out_photos[pid] = {"runs": runs, "answers": combined, "ratings": ratings,
+                           "labels": {p: to_label(r) for p, r in ratings.items()} if ratings else None,
+                           "weighted": weighted, "weightedByRole": by_role, "seconds": round(time.perf_counter() - t0, 1)}
+        print(f"{pid:42} observed {ratings}  weighted " + " ".join(f"{p[:6]}={'–' if w is None else f'{w:.2f}'}" for p, w in weighted.items())
+              + f"  {out_photos[pid]['seconds']:.0f} s", flush=True)
+    peak = torch.cuda.max_memory_allocated() / 1e9
+
+    keys = COUNTS + YES_NO + ["materials"]
+    stability = {}
+    for key in keys:
+        complete = [e["runs"] for e in out_photos.values() if all(e["runs"])]
+        agree = [len({json.dumps(r[key]) for r in runs}) == 1 for runs in complete]
+        stability[key] = {"allRunsAgree": float(np.mean(agree)) if agree else None, "photos": len(agree)}
+
+    graded = json.loads(OUT_GRADED.read_text())["photos"] if OUT_GRADED.exists() else {}
+    discrimination, spearman = {}, {}
+    for p in PRINCIPLES:
+        observed = {pid: e["ratings"][p] for pid, e in out_photos.items() if e["ratings"]}
+        weighted = {pid: e["weighted"][p] for pid, e in out_photos.items() if e["weighted"][p] is not None}
+        discrimination[p] = {"observed": spread(list(observed.values())), "weighted": spread(list(weighted.values())),
+                             "graded (prompt 044, medians)": spread([e[p]["median"] for e in graded.values() if e[p]["median"] is not None])}
+        spearman[p] = {"indicator": MAIN_INDICATOR[p]}
+        for name, values in (("observed", observed), ("weighted", weighted)):
+            pairs = []
+            for pid, v in values.items():
+                path = QUALITIES / f"{pid}.json"
+                result = json.loads(path.read_text())["principles"].get(p) if path.exists() else None
+                value = result["indicators"].get(MAIN_INDICATOR[p]) if result else None
+                if value is not None:
+                    pairs.append((v, value))
+            rho = stats.spearmanr(*zip(*pairs)).statistic if len(pairs) >= 3 else None
+            spearman[p][name] = {"rho": None if rho is None or not np.isfinite(rho) else float(rho), "photos": len(pairs)}
+
+    result = {
+        "date": datetime.date.today().isoformat(),
+        "model": f"{repo}@{rev}", "licence": "Apache-2.0", "quantisation": quant,
+        "promptSha256": digest, "gradedPromptSha256": g_digest,
+        "runs": f"{len(OBSERVE_SEEDS)} sampled runs per photo (seeds {', '.join(map(str, OBSERVE_SEEDS))}, temperature 0.7)",
+        "combination": "median count; majority yes (a tie is no); a material counts if named in at least 2 runs",
+        "rule": {"groundFloor": "[entrances ≥ 1] + [entrances ≥ 3] + [shopWindows ≥ 1] + [no blankStretch] + [streetUse], at most 4",
+                 "rhythm": "[repeatedBays] + [repeatedFloors] + [variety] + [buildings ≥ 3]",
+                 "materials": "textured materials named (brick, natural stone, wood, tiles or setts, planting) + [texturedSurfaces], at most 4",
+                 "labels": "≥ 3 present, ≤ 1 absent, otherwise ambiguous"},
+        "weighted": "per role one greedy pass of prompt_graded.md; expected rating from the probabilities of the tokens 0–4; mean over the 4 roles",
+        "stability": stability,
+        "discrimination": discrimination,
+        "spearmanWithImageMeasure": {"label": "exploratory: two automated methods, not a validation", **spearman},
+        "secondsPerPhoto": round((time.perf_counter() - t_start) / len(photos), 1), "peakGpuGb": round(peak, 2),
+        "photos": out_photos,
+    }
+    OUT_OBSERVED.write_text(json.dumps(result, ensure_ascii=False, separators=(",", ":")))
+    for p in PRINCIPLES:
+        d = discrimination[p]
+        print(f"{p:12} observed {d['observed']}  weighted {d['weighted']}  graded {d['graded (prompt 044, medians)']}")
+        print(f"{'':12} Spearman with {MAIN_INDICATOR[p]}: observed {spearman[p]['observed']}, weighted {spearman[p]['weighted']}")
+    print("Stability (all four runs agree): " + ", ".join(f"{k} {v['allRunsAgree']:.0%}" for k, v in stability.items() if v["allRunsAgree"] is not None))
+    print(f"Peak GPU memory {peak:.2f} GB. Wrote {OUT_OBSERVED.relative_to(REPO)} ({OUT_OBSERVED.stat().st_size / 1e3:.0f} kB)")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--graded", action="store_true")
-    if parser.parse_args().graded:
+    parser.add_argument("--observe", action="store_true")
+    args = parser.parse_args()
+    if args.graded:
         return main_graded()
+    if args.observe:
+        return main_observe()
     system, instruction, digest = prompt_parts()
     photos = json.loads((EXAMPLES / "examples.json").read_text())
     probe = fit(Image.open(EXAMPLES / photos[0]["file"]).convert("RGB"))

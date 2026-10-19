@@ -63,6 +63,31 @@ interface GradedFile {
   >;
 }
 
+/** The panel as observer (prompt 060): answers to visible questions, ratings by a fixed rule, probability-weighted ratings. */
+interface ObservedFile {
+  rule: Record<PrincipleId | 'labels', string>;
+  photos: Record<
+    string,
+    {
+      answers: {
+        entrances: number;
+        shopWindows: number;
+        buildings: number;
+        blankStretch: boolean;
+        streetUse: boolean;
+        repeatedBays: boolean;
+        repeatedFloors: boolean;
+        variety: boolean;
+        texturedSurfaces: boolean;
+        materials: string[];
+      } | null;
+      ratings: Record<PrincipleId, number> | null;
+      labels: Record<PrincipleId, 'present' | 'ambiguous' | 'absent'> | null;
+      weighted: Record<PrincipleId, number | null>;
+    }
+  >;
+}
+
 interface ChecksFile {
   rhythm: { families: Record<'vertical' | 'layer', { balancedAccuracy: number }> };
   frontage: { openShareSpearman: number; outcomeAgreement: number };
@@ -205,6 +230,21 @@ function loadQuality(photoId: string): Promise<QualityFile | null> {
 }
 const loadChecks = cached<ChecksFile>(`${BASE}precomputed/qualities/checks.json?v=${__QUALITIES_VERSION__}`);
 const loadGraded = cached<GradedFile>(`${BASE}precomputed/vlm-panel/panel-graded.json?v=${__PANEL_VERSION__}`);
+const loadObserved = cached<ObservedFile>(`${BASE}precomputed/vlm-panel/panel-observed.json?v=${__PANEL_VERSION__}`);
+const TEXTURED_WORDS = ['brick', 'natural stone', 'wood', 'tiles or setts', 'planting'];
+
+/** The observed panel's main answers for one principle, in a few words. */
+function observedAnswers(a: NonNullable<ObservedFile['photos'][string]['answers']>, p: PrincipleId): string {
+  const n = (x: number, one: string, many: string) => `${Math.round(x)} ${Math.round(x) === 1 ? one : many}`;
+  if (p === 'groundFloor')
+    return [n(a.entrances, 'door', 'doors'), n(a.shopWindows, 'shop window', 'shop windows'), a.blankStretch ? 'a blank stretch' : 'no blank stretch', a.streetUse ? 'use in front' : '']
+      .filter(Boolean)
+      .join(', ');
+  if (p === 'rhythm')
+    return [a.repeatedBays ? 'bays repeat' : 'no repeating bays', a.repeatedFloors ? 'floors repeat' : 'no repeating floors', a.variety ? 'variety' : 'no variety', n(a.buildings, 'building', 'buildings')].join(', ');
+  const textured = a.materials.filter((m) => TEXTURED_WORDS.includes(m));
+  return [textured.length ? textured.join(', ') : 'no textured materials named', a.texturedSurfaces ? 'texture visible' : 'no visible texture'].join('; ');
+}
 export const loadUpClip = cached<UpClipFile>(`${BASE}precomputed/up-clip/scores.json?v=${__UPCLIP_VERSION__}`);
 
 function formatIndicator(key: string, value: number | null): string {
@@ -337,10 +377,11 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
   let showBoxes = false;
   let highlighted: string | undefined;
   let current: { results: Results; file: QualityFile; layers: Keyed[] } | null = null;
-  let extras: { checks: ChecksFile | null; panelV1: PanelFile | null; graded: GradedFile | null; upclip: UpClipFile | null } = {
+  let extras: { checks: ChecksFile | null; panelV1: PanelFile | null; graded: GradedFile | null; observed: ObservedFile | null; upclip: UpClipFile | null } = {
     checks: null,
     panelV1: null,
     graded: null,
+    observed: null,
     upclip: null,
   };
   const shareCache = new Map<string, Map<string, number>>();
@@ -500,13 +541,20 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       }, 'No · AI judgement']);
     }
     const g = extras.graded?.photos[id];
-    if (g) {
+    const o = extras.observed?.photos[id];
+    if (g || o) {
       rows.push(['Simulated panel, rated 0–4', (p) => {
-        const v = g[p];
-        if (!v || v.median === null) return null;
-        const rated = v.ratings.filter((x): x is number => x !== null);
-        return `${v.median} (range ${Math.min(...rated)}–${Math.max(...rated)})`;
+        const v = g?.[p];
+        const rated = v ? v.ratings.filter((x): x is number => x !== null) : [];
+        const median = v && v.median !== null ? `${v.median} (range ${Math.min(...rated)}–${Math.max(...rated)})` : null;
+        const weighted = o?.weighted[p];
+        const parts = [median, weighted !== null && weighted !== undefined ? `weighted ${weighted.toFixed(1)}` : null].filter(Boolean);
+        return parts.length ? parts.join(' · ') : null;
       }, 'No · AI judgement']);
+    }
+    if (o?.ratings && o.answers) {
+      const answers = o.answers;
+      rows.push(['Simulated panel, observed (rule)', (p) => `${o.ratings![p]} · ${observedAnswers(answers, p)}`, 'No · AI observations, rated by a fixed rule']);
     }
     for (const m of extras.upclip?.models ?? []) {
       rows.push([m.name, (p) => upclipScore(m.id, p), 'No · adaptation, not tested on these principles']);
@@ -643,10 +691,12 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
         td.append(el('span', undefined, row ? OUTCOME_TEXT[row.outcome] : '–'));
         const v1 = extras.panelV1?.photos[id]?.[p];
         const g = extras.graded?.photos[id]?.[p];
+        const obs = extras.observed?.photos[id]?.ratings?.[p];
         const u = reproduction ? extras.upclip?.principleScores[reproduction.id]?.[id]?.[p] : undefined;
         const others = [
           v1 ? `panel ${verdictV1(v1).toLowerCase()}` : null,
           g && g.median !== null ? `0–4: ${g.median}` : null,
+          obs !== undefined ? `observed: ${obs}` : null,
           u !== undefined ? `UP-CLIP ${signed(u)}` : null,
         ].filter(Boolean);
         if (others.length) td.append(el('small', undefined, others.join(' · ')));
@@ -662,6 +712,8 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       if (extras.panelV1?.fleissKappa[p] === null) notes.push('The present/absent panel gave the same verdict for every photo it judged.');
       const d = extras.graded?.discrimination[p];
       if (d) notes.push(`The 0–4 panel used ${d.distinctMedians} different medians, from ${d.min} to ${d.max}.`);
+      const obs = Object.values(extras.observed?.photos ?? {}).map((e) => e.ratings?.[p]).filter((x): x is number => x !== undefined);
+      if (obs.length) notes.push(`The observing panel’s rule gave ${new Set(obs).size} different ratings, from ${Math.min(...obs)} to ${Math.max(...obs)}.`);
     }
     const wrap = el('div', 'agreement-wrap');
     wrap.append(table);
@@ -707,14 +759,21 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
     }
     if (requested === results) return;
     requested = results;
-    const [file, checks, panelV1, graded, upclip] = await Promise.all([loadQuality(id), loadChecks(), loadPanel(), loadGraded(), loadUpClip()]);
+    const [file, checks, panelV1, graded, observed, upclip] = await Promise.all([
+      loadQuality(id),
+      loadChecks(),
+      loadPanel(),
+      loadGraded(),
+      loadObserved(),
+      loadUpClip(),
+    ]);
     if (requested !== results) return;
     if (!file) {
       showEmpty('Qualities could not be loaded for this photo.', true);
       return;
     }
     upclipBlock.hidden = false;
-    extras = { checks, panelV1, graded, upclip };
+    extras = { checks, panelV1, graded, observed, upclip };
     current = { results, file, layers: [] };
     highlighted = undefined;
     render();

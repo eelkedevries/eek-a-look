@@ -173,8 +173,21 @@ Rows: image measure (likely present → present, unclear → ambiguous, likely a
 | ambiguous | 10 | 0 | 0 |
 | absent | 8 | 0 | 0 |
 
+## The simulated panel as observer (prompt 060)
+
+Qwen3-VL answered visible questions (counts and yes/no; four sampled runs per photo); ratings 0–4 come from a rule fixed before the run. Weighted: the graded prompt's expected rating from the probabilities of 0–4, mean over four roles. Automated against automated, not a validation.
+
+| Principle | Observed: values (sd) | On the 24 photos | Weighted: distinct (range) | Graded medians (24 photos) | ρ observed / weighted with the measure |
+|---|---|---|---|---|---|
+| groundFloor | 0–4 (0.91) | 0: 1, 1: 13, 2: 5, 3: 3, 4: 2 | 37 (0.4–3.3) | 4 (1–3) | 0.68 / 0.61 (openShare) |
+| rhythm | 0–4 (1.83) | 2: 1, 3: 2, 4: 21 | 37 (1.2–4.0) | 2 (3–4) | 0.56 / 0.45 (rhythmicShare) |
+| materials | 0–4 (1.15) | 0: 1, 1: 9, 2: 7, 3: 6, 4: 1 | 21 (1.7–3.0) | 3 (2–3) | 0.08 / -0.17 (texturedShare) |
+
+All four runs give the same answer: entrances 80%, shopWindows 86%, buildings 71%, blankStretch 73%, streetUse 90%, repeatedBays 90%, repeatedFloors 90%, variety 96%, texturedSurfaces 88%, materials 35%.
+On the ordinary photos the model answers yes to the rhythm questions almost every time, so rhythm still hardly separates them; its spread comes from the renderings and panoramas.
+
 ## Expert labels later
 
-`tools/qualities/labels_template.csv` has one row per photo and principle. An expert panel fills in
-`present`, `absent` or `ambiguous` (the 2020 panel's scale) and runs
-`uv run agreement.py --labels <file>` for each method's agreement with them.
+Raters judge the photos on `/eek-a-look/rate.html` (prompt 059) on the 2020 panel's scale (`present`, `ambiguous`,
+`absent`) and send back its CSV; `uv run agreement.py --labels a.csv b.csv …` reports their agreement with each
+other (Krippendorff's alpha) and each method's agreement with their majority label.

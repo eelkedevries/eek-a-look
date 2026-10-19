@@ -19,6 +19,8 @@ percentage agreement and Cohen's kappa with the labels, with n:
 - simulated panel v1 (its consensus);
 - graded panel (prompt 044): median ≥ 3 → present, ≤ 1 → absent, otherwise
   ambiguous;
+- observed panel (prompt 060): its rule's rating ≥ 3 → present, ≤ 1 → absent,
+  otherwise ambiguous;
 - UP-CLIP reproduction and plain CLIP (prompt 046): principle score above the
   photo set's upper tercile → present, below the lower tercile → absent,
   otherwise ambiguous.
@@ -121,6 +123,10 @@ def methods() -> dict[str, dict[tuple[str, str], str]]:
         to = lambda m: "present" if m >= 3 else "absent" if m <= 1 else "ambiguous"
         found["graded panel"] = {(pid, k): to(v["median"]) for pid, e in json.loads(graded.read_text())["photos"].items()
                                  for k, v in e.items() if v["median"] is not None}
+    observed = PRECOMPUTED / "vlm-panel" / "panel-observed.json"
+    if observed.exists():  # prompt 060: its own labels, from the rule fixed before the run
+        found["observed panel"] = {(pid, k): v for pid, e in json.loads(observed.read_text())["photos"].items() if e["labels"]
+                                   for k, v in e["labels"].items()}
     scores = PRECOMPUTED / "up-clip" / "scores.json"
     if scores.exists():
         data = json.loads(scores.read_text())
