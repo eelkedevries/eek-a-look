@@ -92,8 +92,9 @@ export default defineConfig({
   preview: { proxy: localApi },
   build: {
     sourcemap: false,
-    // The rating page for human raters (prompt 059), not linked from the main page.
-    rollupOptions: { input: { main: 'index.html', rate: 'rate.html' } },
+    // The rating page for human raters (prompt 059), not linked from the main page. The main entry keeps
+    // the name "index": the deploy workflow checks the live page for assets/index-*.js.
+    rollupOptions: { input: { index: 'index.html', rate: 'rate.html' } },
   },
   // onnxruntime-web loads its WebAssembly at run time; pre-bundling breaks those paths.
   optimizeDeps: {
