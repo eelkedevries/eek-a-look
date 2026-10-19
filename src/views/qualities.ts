@@ -155,7 +155,7 @@ const HOW: Record<PrincipleId, string> = {
   groundFloor:
     'The ground floor is the façade up to 4 m above the street, from the horizon and an eye-height camera. Per image column: open where entrances or shopfronts cover at least 30% of it, transparent where windows do, closed otherwise. Glazing the window model misses counts as closed. Frontage grade: entrances, shopfronts and windows per 100 m of frontage within 60 m, and the blind or passive share, graded A–E after the Urban Design Compendium (Table 5.3); entrances stand in for premises. Lengths assume a 60° lens (45° and 75° give the range). A check by eye found doors missed and first-floor windows counted.',
   materials:
-    'Materials from DMS46, a model that recognises 46 materials, near eye level: the ground floor and everything below the horizon. Textured: brick, natural stone, wood, tiles, wicker, planting. Smooth: glass, mirror, metal, polished stone, plaster or paint, plastic, ceramic. Dark brick sometimes comes out as plaster.',
+    'Materials from DMS46, a model that recognises 46 materials, near eye level: the ground floor and everything below the horizon. Textured: brick, natural stone, wood, tiles, wicker, planting. Smooth: glass, mirror, metal, polished stone, plaster or paint, plastic, ceramic. Dark brick sometimes comes out as plaster. Surface detail is fine contrast near eye level relative to brightness; on labelled test photos it did not tell textured from smooth materials apart, so it is shown for reference only and changes nothing.',
 };
 
 const ORIGINAL =
@@ -190,6 +190,7 @@ const INDICATORS: Record<string, string> = {
   streetSmoothShare: 'Smooth in the street space',
   streetNeutralShare: 'Neutral in the street space',
   texturedFurniture: 'Textured street furniture',
+  surfaceDetail: 'Surface detail (reference only)',
   countedFrontageM: 'Frontage counted (within 60 m)',
   entrancesPer100m: 'Entrances per 100 m',
   openingsPer100m: 'Entrances, shopfronts and windows per 100 m',
@@ -250,6 +251,7 @@ export const loadUpClip = cached<UpClipFile>(`${BASE}precomputed/up-clip/scores.
 function formatIndicator(key: string, value: number | null): string {
   if (value === null) return '–';
   if (key === 'countedFrontageM') return `${Math.round(value)} m`;
+  if (key === 'surfaceDetail') return value.toFixed(2);
   if (key.endsWith('Per100m')) return value.toFixed(1);
   return COUNTS.has(key) ? String(value) : percent(value);
 }

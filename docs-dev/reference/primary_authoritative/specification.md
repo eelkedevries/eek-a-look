@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.44 · **Last updated:** 2026-10-19
+**Version:** 0.45 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -96,6 +96,7 @@ scale, reports only the selected model as Σ A, Σ B and the contrast B − A
 with its direction, and leaves measured gaze out of the Example section
 (prompt 068, owner's request of 2026-10-19).
 0.44 adds the simulated panel as observer: answers to visible questions rated by a fixed rule, and probability-weighted graded ratings (prompt 060, owner's request of 2026-10-19).
+0.45 adds a surface-detail indicator to the materials measure; checked on DMS labels, it did not separate textured from smooth materials, so the rule is unchanged (prompt 063, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -720,6 +721,15 @@ was run on the photos.
     text ("Likely present", "Likely absent", "Unclear") and its reasons, with
     the indicators with plain names and a note on how the measure works and
     its main limits under "The numbers", collapsed;
+  - the materials card's numbers add "Surface detail (reference only)"
+    (prompt 063): band-pass energy |G(σ=1) − G(σ=3)| of the grey image over
+    the local mean brightness (σ = 8 px) + 1%, averaged locally (σ = 8 px), at
+    the photo's own resolution, mean over the eye-level zone. On the outdoor
+    DMS test images it did not separate textured from smooth labelled regions
+    (AUC 0.44; brickwork against plaster 0.27), and the
+    pre-registered rule change (plaster or concrete pixels with detail above t
+    count as textured) lowered the grouping's accuracy on held-out images, so
+    it was not adopted; the note on how the measure works says so;
   - on the ground-floor card, under the reasons, the frontage grade (prompt
     062): "Frontage grade D · adapted from the Urban Design Compendium (Table
     5.3), estimated from the photo …", with "the range depends on the assumed

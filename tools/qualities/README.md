@@ -192,6 +192,20 @@ horizon that is not sky, people, vehicles or ground floor (street-space part).
 - DMS46 was trained on general photos; its published per-class test accuracy
   is quoted in prompt 043's report.
 
+**Surface detail (prompt 063):** `materials.surface_detail()` measures fine
+contrast directly: |G(σ=1) − G(σ=3)| of the grey image over the local mean
+brightness (σ = 8 px) + 1%, averaged with σ = 8 px, at the image's own
+resolution. `uv run checks.py --surface` checks it on 200 outdoor DMS
+test images (the originals still available; DMS46 predictions cached in
+`.cache/dms-val/pred/`): per labelled region, AUC textured against smooth
+0.44 and brickwork against plaster 0.27, so by this measure
+plaster regions show *more* fine contrast than brick ones. The rule change
+fixed in the prompt (plaster or concrete pixels with detail above t count as
+textured; t = 0.2694 from the even images) lowered pixel accuracy on
+the odd images (0.796 → 0.795),
+so it was not adopted (`surface_calibration.json`). `surfaceDetail` is in the
+quality files for reference only.
+
 ## Checks (prompt 043)
 
 `checks.py` tests what can be tested without expert labels for these photos,

@@ -296,3 +296,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   Ratings now span 0–4 and weighted ones 21–37 values; on ordinary photos rhythm is
   still 4 on 21 of 24. ρ with the image measure: ground floor 0.68, rhythm 0.56,
   materials 0.08)
+- `063_surface_detail.md` (spec 0.45: `surfaceDetail` in the materials indicators;
+  on DMS labels it did not separate textured from smooth (AUC 0.44, brick
+  against plaster 0.27) and the rule change lowered accuracy, so it was not
+  adopted; outcomes unchanged)

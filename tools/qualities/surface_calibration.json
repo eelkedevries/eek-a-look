@@ -1,0 +1,39 @@
+{
+ "date": "2026-10-19",
+ "prompt": "063",
+ "images": 200,
+ "detail": "|G(1) \u2212 G(3)| / (G(8) of the grey image + 0.01), averaged with G(8), at the image's own resolution",
+ "regions": {
+  "minPixels": 400,
+  "odd": 2562
+ },
+ "aucTexturedVsSmooth": 0.44332888229013956,
+ "aucBrickVsPlaster": 0.27476654232281,
+ "regionCounts": {
+  "brick": 59,
+  "plaster": 677,
+  "textured": 1095,
+  "smooth": 1467
+ },
+ "candidateClasses": [
+  "Paint/plaster/enamel",
+  "Concrete"
+ ],
+ "threshold": 0.2694,
+ "evenAccuracy": {
+  "without": 0.8041543893143521,
+  "with": 0.8033502809354833
+ },
+ "odd": {
+  "without": {
+   "pixelAccuracy": 0.7956980264161381,
+   "texturedIou": 0.646314504307093
+  },
+  "with": {
+   "pixelAccuracy": 0.7948899348678719,
+   "texturedIou": 0.6448007440820285
+  }
+ },
+ "rule": "pixels DMS46 calls plaster/paint or concrete with surface detail above t count as textured; t maximises the grouping's pixel accuracy on the even images; adopted only if on the odd images the accuracy rises by at least 1 point and textured IoU does not fall",
+ "adopted": false
+}

@@ -14,7 +14,7 @@ import numpy as np
 import torch
 from PIL import Image
 
-from shared import CACHE, EXAMPLES, AreaData, evidence
+from shared import CACHE, EXAMPLES, HERE, AreaData, evidence
 
 MODEL = CACHE / "dms" / "DMS46_v1.pt"
 TAXONOMY = CACHE / "dms" / "taxonomy.json"
@@ -30,6 +30,37 @@ STD = np.array([0.229, 0.224, 0.225]) * 255
 TEXTURED = ["Brickwork", "Stone, natural", "Wood", "Wood, tree", "Tile", "Wicker", "Foliage"]
 SMOOTH = ["Glass", "Mirror", "Metal", "Stone, polished", "Paint/plaster/enamel", "Plastic, clear", "Plastic, non-clear", "Ceramic"]
 PLANTING = "Foliage"
+
+
+# Prompt 063: visible surface detail, measured directly from the image (Stamps 1999: surface complexity).
+DETAIL_FINE, DETAIL_COARSE, DETAIL_LOCAL = 1.0, 3.0, 8.0
+DETAIL_FLOOR = 0.01
+DETAIL_CLASSES = ("Paint/plaster/enamel", "Concrete")  # smooth or neutral classes that may hide brick or stone
+SURFACE_CALIBRATION = HERE / "surface_calibration.json"  # written by checks.py --surface
+
+
+def detail_rule() -> float | None:
+    """The threshold t when the check adopted the rule change of prompt 063, otherwise None."""
+    if not SURFACE_CALIBRATION.exists():
+        return None
+    calibration = json.loads(SURFACE_CALIBRATION.read_text())
+    return calibration["threshold"] if calibration.get("adopted") else None
+
+
+def surface_detail(image: Image.Image) -> np.ndarray:
+    """Per pixel, at the image's own resolution: band-pass energy (|G(σ=1) − G(σ=3)| of the grey image) relative to
+    the local mean brightness (σ = 8 px) + 1%, averaged locally (σ = 8 px)."""
+    from scipy import ndimage
+
+    gray = np.asarray(image.convert("L"), np.float32) / 255
+    band = np.abs(ndimage.gaussian_filter(gray, DETAIL_FINE) - ndimage.gaussian_filter(gray, DETAIL_COARSE))
+    ratio = band / (ndimage.gaussian_filter(gray, DETAIL_LOCAL) + DETAIL_FLOOR)
+    return ndimage.gaussian_filter(ratio, DETAIL_LOCAL)
+
+
+def to_grid(values: np.ndarray, size: tuple[int, int]) -> np.ndarray:
+    """A per-pixel map averaged onto the mask grid (width, height)."""
+    return np.asarray(Image.fromarray(values.astype(np.float32), mode="F").resize(size, Image.BOX))
 
 
 def names() -> list[str]:
@@ -75,6 +106,10 @@ def measure(photo: dict, data: AreaData, dms: Dms46) -> tuple[dict, dict]:
     textured, smooth, planting = is_in(TEXTURED), is_in(SMOOTH), labels == index[PLANTING]
     facade_part, street_part = eye_level_zone(data)
     zone = facade_part | street_part
+    detail_map = to_grid(surface_detail(image), (data.width, data.height))
+    threshold = detail_rule()
+    detailed = is_in(DETAIL_CLASSES) & (detail_map > threshold) if threshold is not None else np.zeros_like(textured)
+    textured, smooth = textured | detailed, smooth & ~detailed
 
     def shares(part: np.ndarray) -> tuple[float | None, float | None, float | None]:
         n = part.sum()
@@ -94,6 +129,7 @@ def measure(photo: dict, data: AreaData, dms: Dms46) -> tuple[dict, dict]:
         "facadeTexturedShare": ft, "facadeSmoothShare": fs, "facadeNeutralShare": fn,
         "streetTexturedShare": st, "streetSmoothShare": ss, "streetNeutralShare": sn,
         "texturedFurniture": float((textured & furniture).sum() / furniture.sum()) if furniture.any() else None,
+        "surfaceDetail": float(detail_map[zone].mean()) if zone.any() else None,
     }
     if zone.any():
         counts = np.bincount(labels[zone], minlength=len(dms.names))
@@ -103,11 +139,13 @@ def measure(photo: dict, data: AreaData, dms: Dms46) -> tuple[dict, dict]:
     outcome, reasons = rule(indicators, data.horizon["method"])
 
     layers = [
-        evidence("textured", "Textured surfaces", "supports", zone & textured & ~planting),
+        evidence("textured", "Textured surfaces", "supports", zone & textured & ~planting & ~detailed),
         evidence("planting", "Planting", "supports", zone & planting),
         evidence("smooth", "Smooth surfaces", "against", zone & smooth),
         evidence("eye-level-zone", "Eye-level zone", "context", zone),
     ]
+    if threshold is not None:  # prompt 063, only when the check adopted the rule change
+        layers.insert(1, evidence("detailed", "Plaster or concrete with visible detail", "supports", zone & detailed))
     detail = {"labels": labels, "zone": zone, "names": dms.names}
     return {"outcome": outcome, "reasons": reasons, "indicators": indicators, "evidence": layers}, detail
 

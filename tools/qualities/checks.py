@@ -1,6 +1,7 @@
 """Check the image measures (prompt 043).
 
   uv run checks.py
+  uv run checks.py --surface   only the surface-detail check (prompt 063); writes surface_calibration.json
 
 Writes public/precomputed/qualities/checks.json and the report
 docs-dev/reference/secondary_background/qualities_validation.md.
@@ -19,7 +20,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from PIL import Image
-from scipy import stats
+from scipy import ndimage, stats
 
 import frontage
 import rhythm
@@ -379,7 +380,7 @@ def report(result: dict) -> str:
               "| Class | Group | Test accuracy | Test IoU |", "|---|---|---|---|"]
     for name, v in m["table8"].items():
         lines.append(f"| {name} | {v['group']} | {v['accuracy']:.3f} | {v['iou']:.3f} |")
-    lines += ["", m["ownCheck"], "", "## Sensitivity of the rules", "",
+    lines += ["", m["ownCheck"], *surface_section(), "", "## Sensitivity of the rules", "",
               f"How many of the {len(result['discrimination']['rhythm']['perPhoto'])} outcomes change when one threshold is halved or multiplied by 1.5.", "",
               "| Principle | Threshold | Value | × 0.5 | × 1.5 |", "|---|---|---|---|---|"]
     for p, ts in s.items():
@@ -416,6 +417,10 @@ def report(result: dict) -> str:
 
 
 def main() -> int:
+    if "--surface" in sys.argv[1:]:  # prompt 063: only the surface-detail check
+        s = surface_check()
+        print(json.dumps({k: v for k, v in s.items() if k not in ("rule", "detail")}, indent=1))
+        return 0
     dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     t0 = time.perf_counter()
     calibration = json.loads(rhythm.CALIBRATION.read_text())
@@ -476,6 +481,136 @@ def fetch_original(datum: dict) -> Path | None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_bytes(data)
     return path
+
+
+MIN_REGION = 400   # pixels: labelled regions smaller than this are left out of the AUCs (prompt 063)
+STRIDE = 2         # every second pixel in each direction for the pixel counts
+
+
+def auc(positive: list[float], negative: list[float]) -> float | None:
+    """Probability that a positive region has more surface detail than a negative one (ties count half)."""
+    if not positive or not negative:
+        return None
+    pos, neg = np.asarray(positive), np.asarray(negative)
+    greater = (pos[:, None] > neg[None, :]).sum() + 0.5 * (pos[:, None] == neg[None, :]).sum()
+    return float(greater / (len(pos) * len(neg)))
+
+
+def surface_check() -> dict:
+    """Prompt 063: surface detail against DMS's human material labels on the outdoor test images of the materials check,
+    and the fixed rule for using it (adopted only if it improves the grouping on the odd images)."""
+    import materials
+
+    names = json.loads((DMS_VAL / "DMS_v1" / "taxonomy.json").read_text())["names"]
+    groups = ["textured", "smooth", "neutral"]
+    group = lambda n: "textured" if n in materials.TEXTURED else "smooth" if n in materials.SMOOTH else "neutral"
+    full_group = np.array([groups.index(group(n)) if k else -1 for k, n in enumerate(names)])
+    dev = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    dms = None
+    pred_cache = DMS_VAL / "pred"
+    pred_cache.mkdir(exist_ok=True)
+    regions, pixels, used = [], [], 0
+    for datum in dms_test_images():
+        if used == DMS_IMAGES:
+            break
+        path = fetch_original(datum)
+        if path is None:
+            continue
+        size = (datum["width"], datum["height"])
+        image = Image.open(path).convert("RGB").resize(size, Image.LANCZOS)
+        truth = np.asarray(Image.open(DMS_VAL / "DMS_v1" / datum["label_path"]))
+        cached = pred_cache / f"{datum['id']}.png"
+        if cached.exists():
+            pred = np.asarray(Image.open(cached))
+        else:
+            dms = dms or materials.Dms46(dev)
+            pred = dms.labels(image, size)
+            Image.fromarray(pred).save(cached)
+        detail = materials.surface_detail(image)
+        split = "even" if used % 2 == 0 else "odd"
+        for k, name in enumerate(names):
+            if not k or group(name) == "neutral":
+                continue
+            comp, n = ndimage.label(truth == k)
+            if not n:
+                continue
+            sizes = ndimage.sum(np.ones_like(comp), comp, range(1, n + 1))
+            means = ndimage.mean(detail, comp, range(1, n + 1))
+            regions += [{"split": split, "name": name, "group": group(name), "detail": float(m)} for m, s in zip(means, sizes) if s >= MIN_REGION]
+        dms_names = materials.names()
+        sl = (slice(None, None, STRIDE), slice(None, None, STRIDE))
+        t_g = full_group[truth[sl]]
+        p_names = np.array(dms_names)[pred[sl]]
+        p_g = np.array([groups.index(group(n)) for n in dms_names])[pred[sl]]
+        candidate = np.isin(p_names, materials.DETAIL_CLASSES)
+        pixels.append({"split": split, "truth": t_g.ravel(), "pred": p_g.ravel(), "candidate": candidate.ravel(), "detail": detail[sl].ravel()})
+        used += 1
+    if dms is not None:
+        del dms
+        torch.cuda.empty_cache()
+
+    def scores(split: str, t: float | None) -> dict:
+        inter, union = np.zeros(3), np.zeros(3)
+        correct = total = 0
+        for p in (x for x in pixels if x["split"] == split):
+            pred = p["pred"].copy()
+            if t is not None:
+                pred[p["candidate"] & (p["detail"] > t)] = 0
+            valid = p["truth"] >= 0
+            for g in range(3):
+                inter[g] += ((pred == g) & (p["truth"] == g) & valid).sum()
+                union[g] += (((pred == g) | (p["truth"] == g)) & valid).sum()
+            correct += ((pred == p["truth"]) & valid).sum()
+            total += valid.sum()
+        return {"pixelAccuracy": float(correct / total), "texturedIou": float(inter[0] / union[0]) if union[0] else None}
+
+    even_detail = np.concatenate([p["detail"][p["candidate"]] for p in pixels if p["split"] == "even"])
+    grid = np.unique(np.round(np.quantile(even_detail, np.linspace(0.5, 0.995, 40)), 4)) if len(even_detail) else np.zeros(0)
+    by_t = [(float(t), scores("even", float(t))["pixelAccuracy"]) for t in grid]
+    threshold = max(by_t, key=lambda x: x[1])[0] if by_t else None
+    base_even, base_odd = scores("even", None), scores("odd", None)
+    with_odd = scores("odd", threshold) if threshold is not None else base_odd
+    adopted = bool(threshold is not None and with_odd["pixelAccuracy"] - base_odd["pixelAccuracy"] >= 0.01
+                   and (with_odd["texturedIou"] or 0) >= (base_odd["texturedIou"] or 0))
+    odd = [r for r in regions if r["split"] == "odd"]
+    result = {
+        "date": time.strftime("%Y-%m-%d"), "prompt": "063", "images": used,
+        "detail": "|G(1) − G(3)| / (G(8) of the grey image + 0.01), averaged with G(8), at the image's own resolution",
+        "regions": {"minPixels": MIN_REGION, "odd": len(odd)},
+        "aucTexturedVsSmooth": auc([r["detail"] for r in odd if r["group"] == "textured"], [r["detail"] for r in odd if r["group"] == "smooth"]),
+        "aucBrickVsPlaster": auc([r["detail"] for r in odd if r["name"] == "Brickwork"], [r["detail"] for r in odd if r["name"] == "Paint/plaster/enamel"]),
+        "regionCounts": {"brick": sum(r["name"] == "Brickwork" for r in odd), "plaster": sum(r["name"] == "Paint/plaster/enamel" for r in odd),
+                         "textured": sum(r["group"] == "textured" for r in odd), "smooth": sum(r["group"] == "smooth" for r in odd)},
+        "candidateClasses": list(materials.DETAIL_CLASSES),
+        "threshold": threshold, "evenAccuracy": {"without": base_even["pixelAccuracy"], "with": max(x[1] for x in by_t) if by_t else None},
+        "odd": {"without": base_odd, "with": with_odd},
+        "rule": "pixels DMS46 calls plaster/paint or concrete with surface detail above t count as textured; t maximises the grouping's "
+                "pixel accuracy on the even images; adopted only if on the odd images the accuracy rises by at least 1 point and "
+                "textured IoU does not fall",
+        "adopted": adopted,
+    }
+    materials.SURFACE_CALIBRATION.write_text(json.dumps(result, indent=1))
+    return result
+
+
+def surface_section() -> list[str]:
+    """The check of prompt 063, from surface_calibration.json, if it ran."""
+    import materials
+
+    if not materials.SURFACE_CALIBRATION.exists():
+        return []
+    s = json.loads(materials.SURFACE_CALIBRATION.read_text())
+    f = lambda v: "–" if v is None else f"{v:.2f}"
+    c = s["regionCounts"]
+    return ["", "### Surface detail (prompt 063)", "",
+            f"Surface detail ({s['detail']}) per labelled region of {s['images']} outdoor DMS test images, chosen as above "
+            f"(more originals could be downloaded than for the materials check), odd images only: "
+            f"AUC textured against smooth classes {f(s['aucTexturedVsSmooth'])} ({c['textured']} and {c['smooth']} regions), "
+            f"brickwork against paint/plaster {f(s['aucBrickVsPlaster'])} ({c['brick']} and {c['plaster']} regions).", "",
+            f"Rule tested: {s['rule']}. t = {s['threshold']}. Odd images: pixel accuracy {f(s['odd']['without']['pixelAccuracy'])} → "
+            f"{f(s['odd']['with']['pixelAccuracy'])}, textured IoU {f(s['odd']['without']['texturedIou'])} → {f(s['odd']['with']['texturedIou'])}. "
+            f"**{'Adopted' if s['adopted'] else 'Not adopted'}**: "
+            + ("the materials measure counts such pixels as textured." if s["adopted"] else "surface detail is shown as an indicator only.")]
 
 
 def materials_check() -> dict:

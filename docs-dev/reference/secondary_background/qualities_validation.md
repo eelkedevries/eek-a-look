@@ -107,6 +107,12 @@ Per-class results of DMS46 on the DMS test set, from Upchurch & Niu (2022), Tabl
 
 Own check on 149 outdoor DMS test images (327 originals no longer available): the textured / smooth / neutral grouping agrees with the human labels on 80% of labelled pixels; IoU textured 0.66, smooth 0.64, neutral 0.71. These are the model's own kind of photos (in-domain), so on Dutch and Swiss streets it may do worse.
 
+### Surface detail (prompt 063)
+
+Surface detail (|G(1) − G(3)| / (G(8) of the grey image + 0.01), averaged with G(8), at the image's own resolution) per labelled region of 200 outdoor DMS test images, chosen as above (more originals could be downloaded than for the materials check), odd images only: AUC textured against smooth classes 0.44 (1095 and 1467 regions), brickwork against paint/plaster 0.27 (59 and 677 regions).
+
+Rule tested: pixels DMS46 calls plaster/paint or concrete with surface detail above t count as textured; t maximises the grouping's pixel accuracy on the even images; adopted only if on the odd images the accuracy rises by at least 1 point and textured IoU does not fall. t = 0.2694. Odd images: pixel accuracy 0.80 → 0.79, textured IoU 0.65 → 0.64. **Not adopted**: surface detail is shown as an indicator only.
+
 ## Sensitivity of the rules
 
 How many of the 49 outcomes change when one threshold is halved or multiplied by 1.5.
