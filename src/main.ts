@@ -16,7 +16,7 @@ import { renderAbout } from './views/about';
 import { mountAgreement } from './views/agreement';
 import { mountAreas } from './views/areas';
 import { contrastWith, mountContrast } from './views/contrast';
-import { mountFixationToggle } from './views/fixation-toggle';
+import { mountDisplaySettings } from './views/display-settings';
 import { mountInspector } from './views/inspector';
 import { mountPanel } from './views/panel';
 import { mountQualities } from './views/qualities';
@@ -57,7 +57,7 @@ mountSideBySide(panel('side'), (a, b) => {
   showTab('contrast');
 });
 mountContrast(panel('contrast'), contrastControls);
-mountFixationToggle($('#fixation-toggle'));
+mountDisplaySettings($('#view-settings') as HTMLDetailsElement);
 mountAreas(panel('areas'));
 mountAgreement($('#views'));
 mountMethods($('#methods'));

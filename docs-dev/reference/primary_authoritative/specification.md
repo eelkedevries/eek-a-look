@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.36 · **Last updated:** 2026-10-19
+**Version:** 0.37 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -74,7 +74,10 @@ the three principles together in the Qualities view instead of behind a switch
 (prompt 055, owner's request of 2026-10-19). 0.36 lets visitors draw the
 fixation points over the predicted maps too, off by default, which reverses the
 earlier rule of drawing them over the measured map only (prompt 056, owner's
-request of 2026-10-19).
+request of 2026-10-19). 0.37 moves the heatmap strength, the fixation points'
+slider and the fixation checkboxes from the inspector and from under the image
+into one foldable "Display settings" section between the view tabs and the
+image (prompt 057, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -344,21 +347,22 @@ interface ExamplePhoto {
   every view, with no "unavailable" note. It is never in the neural preference
   (MSDB, IIE, UNISAL) and never in the agreement matrix.
 - **Fixation points:** the fixations behind each map (after steps 1–2 of the
-  recipe) are also written to `<photo-id>.points.json`. An inspector checkbox
-  "Show fixations (raw data)", on by default (prompt 049) and present only on
-  photos with measured data, and repeated directly under the image (both
-  change the same setting; prompt 050), draws them as cyan dots over the "Measured gaze" map in
+  recipe) are also written to `<photo-id>.points.json`. A checkbox
+  "Show fixations (raw data)" in the display settings (prompt 057; before
+  that in the inspector and under the image, prompt 050), on by default
+  (prompt 049) and present only on photos with measured data, draws them as
+  cyan dots over the "Measured gaze" map in
   "Single map", "Side by side" and "Contrast". A second checkbox "Also over
-  the model maps", beside each of them, off by default and inactive while
+  the model maps", beside it, off by default and inactive while
   the dots are off, draws the same dots over the predicted maps too: in
   "Single map", in every panel of "Side by side" and on both maps beneath
   the contrast, never on the contrast map itself or the plain photo
   (prompt 056, owner's request of 2026-10-19, replacing the rule of
   prompt 030 that drew them over the measured map only). The
   heatmap strength does not dim them. Their opacity is set by a slider
-  "Fixation points (raw data)" directly below the heatmap strength in the
-  inspector's "Display" section, 65% by default, present only on photos with
-  measured data (prompt 054).
+  "Fixation points (raw data)" beside the heatmap strength in the display
+  settings, 65% by default, present only on photos with measured data
+  (prompt 054).
 
 **Automatic areas**
 
@@ -629,11 +633,15 @@ was run on the photos.
     with measured gaze (one scrolling row on a phone);
   - the workspace: the photo's title and place, and the views "Single map",
     "Side by side", "Contrast", "Areas" and "Qualities";
+  - directly below the view tabs and above the image, a foldable section
+    "Display settings", open by default (prompt 057): the heatmap strength
+    with its legend (in "Single map" and "Side by side"), and on photos with
+    measured gaze the "Fixation points (raw data)" slider and the "Show
+    fixations (raw data)" and "Also over the model maps" checkboxes (in
+    "Single map", "Side by side" and "Contrast"). It is hidden in views
+    where none of these apply;
   - an inspector: the layers (choosing one opens it in "Single map"), the
-    Contrast selectors with "Reset to the best model", the heatmap strength
-    (also applied in "Side by side") with its legend, on photos with measured
-    gaze the "Show fixations (raw data)" and "Also over the model maps"
-    checkboxes, the match with the
+    Contrast selectors with "Reset to the best model", the match with the
     reference, and a short note on the open view.
   The agreement matrix, About and the methods follow below; a status bar
   shows how many layers are ready.

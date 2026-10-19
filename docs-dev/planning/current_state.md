@@ -243,3 +243,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `056_fixations_on_model_maps.md` (spec 0.36: "Also over the model maps", off by
   default, draws the fixation points over the predicted maps too, which then say
   "with measured fixations"; reverses the measured-map-only rule of prompt 030)
+- `057_settings_above_image.md` (spec 0.37: heatmap strength, fixation slider and
+  checkboxes in one foldable "Display settings" section between the view tabs and
+  the image, `src/views/display-settings.ts`; gone from the inspector and from
+  under the image, `fixation-toggle.ts` removed)

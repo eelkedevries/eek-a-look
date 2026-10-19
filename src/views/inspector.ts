@@ -3,14 +3,13 @@ import { models } from '../models/registry';
 import type { ModelSpec } from '../models/types';
 import { getResults, modelsFor, onResults, referenceModel, shownLayer, type Results } from '../results';
 import { getViewState, onViewState, setViewState } from '../view-state';
-import { gradientCss } from './overlay';
 
 const fixed = (r: number) => r.toFixed(2).replace(/^-(0\.00)$/, '$1');
 
 const HELP: Record<string, [string, string]> = {
   overlay: [
     'One map at a time',
-    'Choose a layer above. Warmer means more likely to be looked at; lower the strength to see the photo underneath.',
+    'Choose a layer above. Warmer means more likely to be looked at; lower the heatmap strength in the display settings to see the photo underneath.',
   ],
   side: [
     'Every map at once',
@@ -57,8 +56,9 @@ function scores(results: Results, refId: string | undefined): Map<string, number
 }
 
 /**
- * The inspector beside the workspace: the layer list, the contrast selectors, display settings,
- * each layer's match with the reference and a short note on the open view. Returns the host for
+ * The inspector beside the workspace: the layer list, the contrast selectors, each layer's match
+ * with the reference and a short note on the open view (the display settings sit above the image
+ * since prompt 057). Returns the host for
  * the contrast selectors.
  */
 export function mountInspector(aside: HTMLElement, showView: (id: string) => void): HTMLElement {
@@ -92,54 +92,6 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
   const contrastHost = el('div');
   contrast.section.append(contrastHost);
 
-  const display = section('Display');
-  const strength = el('label', 'strength');
-  const strengthText = el('span', 'strength-text', 'Heatmap strength');
-  const strengthValue = el('span', 'strength-value');
-  strengthText.append(strengthValue);
-  const slider = el('input');
-  slider.type = 'range';
-  slider.min = '0';
-  slider.max = '100';
-  slider.value = String(getViewState().opacity);
-  slider.addEventListener('input', () => setViewState({ opacity: Number(slider.value) }));
-  strength.append(strengthText, slider);
-  // Prompt 054: how strongly the fixation points are drawn, on photos with measured gaze only.
-  const dotStrength = el('label', 'strength');
-  const dotText = el('span', 'strength-text', 'Fixation points (raw data)');
-  const dotValue = el('span', 'strength-value');
-  dotText.append(dotValue);
-  const dotSlider = el('input');
-  dotSlider.type = 'range';
-  dotSlider.min = '0';
-  dotSlider.max = '100';
-  dotSlider.value = String(getViewState().fixationOpacity);
-  dotSlider.addEventListener('input', () => setViewState({ fixationOpacity: Number(dotSlider.value) }));
-  dotStrength.append(dotText, dotSlider);
-  const legend = el('div', 'legend');
-  const bar = el('span', 'legend-bar');
-  bar.style.background = gradientCss();
-  legend.append('less likely', bar, 'more likely');
-  display.section.append(strength, dotStrength, legend);
-
-  const gaze = section('Eye tracking');
-  gaze.section.classList.add('measured');
-  const fixationToggle = el('label', 'toggle');
-  const fixationBox = el('input');
-  fixationBox.type = 'checkbox';
-  fixationBox.checked = getViewState().fixations;
-  fixationBox.addEventListener('change', () => setViewState({ fixations: fixationBox.checked }));
-  fixationToggle.append(fixationBox, el('span', undefined, 'Show fixations (raw data)'));
-  // Prompt 056: the same dots over the predicted maps too, off by default.
-  const modelsToggle = el('label', 'toggle');
-  const modelsBox = el('input');
-  modelsBox.type = 'checkbox';
-  modelsBox.checked = getViewState().fixationsOnModels;
-  modelsBox.addEventListener('change', () => setViewState({ fixationsOnModels: modelsBox.checked }));
-  modelsToggle.append(modelsBox, el('span', undefined, 'Also over the model maps'));
-  const fixationNote = el('p', 'inspector-note');
-  gaze.section.append(fixationToggle, modelsToggle, fixationNote);
-
   const match = section('Match');
   const matchNote = el('p', 'inspector-note', 'Correlation for this photo: 0 = unrelated · 1 = same pattern.');
   const matchList = el('ol', 'match-list');
@@ -150,25 +102,9 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
   const helpText = el('p');
   help.append(helpTitle, helpText);
 
-  aside.replaceChildren(layers.section, contrast.section, display.section, gaze.section, match.section, help);
-
-  function renderGaze(results = getResults()) {
-    const counts = results?.image.measured ? results.image.measuredCounts : undefined;
-    gaze.section.hidden = !counts || !['overlay', 'side', 'contrast'].includes(getViewState().view);
-    // The checkbox under the image (prompt 050) changes the same setting.
-    const { fixations, fixationsOnModels, fixationOpacity } = getViewState();
-    fixationBox.checked = fixations;
-    modelsBox.checked = fixationsOnModels;
-    modelsBox.disabled = !fixations;
-    dotStrength.hidden = !counts;
-    dotValue.textContent = `${fixationOpacity}%`;
-    fixationNote.textContent = counts
-      ? `${counts.fixations} fixations from ${counts.observers} people · ${fixationsOnModels ? 'on the measured and model maps' : 'on the Measured gaze layer'}`
-      : '';
-  }
+  aside.replaceChildren(layers.section, contrast.section, match.section, help);
 
   function renderScores(results = getResults()) {
-    renderGaze(results);
     if (!results) return;
     const refId = referenceModel(results);
     const ref = models.find((m) => m.id === refId);
@@ -209,12 +145,10 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
   }
 
   function renderView() {
-    const { view, opacity } = getViewState();
+    const { view } = getViewState();
     layers.section.hidden = view === 'contrast';
     layers.heading.textContent = view === 'overlay' ? 'Layer' : 'Layers · choose one to open it';
     contrast.section.hidden = view !== 'contrast';
-    display.section.hidden = view === 'contrast' || view === 'areas' || view === 'qualities';
-    strengthValue.textContent = `${opacity}%`;
     [helpTitle.textContent, helpText.textContent] = HELP[view] ?? ['', ''];
     renderScores();
   }

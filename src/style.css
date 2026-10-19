@@ -1368,12 +1368,58 @@ a:hover {
   cursor: default;
 }
 
-.inspector .legend {
-  display: flex;
+/* The display settings between the view tabs and the image (prompt 057). */
+.view-settings {
+  margin: 0 0 14px;
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
 }
 
-.inspector .legend-bar {
+.view-settings[hidden],
+.view-settings-group[hidden] {
+  display: none;
+}
+
+.view-settings summary {
+  min-height: 28px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.view-settings-body {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 6px 28px;
+  padding: 8px 0 4px;
+}
+
+.view-settings .strength {
+  margin-bottom: 8px;
+}
+
+.view-settings .legend {
+  display: flex;
+  white-space: nowrap;
+}
+
+.view-settings .legend-bar {
   flex: 1 1 auto;
+}
+
+.view-settings .toggle {
+  margin-bottom: 6px;
+}
+
+.view-settings-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
 }
 
 .match-row {
@@ -1515,27 +1561,4 @@ a:hover {
   .library-key {
     margin-top: 8px;
   }
-}
-
-/* The fixation checkboxes under the image (prompts 050, 056). */
-.stage-toggle-row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 4px 20px;
-  margin-top: 10px;
-}
-
-.stage-toggle-row[hidden] {
-  display: none;
-}
-
-.stage-toggle {
-  margin-bottom: 0;
-}
-
-.stage-toggle small {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--muted);
 }

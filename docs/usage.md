@@ -38,13 +38,16 @@ Choose a view above the photo; the inspector on the right changes with it.
   choose any two maps in the inspector, swap them, or reset to the best model.
   Orange marks where the first map expects more looking, blue where the second
   does. Both maps are shown underneath.
-- **Show fixations (raw data):** on the Zürich photos, this checkbox under
-  the image and in the inspector (on by default) draws every fixation the
+- **Display settings:** directly below the view buttons and above the
+  image, a section you can fold away with **Heatmap strength** and, on the
+  Zürich photos, the fixation settings below.
+- **Show fixations (raw data):** on the Zürich photos, this checkbox in the
+  display settings (on by default) draws every fixation the
   measured map was built from as a semi-transparent cyan dot over the
   **Measured gaze** map, in all three views above. Tick **Also over the
   model maps** beside it to draw the same dots over the models' maps, so you
   can see where people looked against each prediction; those maps then say
-  "with measured fixations". The **Fixation points** slider below
+  "with measured fixations". The **Fixation points** slider beside
   the heatmap strength sets how strongly they are drawn.
 - **Qualities:** for every example photo (study images are tagged as a design
   rendering or a 360° panorama), three design principles
