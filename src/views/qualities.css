@@ -104,6 +104,89 @@
   color: var(--muted);
 }
 
+/* Prompt 064: the main indicator on a scale with the rule's bands, and the other methods. */
+.quality-scale {
+  margin: 0 0 12px;
+}
+
+.quality-scale-caption {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.quality-scale-caption strong {
+  color: var(--text-soft);
+  font-weight: 400;
+}
+
+.quality-scale-bar {
+  position: relative;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.quality-scale-band {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.quality-band-likely-absent {
+  background: rgba(213, 94, 0, 0.45);
+}
+
+.quality-band-unclear {
+  background: rgba(154, 154, 164, 0.35);
+}
+
+.quality-band-likely-present {
+  background: rgba(0, 158, 115, 0.45);
+}
+
+.quality-scale-marker {
+  position: absolute;
+  top: -2px;
+  bottom: -2px;
+  width: 3px;
+  margin-left: -1.5px;
+  border-radius: 2px;
+  background: var(--text-bright);
+  box-shadow: 0 0 0 1px var(--bg);
+}
+
+.quality-scale-note {
+  margin: 6px 0 0;
+  font-size: 12px;
+  color: var(--text-soft);
+}
+
+.quality-others {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.quality-disagree,
+.quality-disagree-mark {
+  color: var(--gold);
+}
+
+.quality-disagree {
+  display: inline-block;
+  padding: 0 6px;
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  font-size: 11px;
+}
+
+.quality-disagree-mark {
+  margin-left: 6px;
+  font-weight: 600;
+}
+
 .quality-grade {
   margin: 0 0 10px;
   font-size: 14px;

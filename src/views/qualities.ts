@@ -256,6 +256,61 @@ function formatIndicator(key: string, value: number | null): string {
   return COUNTS.has(key) ? String(value) : percent(value);
 }
 
+/** Each rule's main indicator and its thresholds (prompt 064; the rules in tools/qualities). */
+const SCALE: Record<PrincipleId, { key: string; low: number; high: number; name: string }> = {
+  rhythm: { key: 'rhythmicShare', low: 0.1, high: 0.25, name: 'Repeating layers and bays' },
+  groundFloor: { key: 'openShare', low: 0.1, high: 0.3, name: 'Open frontage' },
+  materials: { key: 'texturedShare', low: 0.1, high: 0.25, name: 'Textured near eye level' },
+};
+type Label = 'present' | 'ambiguous' | 'absent';
+const MEASURE_LABEL: Record<Outcome, Label> = { 'likely-present': 'present', unclear: 'ambiguous', 'likely-absent': 'absent' };
+
+function bandOf(p: PrincipleId, value: number): Outcome {
+  const s = SCALE[p];
+  return value < s.low ? 'likely-absent' : value >= s.high ? 'likely-present' : 'unclear';
+}
+
+/** The main indicator on a 0–100% scale with the rule's three bands and the photo's value as a marker. */
+function outcomeScale(p: PrincipleId, r: PrincipleResult): HTMLElement | null {
+  const value = r.indicators[SCALE[p].key];
+  if (value === null || value === undefined) return null;
+  const s = SCALE[p];
+  const band = bandOf(p, value);
+  const wrap = el('div', 'quality-scale');
+  const bar = el('div', 'quality-scale-bar');
+  bar.setAttribute('role', 'img');
+  const range = band === 'likely-absent' ? `below ${percent(s.low)}` : band === 'likely-present' ? `${percent(s.high)} or more` : `${percent(s.low)}–${percent(s.high)}`;
+  bar.setAttribute('aria-label', `${s.name} ${percent(value)}: in the ${OUTCOME_TEXT[band].toLowerCase()} band, ${range}`);
+  const segments: [Outcome, number, number][] = [
+    ['likely-absent', 0, s.low],
+    ['unclear', s.low, s.high],
+    ['likely-present', s.high, 1],
+  ];
+  for (const [o, from, to] of segments) {
+    const seg = el('span', `quality-scale-band quality-band-${o}`);
+    seg.style.left = `${from * 100}%`;
+    seg.style.width = `${(to - from) * 100}%`;
+    bar.append(seg);
+  }
+  const marker = el('span', 'quality-scale-marker');
+  marker.style.left = `${Math.min(1, Math.max(0, value)) * 100}%`;
+  bar.append(marker);
+  const caption = el('p', 'quality-scale-caption');
+  caption.append(el('strong', undefined, `${s.name} ${percent(value)}`), ` · likely absent below ${percent(s.low)}, likely present from ${percent(s.high)}`);
+  wrap.append(caption, bar);
+  if (band !== r.outcome && r.reasons[0]) {
+    wrap.append(el('p', 'quality-scale-note', `In the “${OUTCOME_TEXT[band].toLowerCase()}” band, but: ${r.reasons[0]}`));
+  }
+  return wrap;
+}
+
+/** Linear-interpolation quantile, as numpy's default percentile. */
+function quantile(sorted: number[], q: number): number {
+  const pos = (sorted.length - 1) * q;
+  const lo = Math.floor(pos);
+  return sorted[lo] + (sorted[Math.min(lo + 1, sorted.length - 1)] - sorted[lo]) * (pos - lo);
+}
+
 /** The ground floor's adapted frontage grade (prompt 062), or why there is none. */
 function gradeLine(r: PrincipleResult): HTMLElement | null {
   if (!r.grade) return null;
@@ -495,7 +550,9 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       }
       numbers.append(list, el('p', 'agreement-caption', HOW[id]));
       const grade = id === 'groundFloor' ? gradeLine(r) : null;
-      card.append(verdict, reasons, ...(grade ? [grade] : []), numbers);
+      const scale = outcomeScale(id, r);
+      const others = otherMethods(current!.file.photo, id, r);
+      card.append(verdict, reasons, ...(scale ? [scale] : []), ...(others ? [others] : []), ...(grade ? [grade] : []), numbers);
       return card;
     });
     const grid = el('div', 'quality-card-grid');
@@ -519,6 +576,42 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
     theirs.append(el('h4', undefined, 'In the original study'), el('p', undefined, ORIGINAL));
     grid.append(theirs);
     definitions.replaceChildren(summary, grid);
+  }
+
+  /** Labels of the other methods for one photo and principle (prompt 064; the mappings of agreement.py). */
+  function methodLabels(photoId: string, p: PrincipleId): { name: string; label: Label }[] {
+    const out: { name: string; label: Label }[] = [];
+    const g = extras.graded?.photos[photoId]?.[p];
+    if (g && g.median !== null) out.push({ name: 'Panel, rated', label: g.median >= 3 ? 'present' : g.median <= 1 ? 'absent' : 'ambiguous' });
+    const o = extras.observed?.photos[photoId]?.labels?.[p];
+    if (o) out.push({ name: 'Panel, observed', label: o });
+    const scores = extras.upclip?.principleScores['up-clip-reproduction'];
+    if (scores?.[photoId]) {
+      const sorted = Object.values(scores)
+        .map((s) => s[p])
+        .sort((a, b) => a - b);
+      const v = scores[photoId][p];
+      out.push({ name: 'UP-CLIP', label: v > quantile(sorted, 2 / 3) ? 'present' : v < quantile(sorted, 1 / 3) ? 'absent' : 'ambiguous' });
+    }
+    return out;
+  }
+
+  /** Present against absent among the image measure and the two panels. */
+  function disagree(photoId: string, p: PrincipleId, outcome: Outcome | undefined): boolean {
+    const labels = methodLabels(photoId, p)
+      .filter((m) => m.name.startsWith('Panel'))
+      .map((m) => m.label);
+    if (outcome) labels.push(MEASURE_LABEL[outcome]);
+    return labels.includes('present') && labels.includes('absent');
+  }
+
+  function otherMethods(photoId: string, p: PrincipleId, r: PrincipleResult): HTMLElement | null {
+    const labels = methodLabels(photoId, p);
+    if (!labels.length) return null;
+    const line = el('p', 'quality-others');
+    line.append(labels.map((m) => `${m.name}: ${m.label}`).join(' · '));
+    if (disagree(photoId, p, r.outcome)) line.append(' ', el('span', 'quality-disagree', 'Methods disagree'));
+    return line;
   }
 
   function upclipScore(modelId: string, principle: PrincipleId): string | null {
@@ -706,6 +799,12 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
           u !== undefined ? `UP-CLIP ${signed(u)}` : null,
         ].filter(Boolean);
         if (others.length) td.append(el('small', undefined, others.join(' · ')));
+        if (disagree(id, p, row?.outcome)) {
+          const mark = el('span', 'quality-disagree-mark', '≠');
+          mark.title = 'Methods disagree: present against absent';
+          mark.setAttribute('aria-label', 'Methods disagree');
+          td.append(mark);
+        }
         tr.append(td);
       }
       table.append(tr);
@@ -721,6 +820,7 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       const obs = Object.values(extras.observed?.photos ?? {}).map((e) => e.ratings?.[p]).filter((x): x is number => x !== undefined);
       if (obs.length) notes.push(`The observing panel’s rule gave ${new Set(obs).size} different ratings, from ${Math.min(...obs)} to ${Math.max(...obs)}.`);
     }
+    notes.push('≠ marks a photo where the image measure and the two panels include both present and absent.');
     const wrap = el('div', 'agreement-wrap');
     wrap.append(table);
     all.replaceChildren(el('h3', 'panel-heading', 'All example photos'), wrap, el('p', 'agreement-caption', notes.join(' ')));

@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.48 · **Last updated:** 2026-10-19
+**Version:** 0.49 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -107,6 +107,7 @@ request of 2026-10-19).
 colour bar for the difference image only, with a key naming the image each
 colour favours (prompt 070, owner's request of 2026-10-19).
 0.48 searches the 360° panoramas for façade elements and measures their rhythm in the four side faces of a cube map (prompt 061, owner's request of 2026-10-19).
+0.49 draws each outcome's main indicator on a scale with the rule's bands, gives the other methods' labels in each card and marks where the methods disagree (prompt 064, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -790,6 +791,18 @@ was run on the photos.
     pre-registered rule change (plaster or concrete pixels with detail above t
     count as textured) lowered the grouping's accuracy on held-out images, so
     it was not adopted; the note on how the measure works says so;
+  - in each card, under the reasons (prompt 064): the rule's main indicator
+    on a 0–100% scale with its three bands and the photo's value as a marker
+    ("Repeating layers and bays", `rhythmicShare`, bands at 10% and 25%;
+    "Open frontage", `openShare`, 10% and 30%; "Textured near eye level",
+    `texturedShare`, 10% and 25%), with a text equivalent; where the outcome
+    differs from the band (another condition of the rule), "In the "…" band,
+    but:" and the rule's first reason. Then the other methods' labels for the
+    photo, with the mappings of `agreement.py`: the rated panel (median ≥ 3
+    present, ≤ 1 absent), the observing panel (its rule) and the UP-CLIP
+    reproduction (terciles over the 49 photos), and "Methods disagree" when
+    the image measure and the two panels include both present and absent; the
+    all-photos table marks such cells with "≠". No combined score;
   - on the ground-floor card, under the reasons, the frontage grade (prompt
     062): "Frontage grade D · adapted from the Urban Design Compendium (Table
     5.3), estimated from the photo …", with "the range depends on the assumed

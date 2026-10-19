@@ -301,6 +301,9 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   S 0.613, and R's precision lower, so A is kept and no quality file changed. A
   first run rectified almost no windows because of a scale bug in the stretch
   check; fixed before the recorded run)
+- `064_outcome_scale.md` (spec 0.49: each card shows its main indicator on a scale
+  with the rule's bands, the other methods' labels and "Methods disagree"; ≠ in
+  the all-photos table)
 - `060_panel_observations.md` (spec 0.44: `panel-observed.json`, the panel answers
   visible questions and a fixed rule rates them; probability-weighted graded ratings.
   Ratings now span 0–4 and weighted ones 21–37 values; on ordinary photos rhythm is
