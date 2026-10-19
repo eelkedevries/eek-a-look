@@ -233,15 +233,18 @@ validation.
 
 ## 4. Proposed prompts
 
+Renumbered from 058–064 to 059–065 after prompt 058 was used for the Example
+section.
+
 | # | Prompt | Needs |
 |---|---|---|
-| 058 | Rating rubric and rating page for human raters; `agreement.py` report | raters (owner recruits) |
-| 059 | Panel v3: atomic observable questions, probability-weighted ratings | local GPU, ~2 h |
-| 060 | Panoramas measured in perspective views | local GPU |
-| 061 | Ground floor: frontage density and an adapted grade | — |
-| 062 | Materials: surface-detail indicator, checked on labelled patches | ~100 hand-labelled patches |
-| 063 | Outcome scale with the unclear band; method-disagreement flag | — |
-| 064 | Rhythm: rectification and symmetry-based repetition | after 053's result |
+| 059 | Rating rubric and rating page for human raters; `agreement.py` report | raters (owner recruits) |
+| 060 | Panel v3: atomic observable questions, probability-weighted ratings | local GPU, ~2 h |
+| 061 | Panoramas measured in perspective views | local GPU |
+| 062 | Ground floor: frontage density and an adapted grade | — |
+| 063 | Materials: surface-detail indicator, checked on labelled patches | ~100 hand-labelled patches |
+| 064 | Outcome scale with the unclear band; method-disagreement flag | — |
+| 065 | Rhythm: rectification and symmetry-based repetition | after 053's result |
 
 ## Sources
 

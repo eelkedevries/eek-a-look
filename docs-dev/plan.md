@@ -226,7 +226,7 @@ variant did better on held-out labels). Owner's interface requests 054–057
 followed (fixation slider, the three principles at once, fixations over the
 model maps, display settings above the image).
 
-Next, proposed and not drafted: prompts 058–064 in
+Next, proposed and not drafted: prompts 059–065 in
 `docs-dev/reference/secondary_background/qualities_improvement_research.md`
 (human ratings with a rubric first, then a panel that observes rather than
 judges, panoramas in perspective views, an adapted frontage grade, a

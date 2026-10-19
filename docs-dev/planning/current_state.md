@@ -95,7 +95,7 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 ## In progress / next
 
 Seventh round run (2026-10-19, prompts 051–057). Proposed next, awaiting the
-owner's choice: prompts 058–064 in
+owner's choice: prompts 059–065 in
 `docs-dev/reference/secondary_background/qualities_improvement_research.md`;
 human ratings with a rubric come first, because no outcome has been checked
 against people yet.
