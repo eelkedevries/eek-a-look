@@ -172,6 +172,43 @@ expected weak spot: no published benchmark covers them.
 | 025 | `025_areas_view.md`: "Areas" tab, attention ÷ size table, credits; deploy | |
 | 026 | `026_vlm_panel_in_app.md`: panel judgement on the page; deploy | |
 
+## Sixth round: architectural qualities and UP-CLIP (2026-10-19)
+
+**Aim.** For each example photo, show which of the three design principles of
+Spanjar & Suurenbroek (2020) appear to be present, *where* the visual evidence
+is, and how different methods compare. The aim is to explore whether automated
+analysis could help with expert labelling and make it easier to relate
+architectural features to gaze. Sources and the UP-CLIP availability check are
+in
+[`reference/secondary_background/qualities_sources.md`](reference/secondary_background/qualities_sources.md).
+
+| Topic | Decision |
+|---|---|
+| Definitions | This project's operational definitions, kept apart from the 2020 panel's scene-level judgements, which named the principles but did not define them |
+| Image measures | One measure per principle with spatial evidence: frontage columns on the ground floor (open, transparent only, closed); repeating floor lines and bays in façade tiles, with variety between façade zones; materials near eye level from a dense material model (DMS46) |
+| Rules | Fixed in the specification before they run on the photos: "Likely present", "Likely absent" or "Unclear", with reasons. A window alone does not make an active frontage; visible texture is not touch |
+| Checks | Each measure computed from human labels (CMP Facade, eTRIMS) and from the automatic pipeline; threshold sensitivity; whether a measure separates the 24 photos at all. No expert labels exist for these photos: a template and a script take them when they do |
+| Simulated panel | A graded version (0–4, with boxes for the evidence), because the first run said "present" for rhythm and materials on all 24 photos. The first run stays for comparison |
+| UP-CLIP | The published checkpoint is not available (training code and a 1k sample only), so the authors' script is re-run on their sample: a labelled reproduction, compared with plain CLIP. Scores for perception descriptions (supported) and the principles (adaptation) |
+| Gaze | Attention ÷ size for the evidence regions of the image measures. Panel and UP-CLIP outputs are never combined with gaze statistics |
+| Display | A "Qualities" view after "Areas" in the workspace; the simulated panel moves there |
+| Processing | On the laptop GPU, like the areas. Only masks, scores and summaries are published; no weights, no UP-CLIP sample images |
+
+These prompts start at 040, so the workspace and UI prompts run in parallel on
+the same day (028 onwards) keep their own numbers.
+
+| # | Prompt | Notes |
+|---|---|---|
+| 040 | `040_frontage_evidence.md`: `tools/qualities/`, active ground floor | From the existing area masks |
+| 041 | `041_rhythm_evidence.md`: repeating layers and bays, variety | SAM 3 instances, line families |
+| 042 | `042_material_evidence.md`: materials near eye level | DMS46 |
+| 043 | `043_quality_checks.md`: checks against human labels, sensitivity, discrimination, expert-label template | Uses the eTRIMS and CMP downloads |
+| 044 | `044_vlm_panel_graded.md`: 0–4 ratings with evidence boxes | Laptop GPU |
+| 045 | `045_upclip_reproduction.md`: the authors' script on their 1k sample; retrieval against plain CLIP | Laptop GPU |
+| 046 | `046_upclip_scores.md`: description ↔ photo scores for the 24 photos | |
+| 047 | `047_qualities_view.md`: the Qualities view; deploy | |
+| 048 | `048_upclip_view.md`: matching descriptions and photos on the page; deploy | |
+
 ## Later
 
 - **Mobile scene video.** Run the same area tool on scene-camera frames. Assign
@@ -186,6 +223,12 @@ expected weak spot: no published benchmark covers them.
   then reports their overlap with the automatic areas and how much the
   attention ratios change.
 - **Live areas for uploads** through `npm run local` (not chosen now).
+- **The published UP-CLIP model**, if the authors share their checkpoint or
+  the full 15k dataset: replace the reproduction and re-run 046.
+- **Free-text descriptions** for UP-CLIP through `npm run local` (the public
+  page keeps a fixed list).
+- **Expert labels** for the three principles on the example photos:
+  `tools/qualities/agreement.py --labels` reports each method's agreement.
 - **Visitors drawing their own areas** (the old v1.1 idea).
 - **Own photos** to replace the Commons examples (eye level, landscape, the same
   camera height throughout).
@@ -217,6 +260,12 @@ expected weak spot: no published benchmark covers them.
   says so.
 - **Qwen3-VL-8B does not fit in 8 GB** even in 4-bit: use Qwen3-VL-4B and record
   it.
+- **Fine-tuning CLIP ViT-L/14 does not fit in 8 GB** with the authors'
+  settings: gradient checkpointing and an 8-bit optimiser, recorded as a
+  deviation; failing that, a smaller batch, reported with its effect on the
+  contrastive loss.
+- **An image measure says the same on every photo**, as the first panel did:
+  the checks report it, and the page says so instead of hiding it.
 
 ## What the owner needs to do
 

@@ -75,8 +75,15 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-v1 and rounds two to four (prompts 012–020) are complete. The fifth round is
-planned, not run: automatic areas in the image (OneFormer categories, a 4 m
+Sixth round (2026-10-19, prompts 040–048, `docs-dev/plan.md`): image measures
+with spatial evidence for the three design principles (`tools/qualities/`),
+checks against human labels, a graded simulated panel, and a reproduction of
+UP-CLIP from the authors' public 1k sample, since no trained checkpoint is
+published (`docs-dev/reference/secondary_background/qualities_sources.md`).
+All shown in a new "Qualities" view.
+
+v1 and rounds two to four (prompts 012–020) are complete. The fifth round
+(021–027) is complete; its original plan was: automatic areas in the image (OneFormer categories, a 4 m
 ground-floor rule, façade elements from a measured model comparison),
 attention ÷ size per area, checks against eTRIMS and CMP Facade, and a
 simulated panel with Qwen3-VL (prompts 021–026; `docs-dev/plan.md`, sources in
