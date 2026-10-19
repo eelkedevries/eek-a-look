@@ -1,0 +1,19 @@
+--- UP-CLIP/train.py
++++ train_8gb.py
+@@ -25,3 +25,3 @@
+ 
+-    def compute_loss(self, model, inputs, return_outputs=False):
++    def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch=None):
+         outputs = model(**inputs, return_loss=True)
+@@ -115,2 +115,4 @@
+     parser.add_argument("--warmup_steps", type=int, default=200, help="Warmup steps for scheduler")
++    parser.add_argument("--gradient_checkpointing", action="store_true", help="8 GB GPU: recompute activations")
++    parser.add_argument("--optim", type=str, default="adamw_torch", help="8 GB GPU: e.g. adamw_bnb_8bit")
+ 
+@@ -169,4 +171,5 @@
+         weight_decay=0.01,
++        gradient_checkpointing=args.gradient_checkpointing,
++        optim=args.optim,
+         remove_unused_columns=False,
+-        logging_dir='./logs',
+         logging_steps=10,

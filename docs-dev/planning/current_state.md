@@ -207,3 +207,8 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   boxes, `panel-graded.json`. Alpha 0.95 / 0.81 / 0.67; rhythm still 3–4 on
   every photo, ground floor 1–3, materials 2–3; 70/72 medians stable; boxes
   64–83% inside the matching region)
+- `045_upclip_reproduction.md` (`tools/up-clip/`: no UP-CLIP checkpoint is
+  published, so the authors' script was re-run on their 1k sample, batch 32
+  with gradient checkpointing and 8-bit AdamW; best epoch 8. Recall@5 on 200
+  held-out pairs 0.40 / 0.34 against plain CLIP 0.19 / 0.16; report
+  `upclip_reproduction.md`. Nothing from the authors' repository is in git)

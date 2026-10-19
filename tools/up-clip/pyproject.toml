@@ -1,0 +1,20 @@
+[project]
+name = "up-clip"
+version = "0.1.0"
+description = "A reproduction of UP-CLIP from the authors' public sample, and its scores for the eek-a-look example photos."
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "torch>=2.7",
+  "torchvision",
+  "transformers>=5.20",
+  "accelerate",
+  "bitsandbytes",
+  "datasets",
+  "pandas",
+  "pillow",
+  "numpy",
+  "scipy",
+]
+
+[tool.uv]
+package = false

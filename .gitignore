@@ -61,3 +61,7 @@ tools/vlm-panel/.venv/
 # Qualities: models, instances and check overlays
 tools/qualities/.cache/
 tools/qualities/.venv/
+
+# UP-CLIP: the authors' repository, sample images, captions and weights (never published)
+tools/up-clip/.cache/
+tools/up-clip/.venv/

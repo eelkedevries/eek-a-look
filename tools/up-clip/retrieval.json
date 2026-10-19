@@ -1,0 +1,99 @@
+{
+ "date": "2026-10-19",
+ "testPool": 200,
+ "dedupedPool": 196,
+ "dedupeRule": "drop test pairs whose image also occurs in the training part, and later copies within the test part",
+ "models": {
+  "plain CLIP ViT-L/14": {
+   "source": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41",
+   "full": {
+    "imageToText": {
+     "R@1": 0.065,
+     "R@5": 0.19,
+     "R@10": 0.275
+    },
+    "textToImage": {
+     "R@1": 0.05,
+     "R@5": 0.155,
+     "R@10": 0.26
+    }
+   },
+   "deduplicated": {
+    "imageToText": {
+     "R@1": 0.0663265306122449,
+     "R@5": 0.18877551020408162,
+     "R@10": 0.2755102040816326
+    },
+    "textToImage": {
+     "R@1": 0.05102040816326531,
+     "R@5": 0.14795918367346939,
+     "R@10": 0.25510204081632654
+    }
+   }
+  },
+  "UP-CLIP reproduction (1k pairs)": {
+   "source": "tools/up-clip/.cache/checkpoint (not published)",
+   "full": {
+    "imageToText": {
+     "R@1": 0.17,
+     "R@5": 0.4,
+     "R@10": 0.53
+    },
+    "textToImage": {
+     "R@1": 0.15,
+     "R@5": 0.34,
+     "R@10": 0.475
+    }
+   },
+   "deduplicated": {
+    "imageToText": {
+     "R@1": 0.1683673469387755,
+     "R@5": 0.3979591836734694,
+     "R@10": 0.5306122448979592
+    },
+    "textToImage": {
+     "R@1": 0.14795918367346939,
+     "R@5": 0.33163265306122447,
+     "R@10": 0.46938775510204084
+    }
+   }
+  }
+ },
+ "captionsTruncatedAt77Tokens": 0,
+ "dataCheck": {
+  "pairs": 1000,
+  "train": 800,
+  "test": 200,
+  "distinctImages": 985,
+  "duplicateGroups": 15,
+  "imagesInDuplicateGroups": 30,
+  "groupsAcrossSplit": 3,
+  "testPairsWhoseImageIsAlsoInTrain": 3,
+  "duplicateGroupsWithIdenticalCaptions": 0,
+  "csv": ".cache/repo/data/dataset-1k.csv"
+ },
+ "training": {
+  "script": "the authors' train.py at ef1bb18, patched by patch.py (train_8gb.diff)",
+  "baseModel": "openai/clip-vit-large-patch14@32bd64288804d66eefd0ccbe215aa642df71cc41 (the script loads the main branch; this was main on 2026-10-19)",
+  "arguments": "--batch_size 32 --epochs 50 (README), authors' defaults otherwise: learning rate 5e-6, cosine, 200 warm-up steps, fp16, gradient accumulation 4, weight decay 0.01, early-stopping patience 3, 80/20 split with seed 42",
+  "firstAttempt": "unchanged settings: CUDA out of memory at batch 32 on the 8 GB RTX 4070 (7.58 GB in use)",
+  "changes": [
+   "compute_loss accepts num_items_in_batch (current transformers)",
+   "logging_dir removed (gone in transformers 5)",
+   "--gradient_checkpointing",
+   "--optim adamw_bnb_8bit"
+  ],
+  "batchSize": 32,
+  "optimizerStepsPerEpoch": 7,
+  "epochsRun": 50,
+  "earlyStopping": "did not trigger: the script adds eval_loss after the early-stopping callback has run, so transformers disabled it ('did not find eval_loss')",
+  "bestEpoch": 8,
+  "bestValidationLoss": 2.782,
+  "finalValidationLoss": 4.821,
+  "loadedAtEnd": "the best checkpoint by validation loss (epoch 8, step 56), as load_best_model_at_end intends",
+  "warmUpNote": "200 warm-up steps at 7 steps per epoch: the learning rate was still rising until epoch 29",
+  "seconds": 2359,
+  "peakGpuMiB": 6447,
+  "date": "2026-10-19"
+ }
+}
