@@ -57,3 +57,7 @@ tools/areas/.venv/
 # Simulated panel
 tools/vlm-panel/.cache/
 tools/vlm-panel/.venv/
+
+# Qualities: models, instances and check overlays
+tools/qualities/.cache/
+tools/qualities/.venv/

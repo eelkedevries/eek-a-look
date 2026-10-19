@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.17 · **Last updated:** 2026-10-19
+**Version:** 0.18 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -36,7 +36,10 @@ workspace: a photo library, the views and an inspector with the layers, the
 contrast selectors, the heatmap strength and each layer's match with the
 reference (prompt 028, from the owner-approved mock-up of 2026-10-19). 0.17 shows street categories and façade elements
 together in the Areas view instead of as two switchable groups (prompt 029,
-owner's request of 2026-10-19).
+owner's request of 2026-10-19). 0.18 adds image measures for the three design
+principles, starting with the active ground floor: this project's operational
+definition, frontage columns and a fixed rule, written to quality files
+(prompt 040).
 
 ## Scope
 
@@ -189,6 +192,32 @@ interface AreaFile {
 }
 ```
 
+A quality file, `public/precomputed/qualities/<photo-id>.json`, on the mask
+grid of the photo's area file:
+
+```ts
+interface QualityFile {
+  photo: string;
+  width: number;          // as the area file
+  height: number;
+  models: Record<string, string>;   // step → repository@revision or rule
+  principles: Partial<Record<'groundFloor' | 'rhythm' | 'materials', PrincipleResult>>;
+}
+
+interface PrincipleResult {
+  outcome: 'likely-present' | 'likely-absent' | 'unclear';
+  reasons: string[];      // plain-language, from the rule
+  indicators: Record<string, number | null>;
+  evidence: Array<{
+    id: string;
+    label: string;        // visitor-facing
+    role: 'supports' | 'against' | 'context';
+    share: number;        // fraction of all mask pixels
+    rle: number[];        // as in the area file
+  }>;
+}
+```
+
 The example photo manifest is `public/examples/examples.json`, an array of:
 
 ```ts
@@ -318,6 +347,46 @@ interface ExamplePhoto {
   - An element whose chosen model scores a mean test IoU below 0.20 is marked
     `lowConfidence`.
   - Elements may overlap each other and the ground floor.
+
+**Architectural qualities**
+
+The three design principles come from Spanjar & Suurenbroek (2020), whose
+panel of 14 experts judged whole photos as present, absent or ambiguous. The
+paper names the principles but does not define them. The definitions below
+are **this project's operational definitions**, not the panel's, and the
+image measures are not expert judgements. Built by `tools/qualities/` for the
+example photos only, from the area files; each rule was fixed here before it
+was run on the photos.
+
+- **Active ground floor** (operational definition): visible street-level
+  frontage that offers openings to the street, namely entrances and
+  shopfronts. Transparency (windows) is shown but does not by itself make a
+  frontage active; blank, closed stretches count against it.
+  - A **frontage column** is an image column with at least 3 ground-floor
+    pixels. In each, the frontage is **open** if entrances ∪ shopfronts cover
+    at least 30% of the column's ground-floor pixels; otherwise **transparent
+    only** if windows cover at least 30%; otherwise **closed**.
+  - Indicators: `frontageShare` (frontage columns ÷ image width);
+    `openShare`, `transparentShare`, `closedShare` (each ÷ frontage columns);
+    `entrances` (connected entrance components of at least 20 pixels that
+    overlap the ground floor); `longestClosedRun` (the longest run of
+    adjacent closed columns ÷ frontage columns); `useCues` (the share of a
+    band below the ground floor, half the column's ground-floor height deep,
+    covered by people, signage or street furniture; context only).
+  - Rule: `frontageShare` < 0.05 → Unclear ("Too little ground floor is
+    visible"); else `openShare` ≥ 0.30 → Likely present; else `openShare` <
+    0.10 and `closedShare` ≥ 0.60 → Likely absent; else Unclear, with the
+    reason "Mostly windows: transparency alone does not show an active
+    frontage" when `transparentShare` ≥ 0.30, otherwise "Open and closed
+    stretches are mixed". A note is added when the horizon is
+    `assumed-level`.
+  - Evidence: "Open frontage" (supports), "Transparent only" (context),
+    "Closed frontage" (against), each the ground-floor pixels of those
+    columns; "Entrances" and "Shopfronts" clipped to the ground floor
+    (supports).
+  - Shares are of image columns, not metres: perspective compresses distant
+    frontage, and people in front of the ground floor come and go. Glazing
+    that the window model does not find counts as closed.
 
 **Derived views**
 
@@ -459,6 +528,9 @@ interface ExamplePhoto {
   (subtitle "48 people, eye tracking").
 - A vision-language model's verdict is called an **"AI judgement"**, never an
   expert judgement or an assessment.
+- The outcome of a rule in *Architectural qualities* is called an **"image
+  measure"**, with the outcomes "Likely present", "Likely absent" and
+  "Unclear"; never an assessment or an expert judgement.
 - Visitor-facing text is British English, plain and short, for a general
   audience. The tool comes first and explanations are brief. Avoid jargon
   ("saliency", "fixation density"): say "where people are likely to look".

@@ -33,6 +33,11 @@ wins and the gap is work still to be done.
   CMP Facade in `validation.json`. The "Areas" tab (`src/views/areas.ts`,
   `src/maps/areas.ts`) shows outlines and attention ÷ size per area and layer
   for the example photos only.
+- Qualities (prompts 040–): `tools/qualities/` computes image measures for the
+  three design principles of Spanjar & Suurenbroek (2020) from the area files,
+  with this project's operational definitions and fixed rules (spec,
+  *Architectural qualities*), into `public/precomputed/qualities/`. Each
+  measure has an outcome, reasons, indicators and evidence masks.
 - Measured gaze (prompts 018–020): `tools/measured-gaze/` builds measured maps
   for 12 Zürich photos (Wilming et al. 2017, CC0) into
   `public/precomputed/measured/`. `src/models/measured.ts` is the "Measured
@@ -164,3 +169,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   `validation.json` exactly on zurich-23)
 - `026_vlm_panel_in_app.md` (spec 0.14: the simulated panel's verdicts under
   the Areas table, with notes on rhythm and materials, which did not vary)
+- `040_frontage_evidence.md` (spec 0.18: active ground floor from frontage
+  columns. 2 likely present, 15 likely absent, 7 unclear. Three photos with an
+  assumed horizon get a ground floor that covers the whole façade, so their
+  outcomes are artefacts; superseded by 040b)
