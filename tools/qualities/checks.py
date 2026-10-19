@@ -80,7 +80,8 @@ def load_qualities() -> dict:
     for photo in photos():
         q = json.loads((OUT / f"{photo['id']}.json").read_text())
         area = json.loads((REPO / "public" / "precomputed" / "areas" / f"{photo['id']}.json").read_text())
-        out[photo["id"]] = {"quality": q, "horizon": area["horizon"]["method"]}
+        out[photo["id"]] = {"quality": q, "horizon": area["horizon"]["method"],
+                            "group": "study" if photo.get("imageKind") else "earlier"}
     return out
 
 
@@ -206,7 +207,13 @@ def discrimination(data: dict) -> dict:
         values = [d["quality"]["principles"][principle]["indicators"].get(MAIN[principle]) for d in data.values()]
         values = [v for v in values if v is not None]
         counts = {k: outcomes.count(k) for k in ("likely-present", "unclear", "likely-absent")}
-        out[principle] = {"outcomes": counts, "indicator": MAIN[principle],
+        groups = {}
+        for group in ("earlier", "study"):  # prompt 052: the 24 earlier photos and the 25 study images
+            g = [d["quality"]["principles"][principle]["outcome"] for d in data.values() if d["group"] == group]
+            if g:
+                c = {k: g.count(k) for k in ("likely-present", "unclear", "likely-absent")}
+                groups[group] = {"photos": len(g), "outcomes": c, "sameOnAllPhotos": max(c.values()) == len(g)}
+        out[principle] = {"outcomes": counts, "indicator": MAIN[principle], "byGroup": groups,
                           "min": min(values) if values else None, "max": max(values) if values else None,
                           "sameOnAllPhotos": max(counts.values()) == len(outcomes),
                           # Per photo, for the page's table of all photos (so it need not load 24 quality files).
@@ -223,10 +230,11 @@ def panel_cross_table(data: dict) -> dict:
     for principle in PRINCIPLES:
         kinds = ["present", "ambiguous", "absent"]
         table = {a: {b: 0 for b in kinds} for a in kinds}
-        for pid, d in data.items():
+        judged = {pid: d for pid, d in data.items() if pid in panel}  # the panel judged the 24 earlier photos
+        for pid, d in judged.items():
             table[to_panel[d["quality"]["principles"][principle]["outcome"]]][panel[pid][principle]["consensus"]] += 1
-        out[principle] = {"rows": "image measure", "columns": "simulated panel v1", "table": table,
-                          "agreement": sum(table[k][k] for k in kinds) / len(data)}
+        out[principle] = {"rows": "image measure", "columns": "simulated panel v1", "table": table, "photos": len(judged),
+                          "agreement": sum(table[k][k] for k in kinds) / len(judged)}
     return out
 
 
@@ -242,9 +250,10 @@ def report(result: dict) -> str:
         "## What was and was not checked",
         "",
         "- **Checked:** whether each measure reads its *components* as people",
-        "  labelled them in a public dataset (CMP Facade), how much the outcomes",
-        "  depend on the rule thresholds, and whether the measures tell the 24",
-        "  example photos apart.",
+        "  labelled them in public datasets, how much the outcomes depend on the",
+        f"  rule thresholds, and whether the measures tell the {sum(v['photos'] for v in d['rhythm']['byGroup'].values())}",
+        "  example photos apart (the 24 earlier photos and the 25 study images,",
+        "  renderings and 360° panoramas, separately).",
         "- **Not checked:** the principles themselves. No experts have judged these",
         "  photos, so agreement with experts has not been evaluated. Agreement",
         "  between automated methods (below) is not validity.",
@@ -278,25 +287,30 @@ def report(result: dict) -> str:
     for name, v in m["table8"].items():
         lines.append(f"| {name} | {v['group']} | {v['accuracy']:.3f} | {v['iou']:.3f} |")
     lines += ["", m["ownCheck"], "", "## Sensitivity of the rules", "",
-              "How many of the 24 outcomes change when one threshold is halved or multiplied by 1.5.", "",
+              f"How many of the {len(result['discrimination']['rhythm']['perPhoto'])} outcomes change when one threshold is halved or multiplied by 1.5.", "",
               "| Principle | Threshold | Value | × 0.5 | × 1.5 |", "|---|---|---|---|---|"]
     for p, ts in s.items():
         for name, v in ts.items():
             lines.append(f"| {p} | {name} | {v['value']} | {v['x0.5']} | {v['x1.5']} |")
     lines += ["", "## Do the measures tell the photos apart?", "",
-              "| Principle | Likely present | Unclear | Likely absent | Main indicator | Range |", "|---|---|---|---|---|---|"]
+              "| Principle | Photos | Likely present | Unclear | Likely absent |", "|---|---|---|---|---|"]
+    names = {"earlier": "24 earlier photos", "study": "25 study images"}
     for p, v in d.items():
-        o = v["outcomes"]
+        for group, g in v["byGroup"].items():
+            o = g["outcomes"]
+            lines.append(f"| {p} | {names.get(group, group)} | {o['likely-present']} | {o['unclear']} | {o['likely-absent']} |")
+    lines += ["", "| Principle | Main indicator | Range over all photos |", "|---|---|---|"]
+    for p, v in d.items():
         rng = "–" if v["min"] is None else f"{v['min']:.2f}–{v['max']:.2f}"
-        lines.append(f"| {p} | {o['likely-present']} | {o['unclear']} | {o['likely-absent']} | `{v['indicator']}` | {rng} |")
-    flagged = [p for p, v in d.items() if v["sameOnAllPhotos"]]
-    lines += ["", ("Flagged (same outcome on every photo): " + ", ".join(flagged)) if flagged else
-              "No measure gives the same outcome on every photo.", "",
+        lines.append(f"| {p} | `{v['indicator']}` | {rng} |")
+    flagged = [f"{p} ({names.get(group, group)})" for p, v in d.items() for group, g in v["byGroup"].items() if g["sameOnAllPhotos"]]
+    lines += ["", ("Flagged (same outcome on every photo of a group): " + ", ".join(flagged)) if flagged else
+              "No measure gives the same outcome on every photo of a group.", "",
               "## Image measure against the simulated panel (automated against automated)", "",
               "Rows: image measure (likely present → present, unclear → ambiguous, likely absent → absent). "
               "Columns: the simulated panel's v1 consensus. Neither is an expert judgement.", ""]
     for p, v in x.items():
-        lines += [f"**{p}** (same label on {pct(v['agreement'])} of the photos)", "",
+        lines += [f"**{p}** (same label on {pct(v['agreement'])} of the {v['photos']} photos the panel judged)", "",
                   "| Measure ↓ / panel → | present | ambiguous | absent |", "|---|---|---|---|"]
         for a, row in v["table"].items():
             lines.append(f"| {a} | " + " | ".join(str(c) for c in row.values()) + " |")

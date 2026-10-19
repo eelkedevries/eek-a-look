@@ -28,6 +28,17 @@
   margin: 4px 0 18px;
 }
 
+.quality-kind {
+  display: inline-block;
+  margin: 0 0 8px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--gold);
+}
+
 .quality-verdict {
   margin: 0 0 6px;
   font-family: var(--font-heading);

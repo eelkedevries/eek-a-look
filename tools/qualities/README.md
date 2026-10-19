@@ -208,6 +208,22 @@ agreement and Cohen's kappa with the labels (majority label per photo when
 there are several raters). Its mappings for the graded panel and UP-CLIP are
 written in its docstring and were fixed before any labels exist.
 
+## Study images (prompt 052)
+
+The 25 images "From published studies" (10 design renderings, 15 360°
+panoramas; `imageKind` in the manifest, prompt 051) are measured with the same
+rules: `uv run build.py --only-missing` leaves the 24 earlier quality files
+untouched. Their reasons carry a note on the image kind, and the quality file
+records `imageKind`. Outcomes on 2026-10-19 (likely present / unclear /
+likely absent): ground floor 2 / 7 / 16, rhythm 3 / 12 / 10, materials
+4 / 20 / 1.
+
+Limits seen in the overlays: in the panoramas SAM 3 finds no façade elements
+(the buildings are small and behind trees), so frontages read as closed and
+rhythm as plain; DMS46 reads the stretched ground of a panorama as sand,
+soil, water or plaster; the renders are smaller than the mask grid
+(about 368 px wide).
+
 ## Output
 
 `public/precomputed/qualities/<photo-id>.json`, the `QualityFile` of the

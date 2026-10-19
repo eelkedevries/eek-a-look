@@ -43,7 +43,8 @@ Choose a view above the photo; the inspector on the right changes with it.
   measured map was built from as a semi-transparent cyan dot over the
   **Measured gaze** map, in all three views above. The dots are
   never drawn over a model's map.
-- **Qualities:** for the 24 Dutch and Zürich photos, three design principles
+- **Qualities:** for every example photo (study images are tagged as a design
+  rendering or a 360° panorama), three design principles
   (rhythm and variety, an active ground floor, tactile materials) measured
   from the photo, with the evidence drawn on it, the definitions, how a
   simulated AI panel and UP-CLIP judged the same photo, and how much

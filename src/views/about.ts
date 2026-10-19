@@ -92,7 +92,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
   const qualitiesHeading = el('h3', 'Architectural qualities');
   const qualitiesText = el(
     'p',
-    'For the 24 Dutch and Zürich example photos, the Qualities view measures three design principles an HvA expert panel used (rhythm and variety, an active ground floor, tactile materials) from the photo itself: how regularly windows and balconies repeat, how much of the ground floor opens to the street, and which materials are visible near eye level. The definitions are this project’s, not the panel’s, and each rule was fixed before it ran on the photos. Parts of each measure were checked against people’s labels of other photos; the principles themselves were not, as no experts judged these photos.',
+    'For every example photo, the Qualities view measures three design principles an HvA expert panel used (rhythm and variety, an active ground floor, tactile materials) from the photo itself: how regularly windows and balconies repeat, how much of the ground floor opens to the street, and which materials are visible near eye level. The definitions are this project’s, not the panel’s, and each rule was fixed before it ran on the photos. Parts of each measure were checked against people’s labels of other photos; the principles themselves were not, as no experts judged these photos.',
   );
   const upclipHeading = el('h3', 'UP-CLIP');
   const upclipText = el(

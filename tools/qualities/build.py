@@ -7,6 +7,7 @@
                                   is missing
   uv run build.py --calibrate     re-run the rhythm calibration
   uv run build.py --materials     tactile materials only (prompt 042; run fetch_dms.py first)
+  uv run build.py --only-missing  every measure, only for photos without a quality file (prompt 052)
 
 Writes public/precomputed/qualities/<photo-id>.json (QualityFile in the
 specification), keeping the principles not re-run, and a check overlay per
@@ -21,9 +22,13 @@ import numpy as np
 from PIL import Image, ImageDraw
 
 import frontage
-from shared import CACHE, EXAMPLES, AreaData, check_quality, load_quality, photos, write_quality
+from shared import CACHE, EXAMPLES, OUT, AreaData, check_quality, load_quality, photos, write_quality
 
 OUTCOME = {"likely-present": "present", "likely-absent": "absent", "unclear": "unclear"}
+KIND_NOTES = {
+    "render": "A design rendering, not a photograph.",
+    "panorama": "A 360° panorama: straight lines curve and distant surfaces are small, so repetition and texture are harder to see.",
+}
 FRONTAGE_COLOURS = {frontage.OPEN: (0, 158, 115), frontage.TRANSPARENT: (86, 180, 233), frontage.CLOSED: (213, 94, 0)}
 
 
@@ -148,6 +153,7 @@ def main() -> int:
     parser.add_argument("--rhythm", action="store_true")
     parser.add_argument("--calibrate", action="store_true")
     parser.add_argument("--materials", action="store_true")
+    parser.add_argument("--only-missing", action="store_true")
     args = parser.parse_args()
     run_all = not (args.ground_floor or args.rhythm or args.calibrate or args.materials)
     (CACHE / "check").mkdir(parents=True, exist_ok=True)
@@ -190,8 +196,14 @@ def main() -> int:
     counts: dict[str, dict[str, int]] = {}
     rows, rhythm_rows, material_rows = [], [], []
     for photo in photos():
+        if args.only_missing and (OUT / f"{photo['id']}.json").exists():
+            continue
         data = AreaData(photo["id"])
         quality = load_quality(data)
+        kind = photo.get("imageKind")
+        if kind:
+            quality["imageKind"] = kind
+            print(f"{photo['id']}: {kind}, {photo['width']} × {photo['height']} px")
         if run_all or args.ground_floor:
             result, classes = frontage.measure(data)
             quality["principles"]["groundFloor"] = result
@@ -228,6 +240,11 @@ def main() -> int:
             counts.setdefault("materials", {}).setdefault(result["outcome"], 0)
             counts["materials"][result["outcome"]] += 1
             material_rows.append((photo["id"], result))
+        if kind:  # prompt 052: notes, not new rules
+            note = KIND_NOTES[kind]
+            for result in quality["principles"].values():
+                if note not in result["reasons"]:
+                    result["reasons"].append(note)
         path = write_quality(quality)
         problems = check_quality(path)
         failures += bool(problems)

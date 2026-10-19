@@ -36,6 +36,8 @@ interface QualityFile {
   photo: string;
   width: number;
   height: number;
+  /** Study images (prompt 052): a design rendering or a 360° panorama. */
+  imageKind?: 'render' | 'panorama';
   models: Record<string, string>;
   principles: Partial<Record<PrincipleId, PrincipleResult>>;
 }
@@ -88,7 +90,10 @@ export interface PhotoInfo {
   file: string;
   width: number;
   height: number;
+  imageKind?: 'render' | 'panorama';
 }
+
+const KIND_TEXT: Record<'render' | 'panorama', string> = { render: 'Design rendering', panorama: '360° panorama' };
 
 const PRINCIPLES: { id: PrincipleId; name: string }[] = [
   { id: 'rhythm', name: 'Rhythm and variety' },
@@ -399,7 +404,8 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       list.append(el('dt', undefined, name), el('dd', undefined, formatIndicator(key, value)));
     }
     const how = el('p', 'agreement-caption', HOW[principle]);
-    outcome.replaceChildren(heading, reasons, list, how);
+    const kind = current?.file.imageKind;
+    outcome.replaceChildren(...(kind ? [el('p', 'quality-kind', KIND_TEXT[kind])] : []), heading, reasons, list, how);
   }
 
   function renderDefinitions() {
@@ -540,7 +546,18 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
       if (h) head.append(el('th', undefined, h));
     }
     table.append(head);
-    for (const [id, row] of Object.entries(c.perPhoto)) {
+    // The 24 earlier photos first, then the study images under their own heading (prompt 052).
+    const entries = Object.entries(c.perPhoto);
+    const study = entries.filter(([id]) => info.get(id)?.imageKind);
+    const ordered = [...entries.filter(([id]) => !info.get(id)?.imageKind), ...study];
+    for (const [id, row] of ordered) {
+      if (study.length && id === study[0][0]) {
+        const group = el('tr', 'areas-group-row');
+        const th = el('th', undefined, 'From published studies · renderings and 360° panoramas');
+        th.colSpan = head.childElementCount;
+        group.append(th);
+        table.append(group);
+      }
       const tr = el('tr');
       if (id === current?.file.photo) tr.className = 'quality-current';
       const th = el('th');
@@ -615,7 +632,7 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
     const [file, checks, panelV1, graded, upclip] = await Promise.all([loadQuality(id), loadChecks(), loadPanel(), loadGraded(), loadUpClip()]);
     if (requested !== results) return;
     if (!file) {
-      showEmpty('Qualities are computed in advance for the 24 Dutch and Zürich example photos only.', true);
+      showEmpty('Qualities could not be loaded for this photo.', true);
       return;
     }
     for (const node of [switcher, upclipBlock]) node.hidden = false;

@@ -25,7 +25,7 @@ against the best model — automatic areas, and qualities) and an inspector on
 the right with the layers, display settings and each layer's match with the
 reference. Agreement scores between the models follow below.
 
-**Qualities** measures, for the 24 Dutch and Zürich photos, the three design
+**Qualities** measures, for every example photo, the three design
 principles of Spanjar & Suurenbroek (2020) — rhythm and variety, an active
 ground floor, tactile materials — from the photo itself, shows the evidence
 on it, and sets these image measures beside a simulated AI panel and UP-CLIP.

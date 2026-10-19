@@ -230,3 +230,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   areas for them with `--only-missing`, the 24 earlier files unchanged; a
   spherical ground-floor rule for the 15 360° panoramas, checked by hand.
   SAM 3 finds no façade elements in the panoramas)
+- `052_study_photo_qualities.md` (spec 0.33: the image measures for all 49 example
+  photos, the 24 earlier files unchanged; study images tagged on the page and
+  grouped in the all-photos table. Panoramas: no façade elements found, so their
+  ground floors read as closed)

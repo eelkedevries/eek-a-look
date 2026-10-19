@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.32 · **Last updated:** 2026-10-19
+**Version:** 0.33 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -67,7 +67,8 @@ model and plain CLIP, for every example photo (prompt 046). 0.30 adds the Qualit
 panel there (prompt 047). 0.31 adds matching descriptions and photos with UP-CLIP
 to the Qualities view (prompt 048). 0.32 names the study images' kind (rendering or 360°
 panorama) and computes their areas, with a ground-floor rule for panoramas
-(prompt 051).
+(prompt 051). 0.33 computes the image measures for the study images too
+and tags them on the page (prompt 052).
 
 ## Scope
 
@@ -97,7 +98,7 @@ In scope for v1:
   **contrast** of two maps, **agreement scores**;
 - an **Areas** view for the example photos: automatic areas and attention ÷
   size per area and layer;
-- a **Qualities** view for the 24 Dutch and Zürich example photos: image
+- a **Qualities** view for the example photos: image
   measures for three design principles with their evidence on the photo, the
   definitions behind them, the other methods' judgements of the same photo,
   and attention ÷ size for the evidence regions;
@@ -237,6 +238,7 @@ interface QualityFile {
   photo: string;
   width: number;          // as the area file
   height: number;
+  imageKind?: 'render' | 'panorama';   // study images (prompt 052)
   models: Record<string, string>;   // step → repository@revision or rule
   principles: Partial<Record<'groundFloor' | 'rhythm' | 'materials', PrincipleResult>>;
 }
@@ -405,6 +407,12 @@ interface ExamplePhoto {
   - Elements may overlap each other and the ground floor.
 
 **Architectural qualities**
+
+The image measures cover every example photo. For the study images
+(`imageKind`, prompt 052) the rules are the same; the reasons add "A design
+rendering, not a photograph." or "A 360° panorama: straight lines curve and
+distant surfaces are small, so repetition and texture are harder to see."
+The simulated panel judged only the 24 earlier photos.
 
 The three design principles come from Spanjar & Suurenbroek (2020), whose
 panel of 14 experts judged whole photos as present, absent or ambiguous. The
@@ -632,10 +640,10 @@ was run on the photos.
   - the note "Ground floor estimated assuming a level camera." when the
     horizon method is `assumed-level`, and "(unreliable: low score in the
     check)" after a `lowConfidence` element.
-- **Qualities** (a view after "Areas"; the 24 Dutch and Zürich photos, which
-  have quality files; other photos and uploads get "Qualities are computed in
-  advance for the 24 Dutch and Zürich example photos only." or "… for the
-  example photos only."):
+- **Qualities** (a view after "Areas"; every example photo; uploads get
+  "Qualities are computed in advance for the example photos only."):
+  - study images carry a tag "Design rendering" or "360° panorama" above the
+    outcome (prompt 052);
   - a switch for the three principles (rhythm and variety, active ground
     floor, tactile materials);
   - the greyed photo with the image measure's evidence: regions that support
@@ -658,7 +666,8 @@ was run on the photos.
     "These methods are compared with each other, not with experts.";
   - attention ÷ size of the image measure's evidence regions per ready layer,
     with the Areas rules; never for the panel's boxes or UP-CLIP;
-  - "All example photos": the 24 photos with the image measure, the panel's
+  - "All example photos": every example photo (the study images under their
+    own heading) with the image measure, the panel's
     two verdicts and the UP-CLIP reproduction's score for the chosen
     principle, the outcome counts and the notes on principles that do not
     vary; choosing a photo's name selects it.
