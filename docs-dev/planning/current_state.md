@@ -240,3 +240,6 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   principles together, no switch: evidence outlined solid / dashed / dotted per
   principle, one legend in three parts, three outcome cards, a column per
   principle in the methods and all-photos tables)
+- `056_fixations_on_model_maps.md` (spec 0.36: "Also over the model maps", off by
+  default, draws the fixation points over the predicted maps too, which then say
+  "with measured fixations"; reverses the measured-map-only rule of prompt 030)

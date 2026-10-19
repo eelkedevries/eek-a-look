@@ -1,7 +1,7 @@
 import { models } from '../models/registry';
 import { mapLabel } from '../models/types';
 import { INFERNO, cssColour } from '../render/colormaps';
-import { fixationLayer, syncFixations } from '../render/fixations';
+import { dotsOver, dotsTag, fixationLayer, syncFixations } from '../render/fixations';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { getResults, onResults, shownLayer, type Results } from '../results';
 import { getViewState, onViewState } from '../view-state';
@@ -45,14 +45,14 @@ export function mountOverlay(stage: HTMLElement, status: HTMLElement): void {
     const outcome = results.status.get(shownId);
     const handover = shownId !== wanted ? `${chosen.name} is computed in advance for the example photos only; showing ${model.name}. ` : '';
     tag.classList.toggle('measured', model.kind === 'measured');
-    syncFixations(dots, results.image, outcome?.state === 'ready' && model.kind === 'measured', results.image.width, results.image.height);
+    syncFixations(dots, results.image, outcome?.state === 'ready' && dotsOver(model), results.image.width, results.image.height);
     if (outcome?.state === 'ready') {
       if (drawnFor?.results !== results || drawnFor.model !== shownId) {
         drawHeatmap(layer, outcome.map, results.image.width, results.image.height);
         drawnFor = { results, model: shownId };
       }
       layer.hidden = greyLayer.hidden = false;
-      tag.textContent = `${mapLabel(model)} · ${model.kind === 'measured' ? model.subtitle : model.name}`;
+      tag.textContent = `${mapLabel(model)} · ${model.kind === 'measured' ? model.subtitle : model.name}${dotsTag(dots, model)}`;
       status.textContent = handover;
     } else {
       layer.hidden = greyLayer.hidden = true;

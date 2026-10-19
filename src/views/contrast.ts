@@ -2,7 +2,7 @@ import { difference, pearson } from '../maps/saliency-map';
 import { models } from '../models/registry';
 import { mapLabel, type ModelSpec } from '../models/types';
 import { BLUE_ORANGE, cssColour } from '../render/colormaps';
-import { fixationLayer, syncFixations } from '../render/fixations';
+import { dotsOver, dotsTag, fixationLayer, syncFixations } from '../render/fixations';
 import { drawDifference, drawGreyed, drawHeatmap } from '../render/heatmap';
 import { bestModel, getResults, modelsFor, onResults, type Results } from '../results';
 import { onViewState } from '../view-state';
@@ -47,14 +47,21 @@ function select(label: string): { wrap: HTMLLabelElement; select: HTMLSelectElem
   return { wrap, select };
 }
 
-/** One of the two maps beneath the contrast; the measured map also gets the canvas for its fixation points. */
+interface Beneath {
+  figure: HTMLElement;
+  model: ModelSpec;
+  tag: HTMLElement;
+  dots: HTMLCanvasElement;
+}
+
+/** One of the two maps beneath the contrast, with a canvas for the fixation points (see `dotsOver`). */
 function heatFigure(
   results: Results,
   model: ModelSpec,
   map: Parameters<typeof drawHeatmap>[1],
   w: number,
   h: number,
-): { figure: HTMLElement; dots?: HTMLCanvasElement } {
+): Beneath {
   const figure = document.createElement('figure');
   figure.className = 'contrast-map';
   const frame = document.createElement('div');
@@ -68,12 +75,12 @@ function heatFigure(
   const tag = document.createElement('span');
   tag.className = model.kind === 'measured' ? 'predicted-tag measured' : 'predicted-tag';
   tag.textContent = mapLabel(model);
-  const dots = model.kind === 'measured' ? fixationLayer() : undefined;
-  frame.append(...[greyed, layer, dots, tag].filter((node) => node !== undefined));
+  const dots = fixationLayer();
+  frame.append(greyed, layer, dots, tag);
   const caption = document.createElement('figcaption');
   caption.textContent = model.name;
   figure.append(frame, caption);
-  return { figure, dots };
+  return { figure, model, tag, dots };
 }
 
 /**
@@ -119,8 +126,14 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
 
   let drawnKey = '';
   let drawnFor: Results | null = null;
-  let dots: { canvas: HTMLCanvasElement; results: Results; w: number; h: number } | null = null;
-  const syncDots = () => dots && syncFixations(dots.canvas, dots.results.image, true, dots.w, dots.h);
+  let dots: { maps: Beneath[]; results: Results; w: number; h: number } | null = null;
+  const syncDots = () => {
+    if (!dots) return;
+    for (const map of dots.maps) {
+      syncFixations(map.dots, dots.results.image, dotsOver(map.model), dots.w, dots.h);
+      map.tag.textContent = mapLabel(map.model) + dotsTag(map.dots, map.model);
+    }
+  };
 
   function current(results: Results): [string, string] | undefined {
     if (chosen && chosen.every((id) => usable(results, id))) return chosen;
@@ -222,8 +235,7 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
     const ph = Math.round(results.image.height * ps);
     const figures = [heatFigure(results, a, sa.map, pw, ph), heatFigure(results, b, sb.map, pw, ph)];
     pair.replaceChildren(...figures.map((f) => f.figure));
-    const canvas = figures.find((f) => f.dots)?.dots;
-    dots = canvas ? { canvas, results, w: pw, h: ph } : null;
+    dots = { maps: figures, results, w: pw, h: ph };
     syncDots();
   }
 

@@ -1363,6 +1363,11 @@ a:hover {
   accent-color: var(--iris);
 }
 
+.toggle:has(input:disabled) {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .inspector .legend {
   display: flex;
 }
@@ -1512,10 +1517,12 @@ a:hover {
   }
 }
 
-/* The fixation checkbox under the image (prompt 050). */
+/* The fixation checkboxes under the image (prompts 050, 056). */
 .stage-toggle-row {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-end;
+  gap: 4px 20px;
   margin-top: 10px;
 }
 

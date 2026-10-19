@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.35 · **Last updated:** 2026-10-19
+**Version:** 0.36 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -71,7 +71,10 @@ panorama) and computes their areas, with a ground-floor rule for panoramas
 and tags them on the page (prompt 052). 0.34 adds a slider for the fixation points' opacity below
 the heatmap strength (prompt 054, owner's request of 2026-10-19). 0.35 shows
 the three principles together in the Qualities view instead of behind a switch
-(prompt 055, owner's request of 2026-10-19).
+(prompt 055, owner's request of 2026-10-19). 0.36 lets visitors draw the
+fixation points over the predicted maps too, off by default, which reverses the
+earlier rule of drawing them over the measured map only (prompt 056, owner's
+request of 2026-10-19).
 
 ## Scope
 
@@ -345,7 +348,13 @@ interface ExamplePhoto {
   "Show fixations (raw data)", on by default (prompt 049) and present only on
   photos with measured data, and repeated directly under the image (both
   change the same setting; prompt 050), draws them as cyan dots over the "Measured gaze" map in
-  "Single map", "Side by side" and "Contrast", and over no other map. The
+  "Single map", "Side by side" and "Contrast". A second checkbox "Also over
+  the model maps", beside each of them, off by default and inactive while
+  the dots are off, draws the same dots over the predicted maps too: in
+  "Single map", in every panel of "Side by side" and on both maps beneath
+  the contrast, never on the contrast map itself or the plain photo
+  (prompt 056, owner's request of 2026-10-19, replacing the rule of
+  prompt 030 that drew them over the measured map only). The
   heatmap strength does not dim them. Their opacity is set by a slider
   "Fixation points (raw data)" directly below the heatmap strength in the
   inspector's "Display" section, 65% by default, present only on photos with
@@ -623,7 +632,8 @@ was run on the photos.
   - an inspector: the layers (choosing one opens it in "Single map"), the
     Contrast selectors with "Reset to the best model", the heatmap strength
     (also applied in "Side by side") with its legend, on photos with measured
-    gaze the "Show fixations (raw data)" checkbox, the match with the
+    gaze the "Show fixations (raw data)" and "Also over the model maps"
+    checkboxes, the match with the
     reference, and a short note on the open view.
   The agreement matrix, About and the methods follow below; a status bar
   shows how many layers are ready.
@@ -726,7 +736,8 @@ was run on the photos.
 
 - Every predicted heatmap carries the label **"Predicted"**. The measured map
   carries **"Measured"**, in its own colour, and is never presented as a
-  prediction.
+  prediction. A predicted map with the measured fixation points over it adds
+  **"with measured fixations"** to its label (prompt 056).
 - The page states, near the top, that these are predictions, not measured gaze,
   except the "Measured gaze" layer on the Zürich photos.
 - The Areas view carries the label **"Automatic areas · not an expert

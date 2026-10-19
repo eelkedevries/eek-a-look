@@ -130,8 +130,15 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
   fixationBox.checked = getViewState().fixations;
   fixationBox.addEventListener('change', () => setViewState({ fixations: fixationBox.checked }));
   fixationToggle.append(fixationBox, el('span', undefined, 'Show fixations (raw data)'));
+  // Prompt 056: the same dots over the predicted maps too, off by default.
+  const modelsToggle = el('label', 'toggle');
+  const modelsBox = el('input');
+  modelsBox.type = 'checkbox';
+  modelsBox.checked = getViewState().fixationsOnModels;
+  modelsBox.addEventListener('change', () => setViewState({ fixationsOnModels: modelsBox.checked }));
+  modelsToggle.append(modelsBox, el('span', undefined, 'Also over the model maps'));
   const fixationNote = el('p', 'inspector-note');
-  gaze.section.append(fixationToggle, fixationNote);
+  gaze.section.append(fixationToggle, modelsToggle, fixationNote);
 
   const match = section('Match');
   const matchNote = el('p', 'inspector-note', 'Correlation for this photo: 0 = unrelated · 1 = same pattern.');
@@ -149,11 +156,14 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
     const counts = results?.image.measured ? results.image.measuredCounts : undefined;
     gaze.section.hidden = !counts || !['overlay', 'side', 'contrast'].includes(getViewState().view);
     // The checkbox under the image (prompt 050) changes the same setting.
-    fixationBox.checked = getViewState().fixations;
+    const { fixations, fixationsOnModels, fixationOpacity } = getViewState();
+    fixationBox.checked = fixations;
+    modelsBox.checked = fixationsOnModels;
+    modelsBox.disabled = !fixations;
     dotStrength.hidden = !counts;
-    dotValue.textContent = `${getViewState().fixationOpacity}%`;
+    dotValue.textContent = `${fixationOpacity}%`;
     fixationNote.textContent = counts
-      ? `${counts.fixations} fixations from ${counts.observers} people · on the Measured gaze layer`
+      ? `${counts.fixations} fixations from ${counts.observers} people · ${fixationsOnModels ? 'on the measured and model maps' : 'on the Measured gaze layer'}`
       : '';
   }
 

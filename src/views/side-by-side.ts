@@ -1,6 +1,6 @@
 import { pearson } from '../maps/saliency-map';
 import { mapLabel, type ModelSpec } from '../models/types';
-import { fixationLayer, syncFixations } from '../render/fixations';
+import { dotsOver, dotsTag, fixationLayer, syncFixations } from '../render/fixations';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { modelsFor, onResults, referenceModel, type Results } from '../results';
 import { getViewState, onViewState } from '../view-state';
@@ -17,8 +17,9 @@ interface Cell {
   score: HTMLElement;
   contrast: HTMLButtonElement;
   drawn: boolean;
-  /** Only on the measured map. */
-  dots?: HTMLCanvasElement;
+  tag: HTMLElement;
+  /** On every map; shown over the measured map, and over the predicted ones on request (prompt 056). */
+  dots: HTMLCanvasElement;
 }
 
 function photoCanvas(results: Results, width: number, height: number): HTMLCanvasElement {
@@ -100,8 +101,8 @@ export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: s
       tag.textContent = mapLabel(model);
       const note = document.createElement('span');
       note.className = 'cell-note';
-      const dots = model.kind === 'measured' ? fixationLayer() : undefined;
-      frame.append(...[greyed, layer, dots, tag, note].filter((node) => node !== undefined));
+      const dots = fixationLayer();
+      frame.append(greyed, layer, dots, tag, note);
 
       const name = document.createElement('span');
       name.className = 'cell-name';
@@ -115,7 +116,7 @@ export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: s
       contrast.textContent = 'Contrast';
       contrast.hidden = true;
 
-      cells.set(model.id, { model, layer, note, score, contrast, drawn: false, dots });
+      cells.set(model.id, { model, layer, note, score, contrast, drawn: false, tag, dots });
       figures.push(figure(frame, name, score, contrast));
     }
     grid.replaceChildren(...figures);
@@ -124,7 +125,8 @@ export function mountSideBySide(panel: HTMLElement, onContrast: (a: string, b: s
 
   function syncDots(results: Results) {
     for (const cell of cells.values()) {
-      if (cell.dots) syncFixations(cell.dots, results.image, cell.drawn, w, h);
+      syncFixations(cell.dots, results.image, cell.drawn && dotsOver(cell.model), w, h);
+      cell.tag.textContent = mapLabel(cell.model) + dotsTag(cell.dots, cell.model);
     }
   }
 

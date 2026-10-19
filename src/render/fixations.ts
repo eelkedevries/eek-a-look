@@ -1,6 +1,23 @@
 import { loadFixations, type Fixations } from '../models/measured';
+import type { ModelSpec } from '../models/types';
 import type { CurrentImage } from '../state';
 import { getViewState } from '../view-state';
+
+/**
+ * Whether the fixation points go over a map of this kind: always over the measured map, and over the
+ * predicted maps too when the visitor asks for it (prompt 056).
+ */
+export function dotsOver(model: Pick<ModelSpec, 'kind'>): boolean {
+  return model.kind === 'measured' || getViewState().fixationsOnModels;
+}
+
+/**
+ * The addition to a map's tag while its dots are shown: on a predicted map the dots are measured data,
+ * so the tag says so. Call after `syncFixations`.
+ */
+export function dotsTag(canvas: HTMLCanvasElement, model: Pick<ModelSpec, 'kind'>): string {
+  return model.kind !== 'measured' && !canvas.hidden ? ' · with measured fixations' : '';
+}
 
 /**
  * The whole layer is faded, so each dot and its edge keep their look at any strength: 65% by default
@@ -10,7 +27,7 @@ function applyOpacity(canvas: HTMLCanvasElement): void {
   canvas.style.opacity = String(getViewState().fixationOpacity / 100);
 }
 
-/** A canvas for the fixation points, stacked over a measured map; it ignores the heatmap strength. */
+/** A canvas for the fixation points, stacked over a map; it ignores the heatmap strength. */
 export function fixationLayer(): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.className = 'layer fixations';
@@ -45,7 +62,8 @@ function drawFixations(target: HTMLCanvasElement, fixations: Fixations, width: n
 
 /**
  * Shows the photo's fixations on `canvas` when the visitor has switched them on and `show` holds (the
- * canvas lies over a drawn measured map); otherwise hides it. The points load on first use.
+ * canvas lies over a drawn map that takes dots, see `dotsOver`); otherwise hides it. The points load on
+ * first use.
  */
 export function syncFixations(canvas: HTMLCanvasElement, image: CurrentImage, show: boolean, width: number, height: number): void {
   const id = image.exampleId;
