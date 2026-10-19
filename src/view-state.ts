@@ -1,8 +1,8 @@
-import { NEURAL_PREFERENCE } from './models/registry';
-
 /**
  * What the visitor has chosen across views: the open view, the layer in the single-map view, the heatmap
- * strength and whether the measured fixations are drawn over the measured layer.
+ * strength and whether the measured fixations are drawn over the measured layer. By default the single map
+ * shows measured gaze with its fixations where the photo has them (prompt 049) and otherwise hands over to
+ * the best model (`shownLayer` in results.ts).
  */
 export interface ViewState {
   view: string;
@@ -14,7 +14,7 @@ export interface ViewState {
 
 type Listener = (state: ViewState) => void;
 
-const state: ViewState = { view: 'overlay', model: NEURAL_PREFERENCE[0], opacity: 100, fixations: false };
+const state: ViewState = { view: 'overlay', model: 'measured', opacity: 100, fixations: true };
 const listeners = new Set<Listener>();
 
 export function getViewState(): ViewState {

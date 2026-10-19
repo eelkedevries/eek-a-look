@@ -25,9 +25,10 @@ page shows UNISAL in their place and says so.
 
 Choose a view above the photo; the inspector on the right changes with it.
 
-- **Single map:** one layer on the photo. Choose the layer in the inspector;
-  **Heatmap strength** fades it in and out. The warmer an area, the more
-  likely people are to look there.
+- **Single map:** one layer on the photo. On the Zürich photos it opens on
+  **Measured gaze**, with the fixations as dots; elsewhere on the best model.
+  Choose another layer in the inspector; **Heatmap strength** fades it in and
+  out. The warmer an area, the more likely people are to look there.
 - **Side by side:** the photo and all layers together. Move the pointer over
   any map to mark the same spot in all of them. Each map shows its match (r)
   with the reference: measured gaze where the photo has it, otherwise the best
@@ -38,8 +39,8 @@ Choose a view above the photo; the inspector on the right changes with it.
   Orange marks where the first map expects more looking, blue where the second
   does. Both maps are shown underneath.
 - **Show fixations (raw data):** on the Zürich photos, this checkbox in the
-  inspector draws every fixation the measured map was built from as a cyan
-  dot over the **Measured gaze** map, in all three views above. The dots are
+  inspector (on by default) draws every fixation the measured map was built
+  from as a cyan dot over the **Measured gaze** map, in all three views above. The dots are
   never drawn over a model's map.
 - **Areas:** automatic areas for the example photos, with how much of each
   map's attention falls inside them relative to their size.

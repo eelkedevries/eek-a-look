@@ -197,3 +197,6 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   pixels on 85 DMS test photos; at most 5 of 24 outcomes change per
   threshold; every measure separates the photos. Expert-label template and
   `agreement.py`)
+- `049_measured_gaze_default.md` (spec 0.25: the single map opens on
+  measured gaze with its fixations on the Zürich photos; elsewhere the best
+  model, which the inspector now marks as shown)

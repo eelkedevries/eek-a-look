@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.24 · **Last updated:** 2026-10-19
+**Version:** 0.25 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -54,6 +54,8 @@ from the DMS46 material model (prompt 042). 0.24 adds 25 openly licensed
 images from two published eye-tracking studies (Zhang et al. 2026; Wang, Hu &
 Ma 2025) with all five predictions; each links to the heat map its study
 measured, which is never turned into a layer (prompt 031, owner's request of
+2026-10-19). 0.25 opens the single map on measured gaze
+with its fixations where the photo has them (prompt 049, owner's request of
 2026-10-19).
 
 ## Scope
@@ -324,8 +326,8 @@ interface ExamplePhoto {
   (MSDB, IIE, UNISAL) and never in the agreement matrix.
 - **Fixation points:** the fixations behind each map (after steps 1–2 of the
   recipe) are also written to `<photo-id>.points.json`. An inspector checkbox
-  "Show fixations (raw data)", off by default and present only on photos with
-  measured data, draws them as cyan dots over the "Measured gaze" map in
+  "Show fixations (raw data)", on by default (prompt 049) and present only on
+  photos with measured data, draws them as cyan dots over the "Measured gaze" map in
   "Single map", "Side by side" and "Contrast", and over no other map. The
   heatmap strength does not dim them.
 
@@ -517,6 +519,12 @@ was run on the photos.
 
 - **Best model** = the best available neural model for the photo: MSDB, then
   IIE, then UNISAL.
+- **Single map**: one layer at a time. By default it is "Measured gaze" with
+  the fixation points where the photo has measured data; on other photos the
+  view shows the best model instead, without an "unavailable" note. A layer
+  the visitor chooses stays chosen across photos; where a photo lacks it or
+  it cannot run (pre-computed models on uploads), the best model is shown,
+  and the inspector marks the layer actually shown.
 - **Side by side**: the photo and every layer that covers it. Each map shows
   its Pearson r with the reference (measured gaze where the photo has it,
   otherwise the best model), and the reference is marked as such. A ring

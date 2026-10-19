@@ -38,6 +38,20 @@ export function bestModel(results: Results): string | undefined {
   return NEURAL_PREFERENCE.find((id) => !['unavailable', 'failed'].includes(results.status.get(id)?.state ?? 'unavailable'));
 }
 
+/**
+ * The layer the single-map view shows for a chosen one: the chosen layer if this photo has it and it can run
+ * here, otherwise the best neural model that can. A layer the photo lacks, such as measured gaze on the Dutch
+ * photos, hands over silently; `wanted` differs from the choice only then.
+ */
+export function shownLayer(results: Results, selected: string): { wanted: string; shown: string } {
+  const wanted = results.status.has(selected) ? selected : NEURAL_PREFERENCE[0];
+  const shown =
+    results.status.get(wanted)?.state === 'unavailable'
+      ? (NEURAL_PREFERENCE.find((id) => !['unavailable', 'failed'].includes(results.status.get(id)?.state ?? '')) ?? wanted)
+      : wanted;
+  return { wanted, shown };
+}
+
 /** The map others are scored against: measured gaze where the photo has it, otherwise the best neural model. */
 export function referenceModel(results: Results): string | undefined {
   return results.status.has('measured') ? 'measured' : bestModel(results);

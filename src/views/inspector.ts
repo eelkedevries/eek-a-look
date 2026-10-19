@@ -1,7 +1,7 @@
 import { pearson } from '../maps/saliency-map';
 import { models } from '../models/registry';
 import type { ModelSpec } from '../models/types';
-import { getResults, modelsFor, onResults, referenceModel, type Results } from '../results';
+import { getResults, modelsFor, onResults, referenceModel, shownLayer, type Results } from '../results';
 import { getViewState, onViewState, setViewState } from '../view-state';
 import { gradientCss } from './overlay';
 
@@ -144,12 +144,13 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
     const ref = models.find((m) => m.id === refId);
     const r = scores(results, refId);
     const { view, model: selected } = getViewState();
+    const { shown } = shownLayer(results, selected);
 
     for (const model of models) {
       const row = rows.get(model.id)!;
       const status = results.status.get(model.id);
       row.button.hidden = !status;
-      row.button.setAttribute('aria-pressed', String(view === 'overlay' && model.id === selected));
+      row.button.setAttribute('aria-pressed', String(view === 'overlay' && model.id === shown));
       row.button.disabled = status?.state === 'unavailable' || status?.state === 'failed';
       row.note.textContent =
         status?.state === 'unavailable' ? 'example photos only'

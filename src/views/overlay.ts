@@ -1,9 +1,9 @@
-import { models, NEURAL_PREFERENCE } from '../models/registry';
+import { models } from '../models/registry';
 import { mapLabel } from '../models/types';
 import { INFERNO, cssColour } from '../render/colormaps';
 import { fixationLayer, syncFixations } from '../render/fixations';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
-import { getResults, onResults, type Results } from '../results';
+import { getResults, onResults, shownLayer, type Results } from '../results';
 import { getViewState, onViewState } from '../view-state';
 
 export function gradientCss(steps = 8): string {
@@ -39,12 +39,8 @@ export function mountOverlay(stage: HTMLElement, status: HTMLElement): void {
     }
 
     // A layer the photo does not have (measured gaze), or one that does not cover it, hands over to the best one that does.
-    const wanted = results.status.has(selected) ? selected : NEURAL_PREFERENCE[0];
+    const { wanted, shown: shownId } = shownLayer(results, selected);
     const chosen = models.find((m) => m.id === wanted)!;
-    const shownId =
-      results.status.get(wanted)?.state === 'unavailable'
-        ? (NEURAL_PREFERENCE.find((id) => !['unavailable', 'failed'].includes(results.status.get(id)?.state ?? '')) ?? wanted)
-        : wanted;
     const model = models.find((m) => m.id === shownId)!;
     const outcome = results.status.get(shownId);
     const handover = shownId !== wanted ? `${chosen.name} is computed in advance for the example photos only; showing ${model.name}. ` : '';
