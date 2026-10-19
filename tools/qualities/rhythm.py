@@ -22,7 +22,7 @@ from PIL import Image
 from scipy import ndimage
 from scipy.cluster.hierarchy import fcluster, linkage
 
-from shared import AREAS, CACHE, EXAMPLES, HERE, AreaData, evidence, evidence_lines
+from shared import AREAS, CACHE, CATEGORY_IDS, EXAMPLES, HERE, AreaData, evidence, evidence_lines
 
 import elements  # tools/areas: SAM 3 pin and the façade zone
 import validate  # tools/areas: dataset mappings
@@ -356,7 +356,88 @@ def zones(lab: np.ndarray) -> np.ndarray:
     return out
 
 
+def measure_panorama(photo: dict, data: AreaData, dev: torch.device, sam_holder: dict, tau: dict[str, float], s: float) -> tuple[dict, dict]:
+    """Prompt 061: a 360° panorama is measured in the four side faces of a cube map (tools/areas/panorama.py), where
+    straight lines are straight: per face, instances, cells and periodicity as for a photo; the cells of all faces are
+    pooled for the indicators and the variety, and the evidence is mapped back onto the panorama's grid."""
+    import panorama
+
+    image = Image.open(EXAMPLES / photo["file"]).convert("RGB")
+    pixels = np.asarray(image.resize((data.width, data.height), Image.LANCZOS))
+    facade_pano = data.category("facade")
+    segs = segments(image, facade_pano)
+    n = panorama.FACE
+    faces, labs, found = [], [], {p: [] for p in PHRASES}
+    for yaw in panorama.YAWS:
+        face_image = Image.fromarray(panorama.to_face(pixels, yaw))
+        cats = panorama.to_face(data.categories, yaw, nearest=True)
+        facade = cats == CATEGORY_IDS.index("facade")
+
+        def compute(face_image=face_image, cats=cats):
+            sam_holder["sam"] = sam_holder.get("sam") or Sam3Instances(dev)
+            zone = elements.facade_zone(cats)
+            return {p: sam_holder["sam"](face_image, p, (n, n), SCORE_FLOOR, zone) for p in PHRASES}
+
+        scored = instances_cached(f"{photo['id']}-face{yaw}", compute)
+        for p in PHRASES:
+            found[p] += [i for i in scored[p] if i["score"] >= s]
+        cells = cell_periodicities(facade, centres_above(scored, s))
+        faces.append({"yaw": yaw, "facade": facade, "cells": cells, "classes": np.array([classify(c, tau) for c in cells], int)})
+        labs.append(lab_cells(face_image, facade, cells) if cells else np.zeros((0, 3)))
+    classes = np.concatenate([f["classes"] for f in faces])
+    lab = np.vstack(labs)
+    zone_of = zones(lab) if len(lab) else np.zeros(0, int)
+
+    n_cells = len(classes)
+    share = lambda k: float((classes == k).sum() / n_cells) if n_cells else None
+    indicators = {
+        "facadeCells": n_cells,
+        "rhythmicShare": share(RHYTHMIC), "layersOnlyShare": share(LAYERS), "baysOnlyShare": share(BAYS),
+        "plainShare": share(PLAIN), "irregularShare": share(IRREGULAR),
+        "distinctZones": int(zone_of.max() + 1) if n_cells and zone_of.max() >= 0 else 0,
+        "windowInstances": len(found["window"]), "balconyInstances": len(found["balcony"]),
+    }
+    outcome, reasons = rule(indicators)
+
+    def cells_mask(select) -> np.ndarray:
+        out = np.zeros_like(facade_pano)
+        k = 0
+        for face in faces:
+            m = np.zeros(face["facade"].shape, np.uint8)
+            for cell in face["cells"]:
+                if select[k]:
+                    y0, x0 = cell["row"] * CELL, cell["col"] * CELL
+                    m[y0:y0 + CELL, x0:x0 + CELL] = 1
+                k += 1
+            back, _ = panorama.from_face(m * face["facade"], face["yaw"], data.width, data.height)
+            out |= back.astype(bool)
+        return out & facade_pano
+
+    def lines(family: str) -> np.ndarray:
+        canvas = np.zeros(facade_pano.shape, np.uint8)
+        for seg in segs[family]:
+            cv2.line(canvas, (int(round(seg[4])), int(round(seg[5]))), (int(round(seg[6])), int(round(seg[7]))), 1, 1)
+        return canvas.astype(bool)
+
+    masks = {"rhythmic": cells_mask(classes == RHYTHMIC), "layers": cells_mask(classes == LAYERS),
+             "bays": cells_mask(classes == BAYS), "plain": cells_mask((classes == PLAIN) | (classes == IRREGULAR))}
+    layers = [
+        evidence("rhythmic", "Repeating layers and bays", "supports", masks["rhythmic"]),
+        evidence("layers-only", "Layers only", "context", masks["layers"]),
+        evidence("bays-only", "Bays only", "context", masks["bays"]),
+        evidence("plain-irregular", "Plain or irregular", "against", masks["plain"]),
+        evidence_lines("floor-lines", "Floor lines and bands", "context", segs["layer"][:, 4:8], lines("layer")),
+        evidence_lines("vertical-lines", "Vertical divisions", "context", segs["vertical"][:, 4:8], lines("vertical")),
+    ]
+    for z in range(indicators["distinctZones"]):
+        layers.append(evidence(f"zone-{z + 1}", f"Façade zone {z + 1}", "context", cells_mask(zone_of == z)))
+    detail = {"panorama": True, "masks": masks, "faces": [(f["yaw"], len(f["cells"])) for f in faces], "instances": found}
+    return {"outcome": outcome, "reasons": reasons, "indicators": indicators, "evidence": layers}, detail
+
+
 def measure(photo: dict, data: AreaData, dev: torch.device, sam_holder: dict, tau: dict[str, float], s: float) -> tuple[dict, dict]:
+    if photo.get("imageKind") == "panorama":
+        return measure_panorama(photo, data, dev, sam_holder, tau, s)
     facade = data.category("facade")
     image = Image.open(EXAMPLES / photo["file"]).convert("RGB")
     size = (data.width, data.height)

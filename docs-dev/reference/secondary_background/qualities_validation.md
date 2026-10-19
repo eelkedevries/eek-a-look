@@ -8,8 +8,9 @@ Made by `tools/qualities/checks.py` (prompt 043) on 2026-10-19. Figures in
 - **Checked:** whether each measure reads its *components* as people
   labelled them in public datasets, how much the outcomes depend on the
   rule thresholds, and whether the measures tell the 49
-  example photos apart (the 24 earlier photos and the 25 study images,
-  renderings and 360° panoramas, separately).
+  example photos apart (the photos and the study images, renderings and
+  360° panoramas, separately; the four Andersson photos have the
+  materials measure only).
 - **Not checked:** the principles themselves. No experts have judged these
   photos, so agreement with experts has not been evaluated. Agreement
   between automated methods (below) is not validity.
@@ -123,10 +124,10 @@ How many of the 49 outcomes change when one threshold is halved or multiplied by
 | groundFloor | openPresent | 0.3 | 3 | 0 |
 | groundFloor | openAbsent | 0.1 | 3 | 2 |
 | groundFloor | closedAbsent | 0.6 | 0 | 4 |
-| rhythm | facadeCellsMin | 8 | 3 | 4 |
+| rhythm | facadeCellsMin | 8 | 0 | 0 |
 | rhythm | rhythmicPresent | 0.25 | 6 | 5 |
 | rhythm | zonesPresent | 2 | 1 | 6 |
-| rhythm | rhythmicAbsent | 0.1 | 1 | 3 |
+| rhythm | rhythmicAbsent | 0.1 | 2 | 3 |
 | materials | zoneMin | 0.1 | 0 | 2 |
 | materials | texturedPresent | 0.25 | 12 | 7 |
 | materials | texturedAbsent | 0.1 | 2 | 2 |
@@ -136,18 +137,18 @@ How many of the 49 outcomes change when one threshold is halved or multiplied by
 
 | Principle | Photos | Likely present | Unclear | Likely absent |
 |---|---|---|---|---|
-| groundFloor | 24 earlier photos | 1 | 10 | 13 |
+| groundFloor | 24 photos | 1 | 10 | 13 |
 | groundFloor | 25 study images | 2 | 7 | 16 |
-| rhythm | 24 earlier photos | 11 | 7 | 6 |
-| rhythm | 25 study images | 3 | 12 | 10 |
-| materials | 24 earlier photos | 6 | 10 | 8 |
+| rhythm | 24 photos | 11 | 7 | 6 |
+| rhythm | 25 study images | 3 | 5 | 17 |
+| materials | 28 photos | 6 | 14 | 8 |
 | materials | 25 study images | 4 | 20 | 1 |
 
 | Principle | Main indicator | Range over all photos |
 |---|---|---|
 | groundFloor | `openShare` | 0.00–0.64 |
 | rhythm | `rhythmicShare` | 0.00–0.90 |
-| materials | `texturedShare` | 0.00–0.70 |
+| materials | `texturedShare` | 0.00–0.84 |
 
 No measure gives the same outcome on every photo of a group.
 

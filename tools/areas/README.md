@@ -92,6 +92,16 @@ The 25 images "From published studies" carry `imageKind` in the manifest:
   Checked by hand on one column of four panoramas (façades 2.4–21.8 m away).
   The façades in these tree-lined streets are small (0–9% of the image),
   and SAM 3 finds no windows, doors, balconies or shopfronts in them.
+  Prompt 061 also searches the four side faces of a cube map
+  (`panorama.py`: yaw 0°, 90°, 180°, 270°, 90° × 90°, 512 px, upsampled from
+  about 160 px of panorama per face; together they cover every direction
+  within about 35° of the horizon), maps each face's scores back and keeps
+  the highest. `uv run elements.py --panoramas`. Found: 7 windows on a
+  distant building in swietenia-2 (right, by eye), 3 "shopfronts" each in
+  swietenia-3 and mangifera-3 (on mangifera-3 a fence, so wrong) and a window
+  and an entrance in mangifera-2 (the entrance is a parked van's door, so
+  wrong); nothing in the other 11. The panoramas are too small and blurred
+  for façade elements.
 
 Both kinds are recorded in the area file (`imageKind`).
 

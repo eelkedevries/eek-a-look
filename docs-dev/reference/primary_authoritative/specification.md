@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.47 · **Last updated:** 2026-10-19
+**Version:** 0.48 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -106,6 +106,7 @@ request of 2026-10-19).
 0.47 names the Example section's measure "predicted gaze density" and keeps a
 colour bar for the difference image only, with a key naming the image each
 colour favours (prompt 070, owner's request of 2026-10-19).
+0.48 searches the 360° panoramas for façade elements and measures their rhythm in the four side faces of a cube map (prompt 061, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -484,6 +485,10 @@ are not in the library.
     *y<sub>h</sub>*) / *R*, so at distance *d* = *c* / tan *φ*; the ground
     floor reaches up to row *y<sub>h</sub>* − (*R* / π) atan((*H* − *c*) /
     *d*). Hidden bases are interpolated as above (prompt 051).
+    Façade elements are searched in the whole panorama and in the four side
+    faces of a cube map (yaw 0°, 90°, 180°, 270°; pitch 0°; 90° × 90°,
+    512 px, gnomonic, `tools/areas/panorama.py`), each face's score map
+    mapped back, the highest score per pixel counting (prompt 061).
   - **Design renderings** (`imageKind: 'render'`) use the rule for ordinary
     photos; their virtual camera height is unknown, so 1.6 m is an
     assumption.
@@ -515,7 +520,12 @@ SAM 3 façade elements, which the ground-floor and rhythm measures need, until
 (`imageKind`, prompt 052) the rules are the same; the reasons add "A design
 rendering, not a photograph." or "A 360° panorama: straight lines curve and
 distant surfaces are small, so repetition and texture are harder to see."
-The simulated panel judged only the 24 earlier photos.
+The simulated panel judged only the 24 earlier photos. For panoramas the
+rhythm measure runs in the four cube faces (prompt 061): the façade
+categories are projected onto each face, window and balcony instances are
+found there, cells and periodicity are computed per face with the same
+thresholds, the cells of all faces are pooled for the indicators and the
+variety, and the evidence is mapped back onto the panorama.
 
 The three design principles come from Spanjar & Suurenbroek (2020), whose
 panel of 14 experts judged whole photos as present, absent or ambiguous. The

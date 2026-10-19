@@ -183,9 +183,16 @@ class Sam3Masks(rhythm.Sam3Instances):
 
 # --- sensitivity, discrimination, panel cross-table ----------------------------------------
 
+def having(data: dict, principle: str) -> dict:
+    """The photos with a result for this principle (the Andersson photos of prompt 069 have materials only)."""
+    return {pid: d for pid, d in data.items() if principle in d["quality"]["principles"]}
+
+
 def sensitivity(data: dict) -> dict:
     out = {}
+    all_data = data
     for principle, defaults in THRESHOLDS.items():
+        data = having(all_data, principle)
         base = {pid: outcome(principle, d["quality"]["principles"][principle]["indicators"], d["horizon"], defaults) for pid, d in data.items()}
         stored = {pid: d["quality"]["principles"][principle]["outcome"] for pid, d in data.items()}
         assert base == stored, f"{principle}: the re-implemented rule does not reproduce the stored outcomes"
@@ -203,7 +210,9 @@ def sensitivity(data: dict) -> dict:
 
 def discrimination(data: dict) -> dict:
     out = {}
+    all_data = data
     for principle in PRINCIPLES:
+        data = having(all_data, principle)
         outcomes = [d["quality"]["principles"][principle]["outcome"] for d in data.values()]
         values = [d["quality"]["principles"][principle]["indicators"].get(MAIN[principle]) for d in data.values()]
         values = [v for v in values if v is not None]
@@ -231,7 +240,7 @@ def panel_cross_table(data: dict) -> dict:
     for principle in PRINCIPLES:
         kinds = ["present", "ambiguous", "absent"]
         table = {a: {b: 0 for b in kinds} for a in kinds}
-        judged = {pid: d for pid, d in data.items() if pid in panel}  # the panel judged the 24 earlier photos
+        judged = {pid: d for pid, d in having(data, principle).items() if pid in panel}  # the panel judged the 24 earlier photos
         for pid, d in judged.items():
             table[to_panel[d["quality"]["principles"][principle]["outcome"]]][panel[pid][principle]["consensus"]] += 1
         out[principle] = {"rows": "image measure", "columns": "simulated panel v1", "table": table, "photos": len(judged),
@@ -343,8 +352,9 @@ def report(result: dict) -> str:
         "- **Checked:** whether each measure reads its *components* as people",
         "  labelled them in public datasets, how much the outcomes depend on the",
         f"  rule thresholds, and whether the measures tell the {sum(v['photos'] for v in d['rhythm']['byGroup'].values())}",
-        "  example photos apart (the 24 earlier photos and the 25 study images,",
-        "  renderings and 360° panoramas, separately).",
+        "  example photos apart (the photos and the study images, renderings and",
+        "  360° panoramas, separately; the four Andersson photos have the",
+        "  materials measure only).",
         "- **Not checked:** the principles themselves. No experts have judged these",
         "  photos, so agreement with experts has not been evaluated. Agreement",
         "  between automated methods (below) is not validity.",
@@ -388,11 +398,11 @@ def report(result: dict) -> str:
             lines.append(f"| {p} | {name} | {v['value']} | {v['x0.5']} | {v['x1.5']} |")
     lines += ["", "## Do the measures tell the photos apart?", "",
               "| Principle | Photos | Likely present | Unclear | Likely absent |", "|---|---|---|---|---|"]
-    names = {"earlier": "24 earlier photos", "study": "25 study images"}
+    names = {"earlier": "photos", "study": "study images"}
     for p, v in d.items():
         for group, g in v["byGroup"].items():
             o = g["outcomes"]
-            lines.append(f"| {p} | {names.get(group, group)} | {o['likely-present']} | {o['unclear']} | {o['likely-absent']} |")
+            lines.append(f"| {p} | {g['photos']} {names.get(group, group)} | {o['likely-present']} | {o['unclear']} | {o['likely-absent']} |")
     lines += ["", "| Principle | Main indicator | Range over all photos |", "|---|---|---|"]
     for p, v in d.items():
         rng = "–" if v["min"] is None else f"{v['min']:.2f}–{v['max']:.2f}"

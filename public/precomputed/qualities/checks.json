@@ -184,8 +184,8 @@
   "rhythm": {
    "facadeCellsMin": {
     "value": 8,
-    "x0.5": 3,
-    "x1.5": 4
+    "x0.5": 0,
+    "x1.5": 0
    },
    "rhythmicPresent": {
     "value": 0.25,
@@ -199,7 +199,7 @@
    },
    "rhythmicAbsent": {
     "value": 0.1,
-    "x0.5": 1,
+    "x0.5": 2,
     "x1.5": 3
    }
   },
@@ -436,11 +436,11 @@
     },
     "guangzhou-mangifera-2": {
      "outcome": "likely-absent",
-     "value": 0.0
+     "value": 0.0031847133757961785
     },
     "guangzhou-mangifera-3": {
      "outcome": "likely-absent",
-     "value": 0.0
+     "value": 0.021798365122615803
     },
     "guangzhou-ficus-1": {
      "outcome": "likely-absent",
@@ -459,8 +459,8 @@
   "rhythm": {
    "outcomes": {
     "likely-present": 14,
-    "unclear": 19,
-    "likely-absent": 16
+    "unclear": 12,
+    "likely-absent": 23
    },
    "indicator": "rhythmicShare",
    "byGroup": {
@@ -477,8 +477,8 @@
      "photos": 25,
      "outcomes": {
       "likely-present": 3,
-      "unclear": 12,
-      "likely-absent": 10
+      "unclear": 5,
+      "likely-absent": 17
      },
      "sameOnAllPhotos": false
     }
@@ -624,7 +624,7 @@
      "value": 0.0
     },
     "guangzhou-tabebuia-1": {
-     "outcome": "unclear",
+     "outcome": "likely-absent",
      "value": 0.0
     },
     "guangzhou-tabebuia-2": {
@@ -636,12 +636,12 @@
      "value": 0.0
     },
     "guangzhou-hydrangea-1": {
-     "outcome": "unclear",
+     "outcome": "likely-absent",
      "value": 0.0
     },
     "guangzhou-hydrangea-2": {
-     "outcome": "unclear",
-     "value": null
+     "outcome": "likely-absent",
+     "value": 0.0
     },
     "guangzhou-hydrangea-3": {
      "outcome": "unclear",
@@ -653,18 +653,18 @@
     },
     "guangzhou-swietenia-2": {
      "outcome": "likely-absent",
-     "value": 0.0
+     "value": 0.057692307692307696
     },
     "guangzhou-swietenia-3": {
      "outcome": "likely-absent",
      "value": 0.0
     },
     "guangzhou-mangifera-1": {
-     "outcome": "unclear",
+     "outcome": "likely-absent",
      "value": 0.0
     },
     "guangzhou-mangifera-2": {
-     "outcome": "unclear",
+     "outcome": "likely-absent",
      "value": 0.0
     },
     "guangzhou-mangifera-3": {
@@ -672,7 +672,7 @@
      "value": 0.0
     },
     "guangzhou-ficus-1": {
-     "outcome": "unclear",
+     "outcome": "likely-absent",
      "value": 0.0
     },
     "guangzhou-ficus-2": {
@@ -680,7 +680,7 @@
      "value": null
     },
     "guangzhou-ficus-3": {
-     "outcome": "unclear",
+     "outcome": "likely-absent",
      "value": 0.0
     }
    }
@@ -688,16 +688,16 @@
   "materials": {
    "outcomes": {
     "likely-present": 10,
-    "unclear": 30,
+    "unclear": 34,
     "likely-absent": 9
    },
    "indicator": "texturedShare",
    "byGroup": {
     "earlier": {
-     "photos": 24,
+     "photos": 28,
      "outcomes": {
       "likely-present": 6,
-      "unclear": 10,
+      "unclear": 14,
       "likely-absent": 8
      },
      "sameOnAllPhotos": false
@@ -713,7 +713,7 @@
     }
    },
    "min": 0.0,
-   "max": 0.7007009882785566,
+   "max": 0.8360353617375832,
    "sameOnAllPhotos": false,
    "perPhoto": {
     "zuidas-gershwinplein": {
@@ -811,6 +811,22 @@
     "zurich-53": {
      "outcome": "likely-present",
      "value": 0.31276869534700086
+    },
+    "andersson-rome": {
+     "outcome": "unclear",
+     "value": 0.8000905330373352
+    },
+    "andersson-europe": {
+     "outcome": "unclear",
+     "value": 0.4676778242677824
+    },
+    "andersson-vy": {
+     "outcome": "unclear",
+     "value": 0.8360353617375832
+    },
+    "andersson-konijntjes": {
+     "outcome": "unclear",
+     "value": 0.601588650627615
     },
     "qinyang-01": {
      "outcome": "unclear",

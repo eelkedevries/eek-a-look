@@ -317,3 +317,8 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   no existing file changed; MSDB r with measured gaze 0.43–0.80. No horizon
   was found on any of the four, so materials read Unclear; SAM 3 elements,
   ground floor and rhythm, the panel and UP-CLIP are left for the laptop)
+- `061_panoramas_perspective.md` (spec 0.48: elements and rhythm of the 360°
+  panoramas in four cube faces, `tools/areas/panorama.py`. Few elements found (4
+  of 15 panoramas; two of three checked by eye wrong); rhythm unclear → likely
+  absent on 7 panoramas because more façade cells now count; ground floors
+  unchanged)
