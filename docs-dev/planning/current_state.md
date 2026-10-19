@@ -81,7 +81,8 @@ wins and the gap is work still to be done.
   headless Chromium and the manipulated areas by `tools/comparisons/`. Since
   prompt 067 each comparison shows A, B and the difference B − A side by side
   and measures one manipulated area only (entrance: the door and its
-  recoloured surround). Since prompt 068: colour bars, A and B on one
+  recoloured surround; since prompt 071 the whole stone block, recoloured by
+  rule in `tools/comparisons/recolour.py`). Since prompt 068: colour bars, A and B on one
   colour scale (`sharedRange()` in `src/render/heatmap.ts`), the selected
   model's Σ A, Σ B and B − A with its direction, and no measured gaze in the
   section. The edited images have no SAM 3 façade elements yet (gated model;
@@ -302,6 +303,11 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `070_example_density_terms.md` (spec 0.47: "predicted gaze density"
   throughout the section; a colour bar with a blue/orange key for the
   difference image only)
+- `071_example_larger_entrance.md` (spec 0.50: example 1's B recoloured by
+  rule, the whole stone entrance block in blue-teal, 3.4% of the image; all
+  four models now predict a higher gaze density on it in B, +0.7 to +4.4
+  points. Examples 2 and 3 not enlarged: the FLUX Kontext Space needs a
+  Hugging Face token)
 - `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational
   symmetry S against held-out labels; balanced accuracy on odd CMP A 0.781, R 0.776,
   S 0.613, and R's precision lower, so A is kept and no quality file changed. A

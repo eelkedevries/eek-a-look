@@ -1,20 +1,20 @@
 {
   "images": [
     {
-      "id": "zurich-42-entrance-surround",
+      "id": "zurich-42-entrance-block",
       "editOf": "zurich-42",
-      "condition": "Contrasting entrance surround",
+      "condition": "Blue-teal entrance block",
       "area": "Zürich",
       "city": "Zürich",
-      "title": "Street corner with a blue-teal entrance surround",
-      "file": "zurich-42-entrance-surround.jpg",
+      "title": "Street corner with the stone block around the entrance in blue-teal",
+      "file": "zurich-42-entrance-block.jpg",
       "width": 1280,
       "height": 960,
       "author": "Edited from Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
       "licence": "CC0 1.0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
-      "changes": "Edited with AI image editing (19 October 2026): a contrasting blue-teal surround around the doorway; small unintended changes elsewhere, such as sign lettering. Scaled from 1448 × 1086 to 1280 × 960 px to match the original; converted from PNG to JPEG"
+      "changes": "Recoloured by rule with tools/comparisons/recolour.py (prompt 071): the rusticated stone block around the entrance, from the balcony slab to the pavement, in blue-teal, keeping the stone's lightness; the door, steps, sign and plants unchanged; outside the block only JPEG re-encoding noise (mean 0.5 of 255 levels). Saved as JPEG"
     },
     {
       "id": "zurich-33-low-planting",
@@ -66,7 +66,7 @@
     }
   ],
   "examples": [
-    { "id": "entrance", "a": "zurich-42", "b": "zurich-42-entrance-surround" },
+    { "id": "entrance", "a": "zurich-42", "b": "zurich-42-entrance-block" },
     { "id": "greenery", "a": "zurich-33", "b": "zurich-33-low-planting" },
     { "id": "glazing", "a": "zurich-53-opaque-glazing", "b": "zurich-53-transparent-glazing", "reference": "zurich-53" }
   ]

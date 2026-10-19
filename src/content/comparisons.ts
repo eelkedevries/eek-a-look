@@ -41,21 +41,21 @@ export const COMPARISONS: ComparisonText[] = [
     place: 'Zürich 42',
     question: 'Does a contrasting colour surround make an entrance more visually prominent?',
     background:
-      'The entrance is where a building meets the street. In the original photograph, the doorway sits in a grey stone base beneath the corner balconies and barely stands out from it. Salience models treat colour contrast as a low-level feature that attracts attention.',
-    manipulated: 'the colour contrast of the entrance surround.',
-    conditionA: 'The original entrance.',
-    conditionB: 'A blue-teal surround around the doorway; the rest of the scene unchanged.',
+      'The entrance is where a building meets the street. In the original photograph, the doorway sits in a block of grey stone beneath the corner balconies and barely stands out from it. Salience models treat colour contrast as a low-level feature that attracts attention.',
+    manipulated: 'the colour of the stone surround of the entrance.',
+    conditionA: 'The original entrance in its grey stone block.',
+    conditionB: 'The whole stone block around the entrance, from the balcony to the pavement, in blue-teal; the door, steps, sign, plants and the rest of the scene unchanged.',
     outcomes: [
-      'B has a higher predicted gaze density on the entrance than A: the colour accent makes the entrance more prominent.',
-      'A and B do not differ meaningfully: the accent is too small to compete with the balconies, signs and other features of the scene.',
+      'B has a higher predicted gaze density on the entrance than A: the colour makes the entrance more prominent.',
+      'A and B do not differ meaningfully: the colour does not compete with the balconies, signs and other features of the scene.',
     ],
     labelA: 'A · Original',
-    labelB: 'B · Blue-teal surround',
+    labelB: 'B · Blue-teal entrance block',
     area: {
       id: 'entrance',
       label: 'Door and surround',
       phrase: 'the door and its surround',
-      note: 'The area is the door and its recoloured surround: the surround found from the change in colour between A and B, down to the step, where the plants hide it.',
+      note: 'The area is the door and its recoloured stone surround, found from the change in colour between A and B.',
     },
   },
   {
@@ -109,10 +109,10 @@ export const COMPARISONS: ComparisonText[] = [
 ];
 
 export const COMPARISON_INTRO =
-  'Three small design changes to Zürich street photos, made with AI image editing. Each example compares where people are predicted to look before and after the change. They are illustrations for discussing design and research questions, not studies.';
+  'Three design changes to Zürich street photos: the first recoloured by rule, the other two made with AI image editing. Each example compares where people are predicted to look before and after the change. They are illustrations for discussing design and research questions, not studies.';
 
 export const COMPARISON_CAVEAT =
-  'The possible outcomes are hypotheses, not results; the numbers show what the models actually predict, even when the difference is small or matches neither outcome. A change in predicted gaze density does not show a change in wellbeing, preference or actual use. The image editing also made small unintended changes elsewhere, such as sign lettering.';
+  'The possible outcomes are hypotheses, not results; the numbers show what the models actually predict, even when the difference is small or matches neither outcome. A change in predicted gaze density does not show a change in wellbeing, preference or actual use. The AI image editing of examples 2 and 3 also made small unintended changes elsewhere; example 1 changes nothing outside the stone block apart from slight JPEG re-encoding noise.';
 
 export const MEASURED_NOTE =
   'All maps here are predictions. Measured gaze (48 people, six seconds of free viewing; Wilming et al. 2017) exists only for the untouched original photographs, so it cannot show the effect of an edit and is left out; the originals’ measured gaze can be seen in the workspace.';

@@ -5,10 +5,9 @@ difference between the two conditions inside a search box set by hand around
 the described change. The same region is used for both conditions, so the
 comparison is over identical pixels:
 
-- entrance: the door and its new surround (prompt 067): the bounding
-  rectangle of the recoloured frame, found from the change in blueness
-  between A and B, extended down to the step, where the plants hide the
-  frame's legs;
+- entrance: the door and its recoloured surround (prompts 067, 071): the
+  bounding rectangle of the recoloured stone block, found from the change in
+  blueness between A and B;
 - greenery: the changed pixels themselves along the building base (the added
   planting), closed, filled and slightly dilated;
 - glazing: the bounding rectangles of the three largest changed patches (the
@@ -45,7 +44,7 @@ RECOLOUR_THRESHOLD = 15
 
 # Search boxes (x0, y0, x1, y1) in pixels of the 1280 × 960 images.
 REGIONS = {
-    "entrance": [{"id": "entrance", "label": "Door and surround", "box": (360, 620, 560, 850), "shape": "frame", "bottom": 797}],
+    "entrance": [{"id": "entrance", "label": "Door and surround", "box": (300, 600, 580, 850), "shape": "frame"}],
     "greenery": [{"id": "planting", "label": "Added planting", "box": (0, 740, 1280, 960), "shape": "mask"}],
     "glazing": [{"id": "windows", "label": "Three window bays", "box": (640, 340, 1280, 600), "shape": "rectangles", "count": 3}],
 }
@@ -90,7 +89,7 @@ def region_mask(diff: np.ndarray, spec: dict) -> np.ndarray:
     count = spec.get("count", 1)
     for k in np.argsort(sizes)[::-1][:count]:
         ys, xs = np.nonzero(labels == k + 1)
-        mask[ys.min() : max(ys.max() + 1, spec.get("bottom", 0)), xs.min() : xs.max() + 1] = True
+        mask[ys.min() : ys.max() + 1, xs.min() : xs.max() + 1] = True
     return mask
 
 
@@ -158,7 +157,7 @@ def main() -> int:
             "width": MASK_SIZE[0],
             "height": MASK_SIZE[1],
             "method": (
-                f"change in blueness between {example['a']} and {example['b']} (blur {RECOLOUR_BLUR} px, threshold {RECOLOUR_THRESHOLD}) inside a search box, down to the step"
+                f"change in blueness between {example['a']} and {example['b']} (blur {RECOLOUR_BLUR} px, threshold {RECOLOUR_THRESHOLD}) inside a search box"
                 if any(s["shape"] == "frame" for s in REGIONS[example["id"]])
                 else f"pixel difference between {example['a']} and {example['b']} (blur {BLUR} px, threshold {THRESHOLD}) inside a search box"
             )

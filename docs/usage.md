@@ -81,9 +81,10 @@ Choose a view above the photo; the inspector on the right changes with it.
 
 ## Example: three design comparisons
 
-**Example** in the top bar opens three illustrations: a coloured entrance
-surround, low planting along a building base, and opaque against transparent
-ground-floor windows, each on a Zürich photo edited with AI image editing.
+**Example** in the top bar opens three illustrations on Zürich photos: the
+stone block around an entrance in blue-teal (recoloured by rule), and, made
+with AI image editing, low planting along a building base and opaque against
+transparent ground-floor windows.
 Choose one to see its question, background, conditions and two possible
 outcomes. Images A and B and the difference between them appear side by side
 for the model you choose; A and B share one colour scale. In the difference,

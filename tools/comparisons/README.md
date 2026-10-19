@@ -19,6 +19,17 @@ node tools/comparisons/browser-models.mjs                        # Classic salie
 cd tools/comparisons && uv run regions.py                        # changed regions and a summary table
 ```
 
+Example 1's image B (`zurich-42-entrance-block`, prompt 071) is not an AI
+edit: `uv run recolour.py` recolours the rusticated stone block around the
+entrance of `zurich-42` in blue-teal by rule (CIELAB lightness kept, so the
+stone's texture and shading stay; door, steps, sign and plants cut out), and
+writes `.cache/sources/zurich-42-entrance-block.png` for
+`node scripts/prepare-photos.mjs tools/comparisons/.cache/sources public/examples`.
+Outside the block only JPEG re-encoding noise remains (mean 0.5 of 255
+levels). It replaced the first edit, a blue-teal
+door frame from the owner's package (1.0% of the image), on the owner's
+request for a much larger manipulation.
+
 Both Python tools read `comparisons.json` as well as `examples.json`.
 
 - `browser-models.mjs` runs the app's own Classic salience and UNISAL code in
@@ -27,11 +38,10 @@ Both Python tools read `comparisons.json` as well as `examples.json`.
   `public/precomputed/comparisons/<model-id>/<image-id>.json`, in the format
   of the DeepGaze maps.
 - `regions.py` finds each comparison's manipulated area inside a search box
-  set by hand around the described change. Entrance (prompt 067): the door
-  and its recoloured surround, i.e. the bounding rectangle of the frame found
-  from the change in blueness (blue minus red) between A and B, blurred
-  (2 px) and above 15, extended down to the step (y = 797 px), where the
-  plants hide the frame's legs. Greenery and glazing: the mean absolute RGB
+  set by hand around the described change. Entrance (prompts 067, 071): the
+  door and its recoloured surround, i.e. the bounding rectangle of the
+  recoloured stone found from the change in blueness (blue minus red)
+  between A and B, blurred (2 px) and above 15. Greenery and glazing: the mean absolute RGB
   difference between A and B, blurred (4 px) and above 20; greenery takes
   the changed pixels, closed, filled and dilated, and glazing the bounding
   rectangles of the three largest patches. It writes `public/precomputed/comparisons/<example>.json` (masks
@@ -46,15 +56,15 @@ on this CPU reproduced the committed maps (DeepGaze IIE and MSDB r = 1.0) and
 its street categories (100% of pixels). SAM 3 is gated and was not available,
 so the edited images have no façade elements yet.
 
-Share of attention in the manipulated area, % (entrance as of prompt 067):
+Share of attention in the manipulated area, % (entrance as of prompt 071):
 
 | Comparison | Layer | A | B |
 |---|---|---|---|
-| Entrance, door and surround (1.0% of the image) | Measured (A only) | 3.43 | – |
-| | Classic salience | 1.05 | 0.94 |
-| | UNISAL | 1.26 | 1.79 |
-| | DeepGaze IIE | 2.71 | 3.60 |
-| | DeepGaze MSDB | 3.45 | 3.53 |
+| Entrance, door and recoloured block (3.4% of the image) | Measured (A only) | 8.32 | – |
+| | Classic salience | 3.43 | 4.08 |
+| | UNISAL | 3.92 | 6.63 |
+| | DeepGaze IIE | 5.81 | 9.30 |
+| | DeepGaze MSDB | 6.51 | 10.88 |
 | Greenery, added planting (4.3%) | Measured (A only) | 2.71 | – |
 | | Classic salience | 5.19 | 6.16 |
 | | UNISAL | 3.44 | 1.75 |

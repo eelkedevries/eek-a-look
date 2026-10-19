@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.49 · **Last updated:** 2026-10-19
+**Version:** 0.50 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -108,6 +108,10 @@ colour bar for the difference image only, with a key naming the image each
 colour favours (prompt 070, owner's request of 2026-10-19).
 0.48 searches the 360° panoramas for façade elements and measures their rhythm in the four side faces of a cube map (prompt 061, owner's request of 2026-10-19).
 0.49 draws each outcome's main indicator on a scale with the rule's bands, gives the other methods' labels in each card and marks where the methods disagree (prompt 064, owner's request of 2026-10-19).
+0.50 replaces example 1's image B with a much larger manipulation, the whole
+stone block around the entrance in blue-teal, recoloured by rule
+(`tools/comparisons/recolour.py`), changing nothing else (prompt 071,
+owner's request of 2026-10-19).
 
 ## Scope
 
@@ -899,14 +903,25 @@ was run on the photos.
 
 **Example comparisons** (prompt 058)
 
-- Three comparisons, A against B, from the owner's package of 2026-10-19:
-  entrance (zurich-42 against a blue-teal surround around the doorway),
-  greenery (zurich-33 against low planting along the building base) and
-  glazing (opaque against transparent versions of the same three window
-  bays of zurich-53, both edited, both with the same unplanted containers).
-  The edited images were 1448 × 1086 px and are scaled to 1280 × 960 px, the
-  size of the originals, so the two images share one grid and one set of
-  masks (alignment within about 3 px).
+- Three comparisons, A against B: entrance (zurich-42 against the same photo
+  with the whole rusticated stone block around the entrance in blue-teal,
+  prompt 071), greenery (zurich-33 against low planting along the building
+  base) and glazing (opaque against transparent versions of the same three
+  window bays of zurich-53, both edited, both with the same unplanted
+  containers). Greenery and glazing come from the owner's package of
+  2026-10-19, made with AI image editing: 1448 × 1086 px, scaled to
+  1280 × 960 px, the size of the originals, so the two images share one grid
+  and one set of masks (alignment within about 3 px).
+- Entrance image B (prompt 071) is made by rule from the original by
+  `tools/comparisons/recolour.py`: inside a hand-set rectangle around the
+  block, with the door opening, steps, oval sign and coloured pixels (plants,
+  pots) cut out, each pixel keeps its CIELAB lightness and takes the hue of
+  the first edit's door frame at chroma 24, less in deep shadow and
+  highlights; the edge is softened by 1 px. Outside the block the image is
+  the original's apart from JPEG re-encoding noise (mean 0.5 of 255
+  levels). It replaced the owner's first edit, a blue-teal door frame
+  (1.0% of the image), on the owner's request for a much larger
+  manipulation.
 - Every map is computed in advance, so nothing runs when the section opens:
   DeepGaze IIE and MSDB by `tools/deepgaze-local/`, Classic salience and
   UNISAL by the app's own code in headless Chromium
@@ -918,8 +933,8 @@ was run on the photos.
   comparison, the same pixels in A and B (`tools/comparisons/regions.py`,
   masks at 640 × 480 in `public/precomputed/comparisons/<id>.json`).
   Entrance: the door and its recoloured surround, i.e. the bounding rectangle
-  of the frame found from the change in blueness between A and B, extended
-  down to the step, where the plants hide the frame's legs. Greenery and
+  of the recoloured stone found from the change in blueness between A and B
+  (3.4% of the image). Greenery and
   glazing: where the edit changed the image, from the pixel difference
   between A and B inside a search box set around the described change. No
   other area (automatic areas, the lower third) is measured in this section.
