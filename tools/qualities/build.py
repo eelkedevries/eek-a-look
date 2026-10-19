@@ -205,7 +205,7 @@ def main() -> int:
             quality["imageKind"] = kind
             print(f"{photo['id']}: {kind}, {photo['width']} × {photo['height']} px")
         if run_all or args.ground_floor:
-            result, classes = frontage.measure(data)
+            result, classes = frontage.measure(data, panorama=kind == "panorama")
             quality["principles"]["groundFloor"] = result
             quality["models"]["groundFloor"] = "frontage columns, tools/qualities/frontage.py (area file: ground floor, entrances, shopfronts, windows)"
             frontage_overlay(photo, data, classes)
@@ -257,7 +257,7 @@ def main() -> int:
         keys = [k for k in table[0][1]["indicators"] if not k.startswith("material: ")]
         print(f"\n{'photo':42} {'outcome':8} " + " ".join(f"{k[:11]:>11}" for k in keys))
         for pid, result in table:
-            print(f"{pid:42} {OUTCOME[result['outcome']]:8} " + " ".join(f"{fmt(result['indicators'][k]):>11}" for k in keys))
+            print(f"{pid:42} {OUTCOME[result['outcome']]:8} " + " ".join(f"{fmt(result['indicators'].get(k)):>11}" for k in keys))
     for pid, result in material_rows:
         top = ", ".join(f"{k[10:]} {v:.0%}" for k, v in result["indicators"].items() if k.startswith("material: "))
         print(f"{pid:42} {top}")

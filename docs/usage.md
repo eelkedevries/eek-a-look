@@ -54,7 +54,9 @@ Choose a view above the photo; the inspector on the right changes with it.
   (rhythm and variety, an active ground floor, tactile materials) measured
   from the photo, all three at once: the evidence drawn on it (rhythm in
   solid lines, ground floor dashed, materials dotted; point at a legend item
-  to fill its region), one card per principle with the outcome, the
+  to fill its region), one card per principle with the outcome (the
+  ground floor also with a frontage grade A–E, adapted from the Urban Design
+  Compendium and estimated from the photo), the
   definitions, how a
   simulated AI panel and UP-CLIP judged the same photo, and how much
   attention the evidence regions receive. At the end, **Descriptions and

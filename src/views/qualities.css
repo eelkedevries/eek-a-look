@@ -104,6 +104,22 @@
   color: var(--muted);
 }
 
+.quality-grade {
+  margin: 0 0 10px;
+  font-size: 14px;
+  color: var(--text-soft);
+}
+
+.quality-grade strong {
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.quality-grade small {
+  font-size: 12px;
+  color: var(--muted);
+}
+
 .quality-reasons {
   margin: 0 0 12px;
   padding-left: 1.2em;

@@ -57,6 +57,18 @@ in for the ground floor, the same band for both sides, so only the openings and 
 | unclear | 5 | 28 | 22 |
 | likely absent | 1 | 1 | 17 |
 
+### Frontage grade: a check by eye (prompt 062)
+
+Three photos, openings on the ground floor counted by eye, against the automatic counts within 60 m of the camera.
+
+| Photo | Entrances (eye / automatic) | Shopfronts | Ground-floor windows | Grade |
+|---|---|---|---|---|
+| zurich-24 | about 4 / 2 | about 3 / 3 | about 8 / 15 | D |
+| zurich-42 | 2–3 / 2 (one is a first-floor balcony door) | 3–4 / 0 | 3–4 / 12 | D |
+| zuidas-gershwinplein | 2–3 / 1 | 0 / 1 (a glazed lobby) | 0 / 0 | E |
+
+Doors are missed, so entrances per 100 m, the grade's main criterion, come out low and the grade tends to be too low. In the Zürich photos the estimated ground floor reaches the first-floor windows, so ground-floor windows are over-counted. Over the 49 photos: E 26, D 3, D–E 2, no grade 18 (no horizon found, or under 20 m of frontage within 60 m). The grade is shown as an estimate and changes no outcome.
+
 ## Materials: DMS46
 
 Per-class results of DMS46 on the DMS test set, from Upchurch & Niu (2022), Table 8. They describe the model on its own kind of photos, not on Dutch or Swiss street façades.

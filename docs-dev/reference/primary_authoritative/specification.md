@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.39 · **Last updated:** 2026-10-19
+**Version:** 0.40 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -83,6 +83,9 @@ greenery, glazing): every map and the areas computed in advance, measured
 gaze on untouched originals only (prompt 058, owner's request of 2026-10-19).
 0.39 adds a rating page for human raters, with a rubric, and inter-rater
 agreement in `agreement.py` (prompt 059, owner's request of 2026-10-19).
+0.40 adds frontage density and a frontage grade adapted from the Urban Design
+Compendium to the ground-floor measure, as indicators that change no outcome
+(prompt 062, owner's request of 2026-10-19).
 
 ## Scope
 
@@ -272,6 +275,11 @@ interface PrincipleResult {
     rle?: number[];       // a region, as in the area file
     lines?: number[][];   // or line segments [x1, y1, x2, y2] on the mask grid, drawn 1 px wide
   }>;
+  grade?: {               // ground floor only, where a horizon was found (prompt 062)
+    value: string | null; // "A"–"E", a range such as "D–E", or null under 20 m of counted frontage
+    source: string;       // "adapted from the Urban Design Compendium, Table 5.3 …; not an expert grade"
+    byFieldOfView: Record<string, string | null> | null;  // perspective photos: "45", "60", "75"; null for panoramas
+  };
 }
 ```
 
@@ -702,6 +710,28 @@ was run on the photos.
     text ("Likely present", "Likely absent", "Unclear") and its reasons, with
     the indicators with plain names and a note on how the measure works and
     its main limits under "The numbers", collapsed;
+  - on the ground-floor card, under the reasons, the frontage grade (prompt
+    062): "Frontage grade D · adapted from the Urban Design Compendium (Table
+    5.3), estimated from the photo …", with "the range depends on the assumed
+    lens" for a range and the warning that doors are often missed; without
+    enough frontage, "No frontage grade: less than 20 m of frontage within
+    60 m of the camera."; nothing where no horizon was found. "The numbers"
+    add the counted length, entrances and all openings per 100 m, the blind
+    or passive share and the counts. Computed by
+    `tools/qualities/frontage.py`:
+    - frontage columns within 60 m of the camera, from the façade base row
+      (smoothed) and the horizon: in a perspective photo a level pinhole
+      camera at 1.6 m with an assumed horizontal field of view of 60° (45° and
+      75° for the range), in a panorama the exact geometry of prompt 051;
+      steps over 3 m between neighbouring columns break the length;
+    - entrances and shopfronts as mask components of at least 20 cells on
+      the ground floor; windows as SAM 3 instances scoring at least 0.65 with
+      their centre on the ground floor and outside entrances and shopfronts;
+    - per 100 m, with B/P the blind or passive share (closed or windows-only
+      columns): A entrances > 15, openings > 25, B/P < 10%; B ≥ 10, > 15,
+      < 25%; C entrances ≥ 6, B/P < 50%; D entrances ≥ 3; E otherwise.
+      Entrances stand in for premises; depth, relief, materials and details
+      are not measured;
   - "Definitions", collapsed: per principle "Our definition" (the
     operational definition), and "In the original study" (14 experts judged
     whole photos as present, absent or ambiguous; they named the principles

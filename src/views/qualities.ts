@@ -30,6 +30,8 @@ interface PrincipleResult {
   reasons: string[];
   indicators: Record<string, number | null>;
   evidence: Evidence[];
+  /** Ground floor only (prompt 062): a frontage grade adapted from the Urban Design Compendium. */
+  grade?: { value: string | null; source: string; byFieldOfView: Record<string, string | null> | null };
 }
 
 interface QualityFile {
@@ -126,7 +128,7 @@ const HOW: Record<PrincipleId, string> = {
   rhythm:
     'Windows and balconies found by SAM 3. In each part of the façade: do their positions repeat at regular intervals across (bays) and up (floors)? The threshold was set on 189 façades labelled by people. Variety: façade zones of clearly different colour. Glass curtain walls and arcades, where no windows are found, read as plain; sun and shade can split one façade into two zones.',
   groundFloor:
-    'The ground floor is the façade up to 4 m above the street, from the horizon and an eye-height camera. Per image column: open where entrances or shopfronts cover at least 30% of it, transparent where windows do, closed otherwise. Glazing the window model misses counts as closed.',
+    'The ground floor is the façade up to 4 m above the street, from the horizon and an eye-height camera. Per image column: open where entrances or shopfronts cover at least 30% of it, transparent where windows do, closed otherwise. Glazing the window model misses counts as closed. Frontage grade: entrances, shopfronts and windows per 100 m of frontage within 60 m, and the blind or passive share, graded A–E after the Urban Design Compendium (Table 5.3); entrances stand in for premises. Lengths assume a 60° lens (45° and 75° give the range). A check by eye found doors missed and first-floor windows counted.',
   materials:
     'Materials from DMS46, a model that recognises 46 materials, near eye level: the ground floor and everything below the horizon. Textured: brick, natural stone, wood, tiles, wicker, planting. Smooth: glass, mirror, metal, polished stone, plaster or paint, plastic, ceramic. Dark brick sometimes comes out as plaster.',
 };
@@ -163,8 +165,14 @@ const INDICATORS: Record<string, string> = {
   streetSmoothShare: 'Smooth in the street space',
   streetNeutralShare: 'Neutral in the street space',
   texturedFurniture: 'Textured street furniture',
+  countedFrontageM: 'Frontage counted (within 60 m)',
+  entrancesPer100m: 'Entrances per 100 m',
+  openingsPer100m: 'Entrances, shopfronts and windows per 100 m',
+  blindPassiveShare: 'Blind or passive (closed or windows only)',
+  shopfronts: 'Shopfronts found',
+  groundFloorWindows: 'Ground-floor windows found',
 };
-const COUNTS = new Set(['entrances', 'facadeCells', 'distinctZones', 'windowInstances', 'balconyInstances']);
+const COUNTS = new Set(['entrances', 'facadeCells', 'distinctZones', 'windowInstances', 'balconyInstances', 'shopfronts', 'groundFloorWindows']);
 
 const percent = (x: number) => `${(x * 100).toFixed(x < 0.1 && x > 0 ? 1 : 0)}%`;
 
@@ -201,7 +209,29 @@ export const loadUpClip = cached<UpClipFile>(`${BASE}precomputed/up-clip/scores.
 
 function formatIndicator(key: string, value: number | null): string {
   if (value === null) return '–';
+  if (key === 'countedFrontageM') return `${Math.round(value)} m`;
+  if (key.endsWith('Per100m')) return value.toFixed(1);
   return COUNTS.has(key) ? String(value) : percent(value);
+}
+
+/** The ground floor's adapted frontage grade (prompt 062), or why there is none. */
+function gradeLine(r: PrincipleResult): HTMLElement | null {
+  if (!r.grade) return null;
+  const line = el('p', 'quality-grade');
+  if (!r.grade.value) {
+    line.textContent = 'No frontage grade: less than 20 m of frontage within 60 m of the camera.';
+    return line;
+  }
+  line.append(
+    'Frontage grade ',
+    el('strong', undefined, r.grade.value),
+    el(
+      'small',
+      undefined,
+      ` · adapted from the Urban Design Compendium (Table 5.3), estimated from the photo${r.grade.value.includes('–') ? '; the range depends on the assumed lens' : ''}. Not an expert grade; doors are often missed, so it tends to be low.`,
+    ),
+  );
+  return line;
 }
 
 /** Evidence regions decoded to masks; line evidence keeps its segments. */
@@ -417,7 +447,8 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
         list.append(el('dt', undefined, label), el('dd', undefined, formatIndicator(key, value)));
       }
       numbers.append(list, el('p', 'agreement-caption', HOW[id]));
-      card.append(verdict, reasons, numbers);
+      const grade = id === 'groundFloor' ? gradeLine(r) : null;
+      card.append(verdict, reasons, ...(grade ? [grade] : []), numbers);
       return card;
     });
     const grid = el('div', 'quality-card-grid');

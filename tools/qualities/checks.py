@@ -238,6 +238,22 @@ def panel_cross_table(data: dict) -> dict:
     return out
 
 
+FRONTAGE_HAND_CHECK = [
+    "", "### Frontage grade: a check by eye (prompt 062)", "",
+    "Three photos, openings on the ground floor counted by eye, against the automatic counts within 60 m of the camera.", "",
+    "| Photo | Entrances (eye / automatic) | Shopfronts | Ground-floor windows | Grade |",
+    "|---|---|---|---|---|",
+    "| zurich-24 | about 4 / 2 | about 3 / 3 | about 8 / 15 | D |",
+    "| zurich-42 | 2–3 / 2 (one is a first-floor balcony door) | 3–4 / 0 | 3–4 / 12 | D |",
+    "| zuidas-gershwinplein | 2–3 / 1 | 0 / 1 (a glazed lobby) | 0 / 0 | E |",
+    "",
+    "Doors are missed, so entrances per 100 m, the grade's main criterion, come out low and the grade tends to be too low. "
+    "In the Zürich photos the estimated ground floor reaches the first-floor windows, so ground-floor windows are over-counted. "
+    "Over the 49 photos: E 26, D 3, D–E 2, no grade 18 (no horizon found, or under 20 m of frontage within 60 m). "
+    "The grade is shown as an estimate and changes no outcome.",
+]
+
+
 def glass_section() -> list[str]:
     """The comparison of prompt 053 (glass and ribbon-window façades), from rhythm_calibration.json, if it ran."""
     comparison = json.loads(rhythm.CALIBRATION.read_text()).get("glassComparison")
@@ -308,6 +324,7 @@ def report(result: dict) -> str:
               "| Labels ↓ / SAM 3 → | likely present | unclear | likely absent |", "|---|---|---|---|"]
     for a, row in f["outcomes"]["table"].items():
         lines.append(f"| {a.replace('-', ' ')} | " + " | ".join(str(v) for v in row.values()) + " |")
+    lines += FRONTAGE_HAND_CHECK
     m = result["materials"]
     lines += ["", "## Materials: DMS46", "", m["note"], "",
               "| Class | Group | Test accuracy | Test IoU |", "|---|---|---|---|"]

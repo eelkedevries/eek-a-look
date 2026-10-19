@@ -268,3 +268,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   the rubric of `rating_rubric.md`, ratings downloaded as CSV; `agreement.py`
   takes several files and reports Krippendorff's alpha among raters; template
   for 49 photos. No ratings collected yet)
+- `062_frontage_grade.md` (spec 0.40: frontage length within 60 m, entrances and
+  openings per 100 m, and a grade adapted from the Urban Design Compendium's
+  Table 5.3; outcomes unchanged. E 26, D 3, D–E 2, none 18; a check by eye found
+  doors missed and first-floor windows counted, so the grade leans low)

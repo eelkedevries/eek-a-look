@@ -6,10 +6,13 @@ street-level frontage that offers openings to the street, namely entrances and
 shopfronts. Windows are shown but do not by themselves make a frontage active.
 """
 
+import json
+
 import numpy as np
 from scipy import ndimage
 
-from shared import AreaData, evidence
+from shared import CACHE, CATEGORY_IDS, HERE, AreaData, evidence
+import groundfloor  # noqa: E402  (tools/areas, on the path via shared: façade bases and the camera model)
 
 MIN_COLUMN_PIXELS = 3
 COVER = 0.30            # share of a column's ground floor that makes it open (or transparent)
@@ -52,7 +55,113 @@ def use_cues(data: AreaData, floor: np.ndarray, classes: np.ndarray) -> float | 
     return hit / total if total else None
 
 
-def measure(data: AreaData) -> dict:
+# --- frontage density and an adapted grade (prompt 062) ---------------------------
+# Urban Design Compendium, Table 5.3 "Active frontage guidelines" (adapted from Gehl, 1994): premises and
+# doors and windows per 100 m, and the share of blind or passive façade. Entrances stand in for premises.
+
+FIELDS_OF_VIEW = (45, 60, 75)   # assumed horizontal field of view of a perspective photo, degrees; 60 is the main one
+MAIN_FOV = 60
+MAX_DISTANCE_M = 60.0           # frontage further away is not counted
+MAX_STEP_M = 3.0                # a larger jump between neighbouring columns is a break (another façade)
+MIN_FRONTAGE_M = 20.0           # less counted frontage gives no grade
+SMOOTH_COLUMNS = 9
+GRADE_SOURCE = "adapted from the Urban Design Compendium, Table 5.3 (after Gehl, 1994); not an expert grade"
+
+
+def smoothed_bases(data: AreaData) -> np.ndarray:
+    """Per column, the row where the façade meets the street (tools/areas), smoothed within each run of façade."""
+    base = groundfloor._bases(data.categories, CATEGORY_IDS)
+    out = np.full_like(base, np.nan)
+    runs, n = ndimage.label(~np.isnan(base))
+    for k in range(1, n + 1):
+        cols = np.flatnonzero(runs == k)
+        values = ndimage.median_filter(base[cols], size=min(SMOOTH_COLUMNS, len(cols)), mode="nearest")
+        out[cols] = ndimage.uniform_filter1d(values, size=min(SMOOTH_COLUMNS, len(cols)), mode="nearest")
+    return out
+
+
+def ground_points(data: AreaData, base: np.ndarray, panorama: bool, fov: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Where each column's façade base meets the ground, in metres from the camera (x across, z ahead), and its distance.
+    Perspective: a level pinhole camera at eye height (groundfloor.py); the sideways position needs no focal length,
+    the depth does. Panorama: azimuth from the column, distance from the depression angle (prompt 051)."""
+    width, height = data.width, data.height
+    below = base + 0.5 - data.horizon["row"]
+    below = np.where(below > 0, below, np.nan)
+    x = np.arange(width) + 0.5
+    c = groundfloor.CAMERA_HEIGHT_M
+    if panorama:
+        distance = c / np.tan(np.pi * below / height)
+        azimuth = 2 * np.pi * x / width
+        return distance * np.sin(azimuth), distance * np.cos(azimuth), distance
+    focal = (width / 2) / np.tan(np.radians(fov) / 2)
+    gx, gz = (x - width / 2) * c / below, c * focal / below
+    return gx, gz, np.hypot(gx, gz)
+
+
+def components(mask: np.ndarray) -> list[tuple[float, float]]:
+    """Centres (row, column) of the connected parts of a mask of at least MIN_ENTRANCE_PIXELS."""
+    labels, count = ndimage.label(mask)
+    if not count:
+        return []
+    sizes = ndimage.sum(np.ones_like(labels), labels, range(1, count + 1))
+    centres = ndimage.center_of_mass(mask, labels, range(1, count + 1))
+    return [c for c, s in zip(centres, sizes) if s >= MIN_ENTRANCE_PIXELS]
+
+
+def adapted_grade(entrances: float, openings: float, blind_passive: float) -> str:
+    """The grade of prompt 062, fixed before it ran; per 100 m of counted frontage."""
+    if entrances > 15 and openings > 25 and blind_passive < 0.10:
+        return "A"
+    if entrances >= 10 and openings > 15 and blind_passive < 0.25:
+        return "B"
+    if entrances >= 6 and blind_passive < 0.50:
+        return "C"
+    if entrances >= 3:
+        return "D"
+    return "E"
+
+
+def frontage_density(data: AreaData, floor: np.ndarray, classes: np.ndarray, entrances: np.ndarray, shopfronts: np.ndarray,
+                     panorama: bool) -> dict:
+    """Counted length, openings per 100 m and the adapted grade, per assumed field of view (one geometry for panoramas)."""
+    base = smoothed_bases(data)
+    doors = components(entrances & floor)
+    shops = components(shopfronts & floor)
+    threshold = json.loads((HERE / "rhythm_calibration.json").read_text())["instanceThreshold"]
+    path = CACHE / "instances-scored" / f"{data.photo}.json"
+    found = json.loads(path.read_text()).get("window", []) if path.exists() else []
+    openings_mask = entrances | shopfronts
+    windows = []
+    for i in found:
+        row, col = int(i["cy"]), int(i["cx"])
+        if i["score"] >= threshold and 0 <= row < data.height and 0 <= col < data.width and floor[row, col] and not openings_mask[row, col]:
+            windows.append((i["cy"], i["cx"]))
+
+    per_view = {}
+    for fov in ((None,) if panorama else FIELDS_OF_VIEW):
+        gx, gz, distance = ground_points(data, base, panorama, fov or MAIN_FOV)
+        counted = (classes != NONE) & np.isfinite(distance) & (distance <= MAX_DISTANCE_M)
+        step = np.hypot(np.diff(gx), np.diff(gz))
+        pairs = counted[:-1] & counted[1:] & np.isfinite(step) & (step <= MAX_STEP_M)
+        length = float(step[pairs].sum())
+        inside = lambda centres: sum(1 for _, col in centres if counted[min(int(col), data.width - 1)])
+        n_doors, n_shops, n_windows = inside(doors), inside(shops), inside(windows)
+        cols = int(counted.sum())
+        blind_passive = float(((classes == CLOSED) | (classes == TRANSPARENT))[counted].sum() / cols) if cols else None
+        per100 = lambda n: 100 * n / length if length > 0 else None
+        grade = (adapted_grade(per100(n_doors), per100(n_doors + n_shops + n_windows), blind_passive)
+                 if length >= MIN_FRONTAGE_M and blind_passive is not None else None)
+        per_view[fov] = {"lengthM": length, "entrances": n_doors, "shopfronts": n_shops, "windows": n_windows,
+                         "entrancesPer100m": per100(n_doors), "openingsPer100m": per100(n_doors + n_shops + n_windows),
+                         "blindPassiveShare": blind_passive, "grade": grade}
+    main = per_view[None if panorama else MAIN_FOV]
+    grades = sorted({v["grade"] for v in per_view.values() if v["grade"]})
+    value = None if main["grade"] is None else grades[0] if len(grades) == 1 else f"{grades[0]}–{grades[-1]}"
+    return {"main": main, "grade": {"value": value, "source": GRADE_SOURCE,
+                                    "byFieldOfView": None if panorama else {str(f): v["grade"] for f, v in per_view.items()}}}
+
+
+def measure(data: AreaData, panorama: bool = False) -> dict:
     floor = data.mask("ground-floor")
     entrances, shopfronts, windows = data.mask("entrances"), data.mask("shopfronts"), data.mask("windows")
     classes = column_classes(floor, entrances | shopfronts, windows)
@@ -74,6 +183,13 @@ def measure(data: AreaData) -> dict:
         "longestClosedRun": longest_run(classes == CLOSED) / n if n else None,
         "useCues": use_cues(data, floor, classes),
     }
+    density = None
+    if data.horizon["method"] != "assumed-level":  # prompt 040b: the geometry needs a found horizon
+        density = frontage_density(data, floor, classes, entrances, shopfronts, panorama)
+        main = density["main"]
+        indicators |= {"countedFrontageM": main["lengthM"], "entrancesPer100m": main["entrancesPer100m"],
+                       "openingsPer100m": main["openingsPer100m"], "blindPassiveShare": main["blindPassiveShare"],
+                       "shopfronts": main["shopfronts"], "groundFloorWindows": main["windows"]}
     outcome, reasons = rule(indicators, data.horizon["method"])
 
     columns = lambda c: floor & (classes == c)[None, :]
@@ -84,7 +200,10 @@ def measure(data: AreaData) -> dict:
         evidence("entrances", "Entrances", "supports", entrances & floor),
         evidence("shopfronts", "Shopfronts", "supports", shopfronts & floor),
     ]
-    return {"outcome": outcome, "reasons": reasons, "indicators": indicators, "evidence": layers}, classes
+    result = {"outcome": outcome, "reasons": reasons, "indicators": indicators, "evidence": layers}
+    if density:
+        result["grade"] = density["grade"]
+    return result, classes
 
 
 def rule(ind: dict, horizon_method: str) -> tuple[str, list[str]]:

@@ -65,6 +65,21 @@ closed frontage (against), entrances and shopfronts on the ground floor
 - People in front of the ground floor come and go, so `useCues` is context,
   not evidence.
 
+**Frontage grade (prompt 062):** indicators beside the outcome, which they do
+not change. The Urban Design Compendium's Table 5.3 (after Gehl, 1994) grades
+frontage A–E by premises and doors and windows per 100 m and the share of
+blind or passive façade. `frontage_density()` measures the frontage length
+within 60 m of the camera (façade base rows from `tools/areas/groundfloor.py`,
+smoothed; a level camera at 1.6 m and an assumed 60° lens, with 45° and 75°
+for a range; the exact geometry for panoramas), counts entrances, shopfronts
+and ground-floor windows (SAM 3 instances ≥ 0.65 outside entrances and
+shopfronts) and grades: A entrances > 15, openings > 25, blind/passive < 10%;
+B ≥ 10, > 15, < 25%; C entrances ≥ 6, < 50%; D entrances ≥ 3; E otherwise.
+Entrances stand in for premises. Result over the 49 photos: E 26, D 3, D–E 2,
+none 18. A check by eye on three photos (`qualities_validation.md`) found
+doors missed and, in the Zürich photos, first-floor windows counted, so the
+grade tends to be too low.
+
 ## Horizontal–vertical rhythm and variety (prompt 041)
 
 **Definition (this project's):** façades articulated by horizontal layers
