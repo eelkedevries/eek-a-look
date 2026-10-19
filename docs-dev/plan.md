@@ -267,6 +267,14 @@ the laptop (prompt 072); the simulated panel and UP-CLIP were not extended.
 
 ## Later
 
+- **Panel and UP-CLIP for the Andersson photos** (owner's decision of
+  2026-10-19: later). Laptop only: the UP-CLIP reproduction's checkpoint
+  (`tools/up-clip/.cache/checkpoint`) exists only there, and the panel's
+  Qwen3-VL-8B in 4-bit needs a CUDA GPU (unquantised it needs about 17 GB,
+  more than a cloud session has). Expected: seconds for `scores.py`, about
+  15–25 minutes for the three panel runs. Suggested scope: the Colosseum and
+  the planted façade only; the country path and the rabbits have no façade.
+
 - **Mobile scene video.** Run the same area tool on scene-camera frames. Assign
   each fixation to the area under the gaze point (or a 1° disc, after Orquin et
   al. 2016). Take the horizon from the headset's IMU (pitch and roll) and the
