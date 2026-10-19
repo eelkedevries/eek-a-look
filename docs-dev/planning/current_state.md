@@ -170,6 +170,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `026_vlm_panel_in_app.md` (spec 0.14: the simulated panel's verdicts under
   the Areas table, with notes on rhythm and materials, which did not vary)
 - `040_frontage_evidence.md` (spec 0.18: active ground floor from frontage
-  columns. 2 likely present, 15 likely absent, 7 unclear. Three photos with an
-  assumed horizon get a ground floor that covers the whole façade, so their
-  outcomes are artefacts; superseded by 040b)
+  columns. Three photos with an assumed horizon got a ground floor covering
+  the whole façade, so their outcomes were artefacts)
+- `040b_frontage_assumed_horizon.md` (spec 0.19: assumed horizon → Unclear.
+  Ground floor now 1 likely present, 13 likely absent, 10 unclear)

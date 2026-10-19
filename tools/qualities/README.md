@@ -40,6 +40,8 @@ columns); `useCues` (people, signage and street furniture in a band below the
 ground floor, half its local height deep; context only).
 
 **Rule:**
+- horizon method `assumed-level` → Unclear ("The horizon could not be
+  found, so the ground floor may be far too tall or missing"; prompt 040b);
 - `frontageShare` < 0.05 → Unclear ("Too little ground floor is visible");
 - `openShare` ≥ 0.30 → Likely present;
 - `openShare` < 0.10 and `closedShare` ≥ 0.60 → Likely absent;
@@ -59,7 +61,7 @@ closed frontage (against), entrances and shopfronts on the ground floor
   modern glass bases.
 - "Storefront" can cover a whole station hall or shelter (prompt 023).
 - Where the horizon is assumed (`assumed-level`), the ground floor can cover
-  almost the whole façade, and the measure then says little.
+  almost the whole façade, so the outcome is always Unclear (040b).
 - People in front of the ground floor come and go, so `useCues` is context,
   not evidence.
 

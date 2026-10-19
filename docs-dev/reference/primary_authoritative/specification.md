@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.18 · **Last updated:** 2026-10-19
+**Version:** 0.19 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -39,7 +39,8 @@ together in the Areas view instead of as two switchable groups (prompt 029,
 owner's request of 2026-10-19). 0.18 adds image measures for the three design
 principles, starting with the active ground floor: this project's operational
 definition, frontage columns and a fixed rule, written to quality files
-(prompt 040).
+(prompt 040). 0.19 makes that measure Unclear when the horizon was assumed,
+since the ground floor is then unreliable (prompt 040b).
 
 ## Scope
 
@@ -373,13 +374,14 @@ was run on the photos.
     adjacent closed columns ÷ frontage columns); `useCues` (the share of a
     band below the ground floor, half the column's ground-floor height deep,
     covered by people, signage or street furniture; context only).
-  - Rule: `frontageShare` < 0.05 → Unclear ("Too little ground floor is
+  - Rule: horizon method `assumed-level` → Unclear ("The horizon could not be
+    found, so the ground floor may be far too tall or missing"); else
+    `frontageShare` < 0.05 → Unclear ("Too little ground floor is
     visible"); else `openShare` ≥ 0.30 → Likely present; else `openShare` <
     0.10 and `closedShare` ≥ 0.60 → Likely absent; else Unclear, with the
     reason "Mostly windows: transparency alone does not show an active
     frontage" when `transparentShare` ≥ 0.30, otherwise "Open and closed
-    stretches are mixed". A note is added when the horizon is
-    `assumed-level`.
+    stretches are mixed".
   - Evidence: "Open frontage" (supports), "Transparent only" (context),
     "Closed frontage" (against), each the ground-floor pixels of those
     columns; "Entrances" and "Shopfronts" clipped to the ground floor

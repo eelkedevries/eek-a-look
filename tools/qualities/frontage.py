@@ -74,9 +74,7 @@ def measure(data: AreaData) -> dict:
         "longestClosedRun": longest_run(classes == CLOSED) / n if n else None,
         "useCues": use_cues(data, floor, classes),
     }
-    outcome, reasons = rule(indicators)
-    if data.horizon["method"] == "assumed-level":
-        reasons.append("The ground floor was estimated assuming a level camera.")
+    outcome, reasons = rule(indicators, data.horizon["method"])
 
     columns = lambda c: floor & (classes == c)[None, :]
     layers = [
@@ -89,8 +87,10 @@ def measure(data: AreaData) -> dict:
     return {"outcome": outcome, "reasons": reasons, "indicators": indicators, "evidence": layers}, classes
 
 
-def rule(ind: dict) -> tuple[str, list[str]]:
+def rule(ind: dict, horizon_method: str) -> tuple[str, list[str]]:
     """The rule of the specification (Architectural qualities, active ground floor)."""
+    if horizon_method == "assumed-level":  # prompt 040b: the 4 m rule needs a found horizon
+        return "unclear", ["The horizon could not be found, so the ground floor may be far too tall or missing."]
     if ind["frontageShare"] < 0.05:
         return "unclear", ["Too little ground floor is visible."]
     if ind["openShare"] >= 0.30:
