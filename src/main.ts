@@ -67,7 +67,7 @@ onImageChange((image) => {
   if (photo) {
     renderCredit(credit, photo);
     photoTitle.textContent = photo.title;
-    photoPlace.textContent = photo.measured ? `${photo.city} · measured eye tracking` : `${photo.area} · ${photo.city}`;
+    photoPlace.textContent = photo.measured ? `${photo.city} · measured eye tracking` : photo.study ? `${photo.city} · published study, predictions only` : `${photo.area} · ${photo.city}`;
   } else {
     credit.textContent = 'Your photo (stays on this device)';
     photoTitle.textContent = 'Your photo';

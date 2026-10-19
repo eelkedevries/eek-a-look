@@ -6,6 +6,9 @@ import { join } from 'node:path';
 
 const DIR = 'public/examples';
 const AREAS = { Zuidas: 'Amsterdam', Weena: 'Rotterdam', Wilhelminapier: 'Rotterdam', Beatrixkwartier: 'The Hague', Zürich: 'Zürich' };
+// Images from published eye-tracking studies form one group across several cities.
+const STUDY_AREA = 'From published studies';
+const STUDY_CITIES = ['Qinyang', 'Guangzhou'];
 const isCount = (n) => Number.isInteger(n) && n > 0;
 const LICENCES = /^(CC0 1\.0|Public domain|CC BY(-SA)? [0-9.]+)$/;
 const FIELDS = ['id', 'area', 'city', 'title', 'file', 'width', 'height', 'author', 'licence', 'licenceUrl', 'sourceUrl', 'changes'];
@@ -22,7 +25,16 @@ for (const [index, photo] of photos.entries()) {
   if (ids.has(photo.id)) errors.push(`${where}: duplicate id`);
   ids.add(photo.id);
   if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(photo.id)) errors.push(`${where}: id is not kebab-case`);
-  if (AREAS[photo.area] === undefined) errors.push(`${where}: unknown area ${photo.area}`);
+  if (photo.area === STUDY_AREA) {
+    if (!STUDY_CITIES.includes(photo.city)) errors.push(`${where}: unknown study city ${photo.city}`);
+    const { citation, heatmapFigure, heatmapUrl, viewing } = photo.study ?? {};
+    for (const [name, value] of Object.entries({ citation, heatmapFigure, heatmapUrl, viewing })) {
+      if (typeof value !== 'string' || value === '') errors.push(`${where}: study.${name} is missing`);
+    }
+    if (!/^https:\/\//.test(heatmapUrl ?? '')) errors.push(`${where}: study.heatmapUrl is not https`);
+    if (photo.measured !== undefined) errors.push(`${where}: a study image cannot have measured gaze`);
+  } else if (photo.study !== undefined) errors.push(`${where}: study is only for ${STUDY_AREA}`);
+  else if (AREAS[photo.area] === undefined) errors.push(`${where}: unknown area ${photo.area}`);
   else if (AREAS[photo.area] !== photo.city) errors.push(`${where}: ${photo.area} is not in ${photo.city}`);
   if (!LICENCES.test(photo.licence)) errors.push(`${where}: licence "${photo.licence}" is not allowed`);
   if (!/^https:\/\//.test(photo.sourceUrl)) errors.push(`${where}: sourceUrl is not https`);

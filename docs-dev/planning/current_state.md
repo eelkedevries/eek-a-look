@@ -62,6 +62,9 @@ wins and the gap is work still to be done.
   `public/models/unisal/` (ONNX fp16, 6.4 MB, dynamic input size; the Gaussian
   priors are a second input built from `model.json`). Verified against PyTorch on
   all 12 photos: r = 1.00000 (fp32), ≥ 0.99999 (fp16).
+- Study images (prompt 031): 25 CC BY images from two published eye-tracking
+  studies, group "From published studies", with predictions only; the `study`
+  field links each to its published heat map, which is never made a layer.
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.

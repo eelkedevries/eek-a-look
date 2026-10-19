@@ -11,6 +11,8 @@ export interface CurrentImage {
   measured?: boolean;
   /** The observers and fixations behind the measured map, on photos that have one. */
   measuredCounts?: { observers: number; fixations: number };
+  /** True for an image taken from a published eye-tracking study: predictions only. */
+  study?: boolean;
 }
 
 type Listener = (image: CurrentImage) => void;

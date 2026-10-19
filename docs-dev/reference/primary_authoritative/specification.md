@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.23 · **Last updated:** 2026-10-19
+**Version:** 0.24 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -50,7 +50,11 @@ gaze" layer, never over a model's map (prompt 030, owner's decision of
 2026-10-19). 0.22 calibrates the SAM 3 score above which an instance counts
 for rhythm together with τ; the calibration kept 0.65 (prompt 041b). 0.23
 adds the image measure for tactile materials: visible texture near eye level
-from the DMS46 material model (prompt 042).
+from the DMS46 material model (prompt 042). 0.24 adds 25 openly licensed
+images from two published eye-tracking studies (Zhang et al. 2026; Wang, Hu &
+Ma 2025) with all five predictions; each links to the heat map its study
+measured, which is never turned into a layer (prompt 031, owner's request of
+2026-10-19).
 
 ## Scope
 
@@ -71,6 +75,10 @@ In scope for v1:
 - twelve Zürich street photos from the eye-tracking dataset of Wilming et al.
   (2017, CC0 1.0), each with a **measured** eye-tracking map
   (`tools/measured-gaze/`);
+- 25 images from two published eye-tracking studies (CC BY 4.0), in a group
+  "From published studies" with **predictions only**: each credit line links to
+  the heat map the study published, which is not digitised, reconstructed or
+  shown as a layer;
 - **upload** of the visitor's own photo (file picker only; no camera capture);
 - four views: **overlay with opacity slider**, **side by side**,
   **contrast** of two maps, **agreement scores**;
@@ -235,8 +243,8 @@ The example photo manifest is `public/examples/examples.json`, an array of:
 ```ts
 interface ExamplePhoto {
   id: string;             // kebab-case, unique
-  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich';
-  city: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich';
+  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich' | 'From published studies';
+  city: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Qinyang' | 'Guangzhou';
   title: string;          // short caption
   file: string;           // path relative to public/examples/
   width: number;
@@ -251,6 +259,12 @@ interface ExamplePhoto {
     fixations: number;    // fixations in the measured map
     viewingSeconds: number;
     citation: string;
+  };
+  study?: {              // only for images from a published study (area 'From published studies')
+    citation: string;
+    heatmapFigure: string; // e.g. "Figure 3"
+    heatmapUrl: string;    // the publisher's figure file
+    viewing: string;       // the study's viewing set-up, one line
   };
 }
 ```
@@ -661,6 +675,7 @@ was run on the photos.
 - Upload only; no camera capture; no remote processing in v1.
 - English only.
 - Measured eye tracking comes only from openly licensed datasets, and is always
-  labelled as measured, never mixed with predictions.
+  labelled as measured, never mixed with predictions. A heat map published as a
+  figure is linked, never digitised into a map.
 - Not listed on the eelkedevries.com Projects page.
 - Prompt files live in `docs-dev/agent/prompts/`.

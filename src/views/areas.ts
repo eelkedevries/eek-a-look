@@ -253,7 +253,7 @@ export function mountAreas(panel: HTMLElement): void {
     const file = await loadAreas(id);
     if (requested !== results) return;
     if (!file) {
-      showEmpty('Areas could not be loaded for this photo.');
+      showEmpty(results.image.study ? 'Areas are computed for the street photos only, not for the images from published studies.' : 'Areas could not be loaded for this photo.');
       return;
     }
     for (const node of [legend, tableWrap, caption]) node.hidden = false;

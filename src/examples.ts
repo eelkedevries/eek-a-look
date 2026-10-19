@@ -2,8 +2,8 @@ import { setImage } from './state';
 
 export interface ExamplePhoto {
   id: string;
-  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich';
-  city: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich';
+  area: 'Zuidas' | 'Weena' | 'Wilhelminapier' | 'Beatrixkwartier' | 'Zürich' | 'From published studies';
+  city: 'Amsterdam' | 'Rotterdam' | 'The Hague' | 'Zürich' | 'Qinyang' | 'Guangzhou';
   title: string;
   file: string;
   width: number;
@@ -15,6 +15,8 @@ export interface ExamplePhoto {
   changes: string;
   /** Only for photos with measured eye tracking. */
   measured?: { observers: number; fixations: number; viewingSeconds: number; citation: string };
+  /** Only for images from a published eye-tracking study, whose heat map is linked, never used as measured gaze. */
+  study?: { citation: string; heatmapFigure: string; heatmapUrl: string; viewing: string };
 }
 
 const EXAMPLES_URL = `${import.meta.env.BASE_URL}examples/`;
@@ -28,8 +30,8 @@ export async function loadExamples(): Promise<ExamplePhoto[]> {
   return response.json();
 }
 
-/** The small text after an area heading: the city, or for the Zürich group (area = city) that gaze was measured. Matches vite.config.ts. */
-const areaNote = (photo: ExamplePhoto) => (photo.measured ? 'measured eye tracking' : photo.city);
+/** The small text after an area heading: the city, or what the group is when the area is not a place. Matches vite.config.ts. */
+const areaNote = (photo: ExamplePhoto) => (photo.measured ? 'measured eye tracking' : photo.study ? 'predictions only' : photo.city);
 
 const thumbUrl = (photo: ExamplePhoto) => EXAMPLES_URL + photo.file.replace(/\.jpg$/, '-thumb.jpg');
 
@@ -44,6 +46,7 @@ export async function showExample(photo: ExamplePhoto): Promise<void> {
     exampleId: photo.id,
     measured: photo.measured !== undefined,
     measuredCounts: photo.measured && { observers: photo.measured.observers, fixations: photo.measured.fixations },
+    study: photo.study !== undefined,
   });
 }
 
@@ -110,12 +113,14 @@ export function renderPicker(
   return mark;
 }
 
-type Filter = 'all' | 'measured' | 'dutch';
+type Filter = 'all' | 'measured' | 'dutch' | 'study';
 const FILTERS: [Filter, string][] = [
   ['all', 'All'],
   ['measured', 'Measured gaze'],
   ['dutch', 'Dutch high-rise'],
+  ['study', 'Published studies'],
 ];
+const kind = (photo: ExamplePhoto): Filter => (photo.measured ? 'measured' : photo.study ? 'study' : 'dutch');
 
 /** Search and filter buttons for the library: hides thumbnails (and empty groups) that do not match. */
 export function mountLibraryFilter(container: HTMLElement, photos: ExamplePhoto[], search: HTMLInputElement, filterGroup: HTMLElement, count: HTMLElement): void {
@@ -146,7 +151,7 @@ export function mountLibraryFilter(container: HTMLElement, photos: ExamplePhoto[
         const photo = byId.get(button.dataset.id ?? '');
         const match =
           !!photo &&
-          (filter === 'all' || (filter === 'measured') === !!photo.measured) &&
+          (filter === 'all' || kind(photo) === filter) &&
           (!query || haystack(photo).includes(query));
         button.hidden = !match;
         if (match) shown++;
@@ -171,11 +176,19 @@ export function renderCredit(element: HTMLElement, photo: ExamplePhoto): void {
     return a;
   };
   element.replaceChildren(
-    `${photo.title}, ${photo.city}. Photo: `,
+    `${photo.title}, ${photo.city}. ${photo.study ? 'Image' : 'Photo'}: `,
     link(photo.sourceUrl, photo.author),
     ', ',
     link(photo.licenceUrl, photo.licence),
     photo.sourceUrl.startsWith('https://commons.wikimedia.org/') ? ', via Wikimedia Commons. ' : '. ',
     `${photo.changes}.`,
   );
+  if (photo.study) {
+    element.append(
+      ' The study’s own heat map of measured gaze (',
+      `${photo.study.viewing}) is `,
+      link(photo.study.heatmapUrl, `${photo.study.heatmapFigure} of ${photo.study.citation}`),
+      '; it is linked, not used as a layer. Every map here is a prediction.',
+    );
+  }
 }

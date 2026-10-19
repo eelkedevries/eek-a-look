@@ -406,5 +406,505 @@
       "viewingSeconds": 6,
       "citation": "Wilming et al. (2017), Scientific Data 4, 160126; Baseline study: Onat, Açık, Schumann & König (2014), PLoS ONE"
     }
+  },
+  {
+    "id": "qinyang-01",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node A1-1 after the proposed renovation",
+    "file": "qinyang-01.jpg",
+    "width": 368,
+    "height": 205,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "qinyang-02",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node A1-2 after the proposed renovation",
+    "file": "qinyang-02.jpg",
+    "width": 365,
+    "height": 203,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "qinyang-03",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node A2-1 after the proposed renovation",
+    "file": "qinyang-03.jpg",
+    "width": 369,
+    "height": 205,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "qinyang-04",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node A2-2 after the proposed renovation",
+    "file": "qinyang-04.jpg",
+    "width": 365,
+    "height": 202,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "qinyang-05",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node B1-1 after the proposed renovation",
+    "file": "qinyang-05.jpg",
+    "width": 368,
+    "height": 204,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "qinyang-06",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node B2-1 (row 3) after the proposed renovation",
+    "file": "qinyang-06.jpg",
+    "width": 364,
+    "height": 203,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "qinyang-07",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node B2-1 (row 4) after the proposed renovation",
+    "file": "qinyang-07.jpg",
+    "width": 368,
+    "height": 206,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "qinyang-08",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node A3-1 after the proposed renovation",
+    "file": "qinyang-08.jpg",
+    "width": 365,
+    "height": 202,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "qinyang-09",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node B3-1 after the proposed renovation",
+    "file": "qinyang-09.jpg",
+    "width": 361,
+    "height": 203,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "qinyang-10",
+    "area": "From published studies",
+    "city": "Qinyang",
+    "title": "Street node B3-2 after the proposed renovation",
+    "file": "qinyang-10.jpg",
+    "width": 365,
+    "height": 204,
+    "author": "Zhang, Wang, Feng, Wang, Zhang and Qiao (2026), Frontiers in Psychology",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3389/fpsyg.2026.1848298",
+    "changes": "Cropped from Figure 2 of the article and recompressed; a design rendering, not a photograph",
+    "study": {
+      "citation": "Zhang et al. (2026), Frontiers in Psychology 17, 1848298",
+      "heatmapFigure": "Figure 3",
+      "heatmapUrl": "https://www.frontiersin.org/files/Articles/1848298/xml-images/fpsyg-17-1848298-g003.webp",
+      "viewing": "51 participants; static images in a VR headset with eye tracking"
+    }
+  },
+  {
+    "id": "guangzhou-tabebuia-1",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Tabebuia chrysantha trees, panorama 1 of 3",
+    "file": "guangzhou-tabebuia-1.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-tabebuia-2",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Tabebuia chrysantha trees, panorama 2 of 3",
+    "file": "guangzhou-tabebuia-2.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-tabebuia-3",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Tabebuia chrysantha trees, panorama 3 of 3",
+    "file": "guangzhou-tabebuia-3.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-hydrangea-1",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Hydrangea macrophylla trees, panorama 1 of 3",
+    "file": "guangzhou-hydrangea-1.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-hydrangea-2",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Hydrangea macrophylla trees, panorama 2 of 3",
+    "file": "guangzhou-hydrangea-2.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-hydrangea-3",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Hydrangea macrophylla trees, panorama 3 of 3",
+    "file": "guangzhou-hydrangea-3.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-swietenia-1",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Swietenia mahagoni trees, panorama 1 of 3",
+    "file": "guangzhou-swietenia-1.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-swietenia-2",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Swietenia mahagoni trees, panorama 2 of 3",
+    "file": "guangzhou-swietenia-2.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-swietenia-3",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Swietenia mahagoni trees, panorama 3 of 3",
+    "file": "guangzhou-swietenia-3.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-mangifera-1",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Mangifera indica trees, panorama 1 of 3",
+    "file": "guangzhou-mangifera-1.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-mangifera-2",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Mangifera indica trees, panorama 2 of 3",
+    "file": "guangzhou-mangifera-2.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-mangifera-3",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Mangifera indica trees, panorama 3 of 3",
+    "file": "guangzhou-mangifera-3.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-ficus-1",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Ficus altissima trees, panorama 1 of 3",
+    "file": "guangzhou-ficus-1.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-ficus-2",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Ficus altissima trees, panorama 2 of 3",
+    "file": "guangzhou-ficus-2.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
+  },
+  {
+    "id": "guangzhou-ficus-3",
+    "area": "From published studies",
+    "city": "Guangzhou",
+    "title": "Street with Ficus altissima trees, panorama 3 of 3",
+    "file": "guangzhou-ficus-3.jpg",
+    "width": 648,
+    "height": 325,
+    "author": "Wang, Hu and Ma (2025), Forests",
+    "licence": "CC BY 4.0",
+    "licenceUrl": "https://creativecommons.org/licenses/by/4.0/",
+    "sourceUrl": "https://doi.org/10.3390/f16101576",
+    "changes": "Cropped from Figure 4 of the article and recompressed; a 360° panorama in equirectangular projection",
+    "study": {
+      "citation": "Wang, Hu & Ma (2025), Forests 16, 1576",
+      "heatmapFigure": "Figure 17",
+      "heatmapUrl": "https://www.mdpi.com/forests/forests-16-01576/article_deploy/html/images/forests-16-01576-g017.png",
+      "viewing": "40 students; 360° panoramas viewed for 30 s in the laboratory"
+    }
   }
 ]
