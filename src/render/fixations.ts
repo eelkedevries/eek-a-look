@@ -2,10 +2,14 @@ import { loadFixations, type Fixations } from '../models/measured';
 import type { CurrentImage } from '../state';
 import { getViewState } from '../view-state';
 
+const DOT_OPACITY = 0.65;
+
 /** A canvas for the fixation points, stacked over a measured map; it ignores the heatmap strength. */
 export function fixationLayer(): HTMLCanvasElement {
   const canvas = document.createElement('canvas');
   canvas.className = 'layer fixations';
+  // The whole layer is faded, so each dot and its edge look as before, at 65% (prompt 050).
+  canvas.style.opacity = String(DOT_OPACITY);
   canvas.setAttribute('aria-hidden', 'true');
   canvas.hidden = true;
   return canvas;

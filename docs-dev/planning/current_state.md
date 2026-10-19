@@ -201,3 +201,5 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `049_measured_gaze_default.md` (spec 0.25: the single map opens on
   measured gaze with its fixations on the Zürich photos; elsewhere the best
   model, which the inspector now marks as shown)
+- `050_fixation_toggle.md` (spec 0.27: fixation dots at 65% opacity; the
+  checkbox also sits under the image, in step with the inspector's)

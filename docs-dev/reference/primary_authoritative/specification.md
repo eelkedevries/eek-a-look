@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.26 · **Last updated:** 2026-10-19
+**Version:** 0.27 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -58,7 +58,9 @@ measured, which is never turned into a layer (prompt 031, owner's request of
 with its fixations where the photo has them (prompt 049, owner's request of
 2026-10-19). 0.26 removes the centre-bias layer and every mention of it from
 the site, the method texts and the offline area checks, leaving four
-predictions (prompt 032, owner's request of 2026-10-19).
+predictions (prompt 032, owner's request of 2026-10-19). 0.27 draws the fixation points at 65% opacity
+and adds their checkbox under the image (prompt 050, owner's request of
+2026-10-19).
 
 ## Scope
 
@@ -321,9 +323,10 @@ interface ExamplePhoto {
 - **Fixation points:** the fixations behind each map (after steps 1–2 of the
   recipe) are also written to `<photo-id>.points.json`. An inspector checkbox
   "Show fixations (raw data)", on by default (prompt 049) and present only on
-  photos with measured data, draws them as cyan dots over the "Measured gaze" map in
+  photos with measured data, and repeated directly under the image (both
+  change the same setting; prompt 050), draws them as cyan dots over the "Measured gaze" map in
   "Single map", "Side by side" and "Contrast", and over no other map. The
-  heatmap strength does not dim them.
+  heatmap strength does not dim them; they are drawn at 65% opacity.
 
 **Automatic areas**
 

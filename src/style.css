@@ -1507,3 +1507,24 @@ a:hover {
     margin-top: 8px;
   }
 }
+
+/* The fixation checkbox under the image (prompt 050). */
+.stage-toggle-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+.stage-toggle-row[hidden] {
+  display: none;
+}
+
+.stage-toggle {
+  margin-bottom: 0;
+}
+
+.stage-toggle small {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--muted);
+}

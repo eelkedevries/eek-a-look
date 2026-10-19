@@ -132,6 +132,8 @@ export function mountInspector(aside: HTMLElement, showView: (id: string) => voi
   function renderGaze(results = getResults()) {
     const counts = results?.image.measured ? results.image.measuredCounts : undefined;
     gaze.section.hidden = !counts || !['overlay', 'side', 'contrast'].includes(getViewState().view);
+    // The checkbox under the image (prompt 050) changes the same setting.
+    fixationBox.checked = getViewState().fixations;
     fixationNote.textContent = counts
       ? `${counts.fixations} fixations from ${counts.observers} people · on the Measured gaze layer`
       : '';
