@@ -4,8 +4,6 @@ add the best per element to the area files (prompt 023).
   uv run elements.py --compare   calibrate on CMP (even image numbers), test on
                                  CMP (odd) and eTRIMS; pick a winner per element
   uv run elements.py --apply     add the winners' masks to the 24 area files
-  uv run elements.py --panoramas the 360° panoramas only, searched as a whole and in
-                                 four cube faces (prompt 061, panorama.py)
 
 Every model gets one phrase per call. A model returns a score map: per pixel,
 the highest score of the masks covering it, so the union of masks above a
@@ -403,61 +401,6 @@ def apply(dev: torch.device, only_missing: bool = False) -> None:
         overlay(pid, data)
 
 
-def apply_panoramas(dev: torch.device) -> None:
-    """Prompt 061: for the 360° panoramas, the winners' search also runs on the four cube faces (panorama.py); each
-    face's score map is mapped back and the highest score per pixel counts, before the façade zone and threshold."""
-    import panorama
-
-    comparison = json.loads(COMPARISON.read_text())
-    winners = comparison["winners"]
-    targets = [p for p in photos() if p.get("imageKind") == "panorama"]
-    files = {p["id"]: json.loads((OUT / f"{p['id']}.json").read_text()) for p in targets}
-    by_candidate: dict[str, list[str]] = {}
-    for eid, w in winners.items():
-        by_candidate.setdefault(w["candidate"], []).append(eid)
-    found: dict[str, dict[str, tuple]] = {pid: {} for pid in files}
-    for key, eids in by_candidate.items():
-        candidate = load_candidate(key, dev)
-        for photo in targets:
-            data = files[photo["id"]]
-            w, h = data["width"], data["height"]
-            cats = np.zeros((h, w), np.uint8)
-            for k, c in enumerate(CATEGORY_IDS):
-                area = next(a for a in data["areas"] if a["id"] == c)
-                cats[decode_rle(area["rle"], w, h)] = k
-            zone = facade_zone(cats)
-            image = Image.open(EXAMPLES / photo["file"]).convert("RGB")
-            pixels = np.asarray(image.resize((w, h), Image.LANCZOS))
-            faces = [(yaw, Image.fromarray(panorama.to_face(pixels, yaw))) for yaw in panorama.YAWS]
-            for eid in eids:
-                scores = candidate.score_map(image, ELEMENTS[eid][1], (w, h))
-                for yaw, face in faces:
-                    back, _ = panorama.from_face(candidate.score_map(face, ELEMENTS[eid][1], (panorama.FACE, panorama.FACE)), yaw, w, h)
-                    np.maximum(scores, back, out=scores)
-                scores = np.where(zone, scores, 0)
-                threshold = winners[eid]["threshold"]
-                found[photo["id"]][eid] = (scores >= (round(threshold * 100) if threshold is not None else 1), scores)
-            print(f"{photo['id']}: " + ", ".join(f"{eid} {int(ndimage.label(found[photo['id']][eid][0])[1])}" for eid in eids), flush=True)
-        del candidate; gc.collect(); torch.cuda.empty_cache()
-
-    for pid, data in files.items():
-        data["areas"] = [a for a in data["areas"] if a["id"] not in ELEMENTS]
-        for eid, (label, *_rest) in ELEMENTS.items():
-            mask, scores = found[pid][eid]
-            win = winners[eid]
-            spec = CANDIDATES[win["candidate"]]
-            data["models"][eid] = f"{spec['name']}: " + ", ".join(spec["repos"][i][0] + "@" + spec["repos"][i][1] for i in range(len(spec["repos"]))) \
-                + (f"; threshold {win['threshold']}" if win["threshold"] is not None else "") \
-                + "; whole panorama and four cube faces (prompt 061)"
-            extra = {"model": eid, "instances": int(ndimage.label(mask)[1]),
-                     "meanScore": round(float(scores[mask].mean()) / 100, 3) if mask.any() else None}
-            if win["lowConfidence"]:
-                extra["lowConfidence"] = True
-            data["areas"].append(area_entry(eid, label, "element", mask, **extra))
-        write_area_file(OUT / f"{pid}.json", data)
-        overlay(pid, data)
-
-
 COLOURS = {"ground-floor": (255, 0, 255), "windows": (86, 180, 233), "entrances": (230, 159, 0),
            "balconies": (0, 158, 115), "shopfronts": (240, 228, 66)}
 
@@ -486,17 +429,13 @@ def main() -> int:
     parser.add_argument("--compare", action="store_true")
     parser.add_argument("--apply", action="store_true")
     parser.add_argument("--only-missing", action="store_true", help="with --apply: only photos without element masks (prompt 051)")
-    parser.add_argument("--panoramas", action="store_true", help="the 360° panoramas only, also searched in cube faces (prompt 061)")
     args = parser.parse_args()
     dev = device()
     if args.compare:
         comparison = compare(dev)
         print_table(comparison)
         validate.save_elements(comparison)
-    if args.panoramas:
-        apply_panoramas(dev)
-        print(f"Added {', '.join(ELEMENTS)} to the panoramas' area files; overlays in .cache/check/")
-    elif args.apply:
+    if args.apply:
         apply(dev, args.only_missing)
         print(f"Added {', '.join(ELEMENTS)} to the area files; overlays in .cache/check/")
     return 0

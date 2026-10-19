@@ -13,7 +13,7 @@ const STUDY_CITIES = ['Qinyang'];
 const MEASURED_AREA = 'Andersson et al. (2017)';
 const MEASURED_AREA_CITIES = ['Rome'];
 const isCount = (n) => Number.isInteger(n) && n > 0;
-const IMAGE_KINDS = ['render', 'panorama'];
+const IMAGE_KINDS = ['render'];
 const LICENCES = /^(CC0 1\.0|Public domain|CC BY(-SA)? [0-9.]+|GNU GPL 3\.0)$/;
 const FIELDS = ['id', 'area', 'city', 'title', 'file', 'width', 'height', 'author', 'licence', 'licenceUrl', 'sourceUrl', 'changes'];
 
@@ -38,7 +38,7 @@ for (const [index, photo] of photos.entries()) {
     }
     if (!/^https:\/\//.test(heatmapUrl ?? '')) errors.push(`${where}: study.heatmapUrl is not https`);
     if (photo.measured !== undefined) errors.push(`${where}: a study image cannot have measured gaze`);
-    // Prompt 051: renderings and 360° panoramas are named, so the area tool can treat them apart.
+    // Prompt 051: renderings are named, so the area tool can treat them apart.
     if (!IMAGE_KINDS.includes(photo.imageKind)) errors.push(`${where}: imageKind must be one of ${IMAGE_KINDS.join(', ')}`);
   } else if (photo.study !== undefined) errors.push(`${where}: study is only for ${STUDY_AREA}`);
   else if (photo.area === MEASURED_AREA) {

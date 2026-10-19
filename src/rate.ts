@@ -56,7 +56,6 @@ const PRINCIPLES: { id: Principle; name: string; cue: string }[] = [
 ];
 const KIND: Record<string, string> = {
   render: 'Design rendering',
-  panorama: '360° panorama, shown flat',
 };
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -141,13 +140,13 @@ function rubric(): HTMLElement {
     el(
       'p',
       undefined,
-      'Some photos come from published studies. Design renderings are computer-made images of planned streets. 360° panoramas are shown flat: the left and right edges join, and straight lines curve. Judge them as you would a photo.',
+      'Some photos come from published studies. Design renderings are computer-made images of planned streets. Judge them as you would a photo.',
     ),
   );
   return details;
 }
 
-/** The rating set is the 49 photos of prompt 059; the photos of Andersson et al. (2017), added in prompt 069, are not rated. */
+/** The rating set is the 34 photos of prompt 059 (49 before the Guangzhou panoramas were removed); the photos of Andersson et al. (2017), added in prompt 069, are not rated. */
 const NOT_RATED = 'Andersson et al. (2017)';
 
 async function loadPhotos(): Promise<ExamplePhoto[]> {
@@ -162,11 +161,11 @@ async function mount(root: HTMLElement): Promise<void> {
 
   const intro = el('section', 'rate-intro');
   intro.append(
-    el('h2', 'rate-heading', 'Rate 49 street photos on three design principles'),
+    el('h2', 'rate-heading', 'Rate 34 street photos on three design principles'),
     el(
       'p',
       undefined,
-      'In 2020, fourteen experts judged photos of streets in high-rise areas on three design principles (Spanjar & Suurenbroek, Eye-tracking the city). We ask you the same question about 49 photos: for each photo and principle, is the principle present, ambiguous or absent? Use your own professional judgement. There are no right answers, and nothing on this page shows what any computer method decided.',
+      'In 2020, fourteen experts judged photos of streets in high-rise areas on three design principles (Spanjar & Suurenbroek, Eye-tracking the city). We ask you the same question about 34 photos: for each photo and principle, is the principle present, ambiguous or absent? Use your own professional judgement. There are no right answers, and nothing on this page shows what any computer method decided.',
     ),
   );
   const scale = el('ul', 'rate-scale');

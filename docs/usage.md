@@ -51,7 +51,7 @@ Choose a view above the photo; the inspector on the right changes with it.
   "with measured fixations". The **Fixation points** slider beside
   the heatmap strength sets how strongly they are drawn.
 - **Qualities:** for every example photo (study images are tagged as a design
-  rendering or a 360° panorama), three design principles
+  rendering), three design principles
   (rhythm and variety, an active ground floor, tactile materials) measured
   from the photo (the simulated AI panel also answers what it sees, rated by a
   fixed rule), all three at once: the evidence drawn on it (rhythm in

@@ -164,23 +164,6 @@ def ground_floor(categories: np.ndarray, ids: list[str], horizon: float,
     return _band(categories, ids, base, top, ok)
 
 
-def ground_floor_equirectangular(categories: np.ndarray, ids: list[str], horizon: float,
-                                 camera_m: float = CAMERA_HEIGHT_M, storey_m: float = STOREY_HEIGHT_M) -> np.ndarray:
-    """Ground-floor mask for a level 360° panorama in equirectangular projection (prompt 051).
-
-    Rows are elevation angles, π over the image height. A base row y0 below the
-    horizon lies at depression φ = π (y0 − y_h) / H, so at distance d = c / tan φ;
-    the storey line is at elevation atan((S − c) / d), row y_h − (H / π) of that.
-    """
-    height = categories.shape[0]
-    base = _bases(categories, ids)
-    ok = ~np.isnan(base) & (base > horizon)
-    depression = np.pi * (np.where(ok, base, horizon + 1) - horizon) / height
-    distance = camera_m / np.tan(depression)
-    top = horizon - height / np.pi * np.arctan((storey_m - camera_m) / distance)
-    return _band(categories, ids, base, top, ok)
-
-
 def head_offset(categories: np.ndarray, ids: list[str], horizon: float) -> float | None:
     """Median top row of standing people minus the horizon, in % of the height."""
     height = categories.shape[0]

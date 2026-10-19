@@ -38,8 +38,8 @@ interface QualityFile {
   photo: string;
   width: number;
   height: number;
-  /** Study images (prompt 052): a design rendering or a 360° panorama. */
-  imageKind?: 'render' | 'panorama';
+  /** Study images (prompt 052): a design rendering. */
+  imageKind?: 'render';
   models: Record<string, string>;
   principles: Partial<Record<PrincipleId, PrincipleResult>>;
 }
@@ -117,10 +117,10 @@ export interface PhotoInfo {
   file: string;
   width: number;
   height: number;
-  imageKind?: 'render' | 'panorama';
+  imageKind?: 'render';
 }
 
-const KIND_TEXT: Record<'render' | 'panorama', string> = { render: 'Design rendering', panorama: '360° panorama' };
+const KIND_TEXT: Record<'render', string> = { render: 'Design rendering' };
 
 const PRINCIPLES: { id: PrincipleId; name: string }[] = [
   { id: 'rhythm', name: 'Rhythm and variety' },
@@ -770,7 +770,7 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
     for (const id of [...ids.filter((id) => !info.get(id)?.imageKind), ...study]) {
       if (study.length && id === study[0]) {
         const group = el('tr', 'areas-group-row');
-        const th = el('th', undefined, 'From published studies · renderings and 360° panoramas');
+        const th = el('th', undefined, 'From published studies · design renderings');
         th.colSpan = head.childElementCount;
         group.append(th);
         table.append(group);

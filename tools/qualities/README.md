@@ -71,12 +71,12 @@ frontage A–E by premises and doors and windows per 100 m and the share of
 blind or passive façade. `frontage_density()` measures the frontage length
 within 60 m of the camera (façade base rows from `tools/areas/groundfloor.py`,
 smoothed; a level camera at 1.6 m and an assumed 60° lens, with 45° and 75°
-for a range; the exact geometry for panoramas), counts entrances, shopfronts
+for a range), counts entrances, shopfronts
 and ground-floor windows (SAM 3 instances ≥ 0.65 outside entrances and
 shopfronts) and grades: A entrances > 15, openings > 25, blind/passive < 10%;
 B ≥ 10, > 15, < 25%; C entrances ≥ 6, < 50%; D entrances ≥ 3; E otherwise.
-Entrances stand in for premises. Result over the 49 photos: E 26, D 3, D–E 2,
-none 18. A check by eye on three photos (`qualities_validation.md`) found
+Entrances stand in for premises. Result over the 34 photos: E 16, D 3, D–E 2,
+none 13. A check by eye on three photos (`qualities_validation.md`) found
 doors missed and, in the Zürich photos, first-floor windows counted, so the
 grade tends to be too low.
 
@@ -238,36 +238,17 @@ agreement and Cohen's kappa with the labels (majority label per photo when
 there are several raters). Its mappings for the graded panel and UP-CLIP are
 written in its docstring and were fixed before any labels exist.
 
-## Panoramas in cube faces (prompt 061)
-
-For the 15 360° panoramas, `rhythm.measure_panorama()` projects the photo
-and its categories onto the four side faces of a cube map
-(`tools/areas/panorama.py`, 512 px faces), finds window and balcony
-instances in each face (cached as `<photo>-face<yaw>`), computes cells and
-periodicity per face with the same thresholds, pools the cells for the
-indicators and the variety, and maps the evidence back.
-`uv run build.py --ground-floor --rhythm --kind panorama`. A 32 px cell on
-the panorama's own grid spans about 18° of view, so before few façade cells
-counted and 7 panoramas were "unclear: too little façade"; in the faces a
-cell spans about 5.6° (3.2° in the ordinary photos), more cells count, and
-with no windows found they now read as likely absent. That may reflect the
-blur of these small panoramas more than their streets. Ground-floor
-outcomes did not change.
-
 ## Study images (prompt 052)
 
-The 25 images "From published studies" (10 design renderings, 15 360°
-panoramas; `imageKind` in the manifest, prompt 051) are measured with the same
+The 10 images "From published studies" (design renderings; `imageKind` in
+the manifest, prompt 051) are measured with the same
 rules: `uv run build.py --only-missing` leaves the 24 earlier quality files
 untouched. Their reasons carry a note on the image kind, and the quality file
 records `imageKind`. Outcomes on 2026-10-19 (likely present / unclear /
-likely absent): ground floor 2 / 7 / 16, rhythm 3 / 12 / 10, materials
-4 / 20 / 1.
+likely absent), after the 15 Guangzhou panoramas were removed: ground floor
+2 / 3 / 5, rhythm 3 / 3 / 4, materials 1 / 9 / 0.
 
-Limits seen in the overlays: in the panoramas SAM 3 finds no façade elements
-(the buildings are small and behind trees), so frontages read as closed and
-rhythm as plain; DMS46 reads the stretched ground of a panorama as sand,
-soil, water or plaster; the renders are smaller than the mask grid
+Limits seen in the overlays: the renders are smaller than the mask grid
 (about 368 px wide).
 
 **Glass and ribbon-window façades (prompt 053):** `compare_rhythm.py` compares the

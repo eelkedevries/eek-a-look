@@ -76,34 +76,18 @@ specification. Masks are row-major run lengths that start outside the area.
 - the ground floor lies inside the façade;
 - the file is at most 150 kB.
 
-## Study images: renderings and 360° panoramas (prompt 051)
+## Study images: design renderings (prompt 051)
 
-The 25 images "From published studies" carry `imageKind` in the manifest:
+The 10 images "From published studies" carry `imageKind` in the manifest:
 - **`render`** (10 Qinyang design renderings, about 368 × 205 px): the
   ordinary rule; their virtual camera height is unknown, so 1.6 m is an
   assumption. Two of them (qinyang-01, qinyang-10) fall back to the middle
   row and so get a ground floor covering the whole façade.
-- **`panorama`** (360° panoramas, equirectangular; the 15 Guangzhou
-  panoramas, 648 × 325 px, were removed on 2026-10-19): a level capture is assumed, so the horizon is the middle row
-  (`equirectangular`). Rows are elevation angles, π over the image height
-  *R*: a base row *y<sub>0</sub>* lies at depression *φ* = π (*y<sub>0</sub>* −
-  *y<sub>h</sub>*) / *R*, at distance *d* = *c* / tan *φ*, and the ground floor
-  reaches up to row *y<sub>h</sub>* − (*R* / π) atan((*H* − *c*) / *d*).
-  Checked by hand on one column of four panoramas (façades 2.4–21.8 m away).
-  The façades in these tree-lined streets are small (0–9% of the image),
-  and SAM 3 finds no windows, doors, balconies or shopfronts in them.
-  Prompt 061 also searches the four side faces of a cube map
-  (`panorama.py`: yaw 0°, 90°, 180°, 270°, 90° × 90°, 512 px, upsampled from
-  about 160 px of panorama per face; together they cover every direction
-  within about 35° of the horizon), maps each face's scores back and keeps
-  the highest. `uv run elements.py --panoramas`. Found: 7 windows on a
-  distant building in swietenia-2 (right, by eye), 3 "shopfronts" each in
-  swietenia-3 and mangifera-3 (on mangifera-3 a fence, so wrong) and a window
-  and an entrance in mangifera-2 (the entrance is a parked van's door, so
-  wrong); nothing in the other 11. The panoramas are too small and blurred
-  for façade elements.
 
-Both kinds are recorded in the area file (`imageKind`).
+The 15 Guangzhou 360° panoramas and their panorama rules (prompts 051 and
+061) were removed on 2026-10-19.
+
+The kind is recorded in the area file (`imageKind`).
 
 ## Edited images of the Example section (prompt 058)
 

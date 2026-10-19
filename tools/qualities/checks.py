@@ -218,7 +218,7 @@ def discrimination(data: dict) -> dict:
         values = [v for v in values if v is not None]
         counts = {k: outcomes.count(k) for k in ("likely-present", "unclear", "likely-absent")}
         groups = {}
-        for group in ("earlier", "study"):  # prompt 052: the 24 earlier photos and the 25 study images
+        for group in ("earlier", "study"):  # prompt 052: the 24 earlier photos and the 10 study images
             g = [d["quality"]["principles"][principle]["outcome"] for d in data.values() if d["group"] == group]
             if g:
                 c = {k: g.count(k) for k in ("likely-present", "unclear", "likely-absent")}
@@ -259,7 +259,7 @@ FRONTAGE_HAND_CHECK = [
     "",
     "Doors are missed, so entrances per 100 m, the grade's main criterion, come out low and the grade tends to be too low. "
     "In the Zürich photos the estimated ground floor reaches the first-floor windows, so ground-floor windows are over-counted. "
-    "Over the 49 photos: E 26, D 3, D–E 2, no grade 18 (no horizon found, or under 20 m of frontage within 60 m). "
+    "Over the 34 photos: E 16, D 3, D–E 2, no grade 13 (no horizon found, or under 20 m of frontage within 60 m). "
     "The grade is shown as an estimate and changes no outcome.",
 ]
 
@@ -334,7 +334,7 @@ def observed_section() -> list[str]:
     stab = ", ".join(f"{k} {v['allRunsAgree']:.0%}" for k, v in o["stability"].items() if v["allRunsAgree"] is not None)
     lines += ["", f"All four runs give the same answer: {stab}.",
               "On the ordinary photos the model answers yes to the rhythm questions almost every time, so rhythm still hardly "
-              "separates them; its spread comes from the renderings and panoramas."]
+              "separates them; its spread comes from the renderings."]
     return lines
 
 
@@ -352,8 +352,8 @@ def report(result: dict) -> str:
         "- **Checked:** whether each measure reads its *components* as people",
         "  labelled them in public datasets, how much the outcomes depend on the",
         f"  rule thresholds, and whether the measures tell the {sum(v['photos'] for v in d['rhythm']['byGroup'].values())}",
-        "  example photos apart (the photos and the study images, renderings and",
-        "  360° panoramas, separately; the four Andersson photos have the",
+        "  example photos apart (the photos and the study images, design",
+        "  renderings, separately; the four Andersson photos have the",
         "  materials measure only).",
         "- **Not checked:** the principles themselves. No experts have judged these",
         "  photos, so agreement with experts has not been evaluated. Agreement",

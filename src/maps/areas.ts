@@ -17,8 +17,8 @@ export interface AreaFile {
   photo: string;
   width: number;
   height: number;
-  horizon: { row: number; method: 'vanishing-lines' | 'standing-people' | 'assumed-level' | 'equirectangular'; support: number };
-  imageKind?: 'render' | 'panorama';
+  horizon: { row: number; method: 'vanishing-lines' | 'standing-people' | 'assumed-level'; support: number };
+  imageKind?: 'render';
   params: { cameraHeightM: number; storeyHeightM: number };
   models: Record<string, string>;
   areas: AreaInfo[];

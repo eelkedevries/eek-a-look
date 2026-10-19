@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.52 · **Last updated:** 2026-10-19
+**Version:** 0.53 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -117,8 +117,10 @@ opaque or transparent, edited with FLUX.1 Kontext and pasted over the
 original only where the edit changed it (prompt 071b, owner's request of
 2026-10-19).
 0.52 removes the 15 Guangzhou panoramas (Wang, Hu & Ma, 2025) and all their
-precomputed data; no current image is a panorama, but the panorama rules stay
-(owner's request of 2026-10-19).
+precomputed data (owner's request of 2026-10-19). 0.53 removes the panorama
+rules and code (the `panorama` image kind, the equirectangular ground floor,
+the cube faces of 0.48) and recomputes the summaries over the remaining photos
+from the stored per-photo results (owner's request of 2026-10-19).
 
 ## Scope
 
@@ -143,7 +145,7 @@ In scope for v1:
   "Andersson et al. (2017)", each with a **measured** eye-tracking map from
   two to five people's hand-labelled fixations (`tools/measured-gaze/`,
   prompt 069);
-- 25 images from two published eye-tracking studies (CC BY 4.0), in a group
+- 10 design renderings from a published eye-tracking study (CC BY 4.0), in a group
   "From published studies" with **predictions only**: each credit line links to
   the heat map the study published, which is not digitised, reconstructed or
   shown as a layer;
@@ -269,8 +271,8 @@ interface AreaFile {
   photo: string;          // example photo id
   width: number;          // mask size: the photo scaled to 640 px on the long side
   height: number;
-  horizon: { row: number; method: 'vanishing-lines' | 'standing-people' | 'assumed-level' | 'equirectangular'; support: number };
-  imageKind?: 'render' | 'panorama';   // copied from the manifest (prompt 051)
+  horizon: { row: number; method: 'vanishing-lines' | 'standing-people' | 'assumed-level'; support: number };
+  imageKind?: 'render';   // copied from the manifest (prompt 051)
   params: { cameraHeightM: number; storeyHeightM: number };
   models: Record<string, string>;   // step → repository@revision or rule
   areas: Array<{
@@ -295,7 +297,7 @@ interface QualityFile {
   photo: string;
   width: number;          // as the area file
   height: number;
-  imageKind?: 'render' | 'panorama';   // study images (prompt 052)
+  imageKind?: 'render';   // study images (prompt 052)
   models: Record<string, string>;   // step → repository@revision or rule
   principles: Partial<Record<'groundFloor' | 'rhythm' | 'materials', PrincipleResult>>;
 }
@@ -315,7 +317,7 @@ interface PrincipleResult {
   grade?: {               // ground floor only, where a horizon was found (prompt 062)
     value: string | null; // "A"–"E", a range such as "D–E", or null under 20 m of counted frontage
     source: string;       // "adapted from the Urban Design Compendium, Table 5.3 …; not an expert grade"
-    byFieldOfView: Record<string, string | null> | null;  // perspective photos: "45", "60", "75"; null for panoramas
+    byFieldOfView: Record<string, string | null>;  // "45", "60", "75"
   };
 }
 ```
@@ -338,9 +340,8 @@ interface ExamplePhoto {
   licenceUrl: string;
   sourceUrl: string;      // Commons file page, the dataset's DOI, or the original file at a pinned commit
   changes: string;        // e.g. "Resized and recompressed"
-  imageKind?: 'render' | 'panorama'; // study images only (required there): a design
-                          // rendering, or a 360° panorama in equirectangular projection;
-                          // absent for ordinary photos (prompt 051)
+  imageKind?: 'render';   // study images only (required there): a design
+                          // rendering; absent for ordinary photos (prompt 051)
   measured?: {            // only for photos with measured eye tracking
     observers: number;
     fixations: number;    // fixations in the measured map
@@ -490,17 +491,6 @@ are not in the library.
     façade run;
   - the ground floor is the façade pixels from *y<sub>0</sub>* up to
     *y<sub>h</sub> − (H − c)/c · (y<sub>0</sub> − y<sub>h</sub>)*.
-  - **360° panoramas** (`imageKind: 'panorama'`, equirectangular, assumed
-    level): the horizon is the middle row (`equirectangular`); rows are
-    elevation angles, π over the image height *R*. A base row *y<sub>0</sub>*
-    below the horizon lies at depression *φ* = π (*y<sub>0</sub>* −
-    *y<sub>h</sub>*) / *R*, so at distance *d* = *c* / tan *φ*; the ground
-    floor reaches up to row *y<sub>h</sub>* − (*R* / π) atan((*H* − *c*) /
-    *d*). Hidden bases are interpolated as above (prompt 051).
-    Façade elements are searched in the whole panorama and in the four side
-    faces of a cube map (yaw 0°, 90°, 180°, 270°; pitch 0°; 90° × 90°,
-    512 px, gnomonic, `tools/areas/panorama.py`), each face's score map
-    mapped back, the highest score per pixel counting (prompt 061).
   - **Design renderings** (`imageKind: 'render'`) use the rule for ordinary
     photos; their virtual camera height is unknown, so 1.6 m is an
     assumption.
@@ -530,14 +520,8 @@ Andersson et al. (2017) have only tactile materials: their area files have no
 SAM 3 façade elements, which the ground-floor and rhythm measures need, until
 `elements.py --apply --only-missing` runs on the laptop (prompt 069). For the study images
 (`imageKind`, prompt 052) the rules are the same; the reasons add "A design
-rendering, not a photograph." or "A 360° panorama: straight lines curve and
-distant surfaces are small, so repetition and texture are harder to see."
-The simulated panel judged only the 24 earlier photos. For panoramas the
-rhythm measure runs in the four cube faces (prompt 061): the façade
-categories are projected onto each face, window and balcony instances are
-found there, cells and periodicity are computed per face with the same
-thresholds, the cells of all faces are pooled for the indicators and the
-variety, and the evidence is mapped back onto the panorama.
+rendering, not a photograph."
+The simulated panel judged only the 24 earlier photos.
 
 The three design principles come from Spanjar & Suurenbroek (2020), whose
 panel of 14 experts judged whole photos as present, absent or ambiguous. The
@@ -774,7 +758,7 @@ was run on the photos.
     check)" after a `lowConfidence` element.
 - **Qualities** (a view after "Areas"; every example photo; uploads get
   "Qualities are computed in advance for the example photos only."):
-  - study images carry a tag "Design rendering" or "360° panorama" above the
+  - study images carry a tag "Design rendering" above the
     outcome (prompt 052);
   - all three principles (rhythm and variety, active ground floor, tactile
     materials) at once, without a switch (prompt 055);
@@ -811,7 +795,7 @@ was run on the photos.
     but:" and the rule's first reason. Then the other methods' labels for the
     photo, with the mappings of `agreement.py`: the rated panel (median ≥ 3
     present, ≤ 1 absent), the observing panel (its rule) and the UP-CLIP
-    reproduction (terciles over the 49 photos), and "Methods disagree" when
+    reproduction (terciles over the 34 photos), and "Methods disagree" when
     the image measure and the two panels include both present and absent; the
     all-photos table marks such cells with "≠". No combined score;
   - on the ground-floor card, under the reasons, the frontage grade (prompt
@@ -826,7 +810,7 @@ was run on the photos.
     - frontage columns within 60 m of the camera, from the façade base row
       (smoothed) and the horizon: in a perspective photo a level pinhole
       camera at 1.6 m with an assumed horizontal field of view of 60° (45° and
-      75° for the range), in a panorama the exact geometry of prompt 051;
+      75° for the range);
       steps over 3 m between neighbouring columns break the length;
     - entrances and shopfronts as mask components of at least 20 cells on
       the ground floor; windows as SAM 3 instances scoring at least 0.65 with
@@ -990,15 +974,15 @@ was run on the photos.
 
 - `/eek-a-look/rate.html` (`rate.html`, `src/rate.ts`, `src/rate.css`), built
   with the site, not linked from the main page, `noindex`. Raters judge each
-  of the 49 example photos (not the photos of Andersson et al. 2017, added
+  of the 34 example photos (not the photos of Andersson et al. 2017, added
   later) on the three principles on the 2020 panel's scale
   (present, ambiguous, absent), in their own professional judgement.
 - It shows: an introduction, the scale, the rubric "What to look at"
   (collapsible; the wording of `rating_rubric.md` in the developer notes), a
   field for the rater's initials, one photo at a time with its place, its
-  kind for study images (design rendering, 360° panorama) and its credit,
+  kind for study images (design rendering) and its credit,
   the three questions and an optional note, "Previous", "Next", "Next
-  unrated" and "Photo n of 49 · k of 49 rated".
+  unrated" and "Photo n of 34 · k of 34 rated".
 - The order is shuffled per rater, seeded by the initials. Answers are kept
   in the browser (`localStorage`); the page works without it.
 - "Download ratings (CSV)" (needs initials) gives the labels format of

@@ -7,9 +7,9 @@ Made by `tools/qualities/checks.py` (prompt 043) on 2026-10-19. Figures in
 
 - **Checked:** whether each measure reads its *components* as people
   labelled them in public datasets, how much the outcomes depend on the
-  rule thresholds, and whether the measures tell the 49
-  example photos apart (the photos and the study images, renderings and
-  360° panoramas, separately; the four Andersson photos have the
+  rule thresholds, and whether the measures tell the 34
+  example photos apart (the photos and the study images, design
+  renderings, separately; the four Andersson photos have the
   materials measure only).
 - **Not checked:** the principles themselves. No experts have judged these
   photos, so agreement with experts has not been evaluated. Agreement
@@ -80,7 +80,7 @@ Three photos, openings on the ground floor counted by eye, against the automatic
 | zurich-42 | 2–3 / 2 (one is a first-floor balcony door) | 3–4 / 0 | 3–4 / 12 | D |
 | zuidas-gershwinplein | 2–3 / 1 | 0 / 1 (a glazed lobby) | 0 / 0 | E |
 
-Doors are missed, so entrances per 100 m, the grade's main criterion, come out low and the grade tends to be too low. In the Zürich photos the estimated ground floor reaches the first-floor windows, so ground-floor windows are over-counted. Over the 49 photos: E 26, D 3, D–E 2, no grade 18 (no horizon found, or under 20 m of frontage within 60 m). The grade is shown as an estimate and changes no outcome.
+Doors are missed, so entrances per 100 m, the grade's main criterion, come out low and the grade tends to be too low. In the Zürich photos the estimated ground floor reaches the first-floor windows, so ground-floor windows are over-counted. Over the 34 photos: E 16, D 3, D–E 2, no grade 13 (no horizon found, or under 20 m of frontage within 60 m). The grade is shown as an estimate and changes no outcome.
 
 ## Materials: DMS46
 
@@ -116,33 +116,33 @@ Rule tested: pixels DMS46 calls plaster/paint or concrete with surface detail ab
 
 ## Sensitivity of the rules
 
-How many of the 49 outcomes change when one threshold is halved or multiplied by 1.5.
+How many of the 34 outcomes change when one threshold is halved or multiplied by 1.5.
 
 | Principle | Threshold | Value | × 0.5 | × 1.5 |
 |---|---|---|---|---|
-| groundFloor | frontageMin | 0.05 | 0 | 1 |
+| groundFloor | frontageMin | 0.05 | 0 | 0 |
 | groundFloor | openPresent | 0.3 | 3 | 0 |
 | groundFloor | openAbsent | 0.1 | 3 | 2 |
 | groundFloor | closedAbsent | 0.6 | 0 | 4 |
 | rhythm | facadeCellsMin | 8 | 0 | 0 |
 | rhythm | rhythmicPresent | 0.25 | 6 | 5 |
 | rhythm | zonesPresent | 2 | 1 | 6 |
-| rhythm | rhythmicAbsent | 0.1 | 2 | 3 |
+| rhythm | rhythmicAbsent | 0.1 | 1 | 3 |
 | materials | zoneMin | 0.1 | 0 | 2 |
-| materials | texturedPresent | 0.25 | 12 | 7 |
+| materials | texturedPresent | 0.25 | 7 | 5 |
 | materials | texturedAbsent | 0.1 | 2 | 2 |
-| materials | smoothRatio | 2.0 | 3 | 1 |
+| materials | smoothRatio | 2.0 | 2 | 1 |
 
 ## Do the measures tell the photos apart?
 
 | Principle | Photos | Likely present | Unclear | Likely absent |
 |---|---|---|---|---|
 | groundFloor | 24 photos | 1 | 10 | 13 |
-| groundFloor | 25 study images | 2 | 7 | 16 |
+| groundFloor | 10 study images | 2 | 3 | 5 |
 | rhythm | 24 photos | 11 | 7 | 6 |
-| rhythm | 25 study images | 3 | 5 | 17 |
+| rhythm | 10 study images | 3 | 3 | 4 |
 | materials | 28 photos | 6 | 14 | 8 |
-| materials | 25 study images | 4 | 20 | 1 |
+| materials | 10 study images | 1 | 9 | 0 |
 
 | Principle | Main indicator | Range over all photos |
 |---|---|---|
@@ -186,12 +186,12 @@ Qwen3-VL answered visible questions (counts and yes/no; four sampled runs per ph
 
 | Principle | Observed: values (sd) | On the 24 photos | Weighted: distinct (range) | Graded medians (24 photos) | ρ observed / weighted with the measure |
 |---|---|---|---|---|---|
-| groundFloor | 0–4 (0.91) | 0: 1, 1: 13, 2: 5, 3: 3, 4: 2 | 37 (0.4–3.3) | 4 (1–3) | 0.68 / 0.61 (openShare) |
-| rhythm | 0–4 (1.83) | 2: 1, 3: 2, 4: 21 | 37 (1.2–4.0) | 2 (3–4) | 0.56 / 0.45 (rhythmicShare) |
-| materials | 0–4 (1.15) | 0: 1, 1: 9, 2: 7, 3: 6, 4: 1 | 21 (1.7–3.0) | 3 (2–3) | 0.08 / -0.17 (texturedShare) |
+| groundFloor | 0–4 (1.02) | 0: 1, 1: 13, 2: 5, 3: 3, 4: 2 | 30 (1.0–3.3) | 4 (1–3) | 0.61 / 0.53 (openShare) |
+| rhythm | 0–4 (1.30) | 2: 1, 3: 2, 4: 21 | 25 (3.0–4.0) | 2 (3–4) | 0.22 / 0.13 (rhythmicShare) |
+| materials | 0–4 (1.24) | 0: 1, 1: 9, 2: 7, 3: 6, 4: 1 | 18 (1.9–3.0) | 3 (2–3) | 0.08 / -0.21 (texturedShare) |
 
-All four runs give the same answer: entrances 80%, shopWindows 86%, buildings 71%, blankStretch 73%, streetUse 90%, repeatedBays 90%, repeatedFloors 90%, variety 96%, texturedSurfaces 88%, materials 35%.
-On the ordinary photos the model answers yes to the rhythm questions almost every time, so rhythm still hardly separates them; its spread comes from the renderings and panoramas.
+All four runs give the same answer: entrances 71%, shopWindows 79%, buildings 59%, blankStretch 62%, streetUse 85%, repeatedBays 85%, repeatedFloors 85%, variety 94%, texturedSurfaces 82%, materials 35%.
+On the ordinary photos the model answers yes to the rhythm questions almost every time, so rhythm still hardly separates them; its spread comes from the renderings.
 
 ## Expert labels later
 

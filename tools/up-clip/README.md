@@ -71,7 +71,8 @@ by hand from the training log (batch, epochs, time, peak memory).
 
 ## Scores for the example photos (prompt 046)
 
-`scores.py` scores every example photo (49 on 2026-10-19) against the 28
+`scores.py` scores every example photo (34 after the Guangzhou panoramas were
+removed on 2026-10-19) against the 28
 sentences of `descriptions.json`, written for this project:
 - **perception** (supported use): "A street that feels {word}." for the 16
   keywords of the authors' sample (Neat, Efficient, Walkable, Lively, …);
@@ -85,12 +86,13 @@ probabilities and have no location in the photo. The principle score is the
 mean similarity with the positive sentences minus the mean with the negative
 ones.
 
-Exploratory, automated against automated, on the 24 photos with image
-measures (Spearman ρ, reproduction / plain CLIP):
+Exploratory, automated against automated (Spearman ρ, reproduction / plain
+CLIP; recomputed on 2026-10-19 over the 34 photos with image measures, 31 for
+the ground floor, and the 24 photos the graded panel judged):
 
 | Principle score against | Rhythm | Ground floor | Materials |
 |---|---|---|---|
-| the image measure's main indicator | −0.22 / −0.30 | 0.52 / 0.51 | 0.10 / 0.08 |
+| the image measure's main indicator | 0.03 / −0.04 | 0.42 / 0.41 | 0.15 / 0.12 |
 | the graded panel's median | 0.45 / 0.36 | 0.65 / 0.56 | 0.03 / 0.09 |
 
 Only the ground floor shows some agreement between methods. None of this is a

@@ -101,19 +101,20 @@ rule fixed before the run turns the answers into ratings 0–4:
 
 It also re-asks the graded prompt once per role without sampling and takes
 the expected rating from the probabilities of the tokens 0–4 (G-Eval style),
-so ratings no longer tie. Results (49 photos, 75–100 s per photo, peak 7.3 GB):
+so ratings no longer tie. Results (34 photos after the Guangzhou panoramas were
+removed, 75–100 s per photo, peak 7.3 GB):
 
 | Principle | Observed (sd) | On the 24 photos | Weighted: distinct (range) | Graded medians | ρ observed / weighted with the image measure |
 |---|---|---|---|---|---|
-| ground floor | 0–4 (0.91) | 1 ×13, 2 ×5, 3 ×3, 4 ×2, 0 ×1 | 37 (0.4–3.3) | 1–3 | 0.68 / 0.61 |
-| rhythm | 0–4 (1.83) | 4 ×21, 3 ×2, 2 ×1 | 37 (1.2–4.0) | 3–4 | 0.56 / 0.45 |
-| materials | 0–4 (1.15) | 1 ×9, 2 ×7, 3 ×6, 0 ×1, 4 ×1 | 21 (1.7–3.0) | 2–3 | 0.08 / −0.17 |
+| ground floor | 0–4 (1.02) | 1 ×13, 2 ×5, 3 ×3, 4 ×2, 0 ×1 | 30 (1.0–3.3) | 1–3 | 0.61 / 0.53 |
+| rhythm | 0–4 (1.30) | 4 ×21, 3 ×2, 2 ×1 | 25 (3.0–4.0) | 3–4 | 0.22 / 0.13 |
+| materials | 0–4 (1.24) | 1 ×9, 2 ×7, 3 ×6, 0 ×1, 4 ×1 | 18 (1.9–3.0) | 2–3 | 0.08 / −0.21 |
 
 The observed rule separates the photos on the ground floor and materials,
 and the weighted ratings no longer tie. On rhythm the model still says yes to
 repetition and variety on almost every ordinary photo; the spread comes from
-the renderings and panoramas. The links with the image measures are between
-automated methods, not a validation. All four runs agree on 71–96% of the
+the renderings. The links with the image measures are between
+automated methods, not a validation. All four runs agree on 59–94% of the
 photos per question, but on the full materials list only on 35%.
 
 ## Caveats

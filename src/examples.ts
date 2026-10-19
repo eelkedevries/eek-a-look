@@ -18,8 +18,8 @@ export interface ExamplePhoto {
   measured?: { observers: number; fixations: number; viewingSeconds: number; citation: string };
   /** Only for images from a published eye-tracking study, whose heat map is linked, never used as measured gaze. */
   study?: { citation: string; heatmapFigure: string; heatmapUrl: string; viewing: string };
-  /** Study images only (prompt 051): a design rendering or a 360° panorama. */
-  imageKind?: 'render' | 'panorama';
+  /** Study images only (prompt 051): a design rendering. */
+  imageKind?: 'render';
   /** Edited images of the Example section only (prompt 058): the photo it was edited from, and what was changed. */
   editOf?: string;
   condition?: string;

@@ -163,7 +163,7 @@
    "frontageMin": {
     "value": 0.05,
     "x0.5": 0,
-    "x1.5": 1
+    "x1.5": 0
    },
    "openPresent": {
     "value": 0.3,
@@ -199,7 +199,7 @@
    },
    "rhythmicAbsent": {
     "value": 0.1,
-    "x0.5": 2,
+    "x0.5": 1,
     "x1.5": 3
    }
   },
@@ -211,8 +211,8 @@
    },
    "texturedPresent": {
     "value": 0.25,
-    "x0.5": 12,
-    "x1.5": 7
+    "x0.5": 7,
+    "x1.5": 5
    },
    "texturedAbsent": {
     "value": 0.1,
@@ -221,7 +221,7 @@
    },
    "smoothRatio": {
     "value": 2.0,
-    "x0.5": 3,
+    "x0.5": 2,
     "x1.5": 1
    }
   }
@@ -230,8 +230,8 @@
   "groundFloor": {
    "outcomes": {
     "likely-present": 3,
-    "unclear": 17,
-    "likely-absent": 29
+    "unclear": 13,
+    "likely-absent": 18
    },
    "indicator": "openShare",
    "byGroup": {
@@ -245,11 +245,11 @@
      "sameOnAllPhotos": false
     },
     "study": {
-     "photos": 25,
+     "photos": 10,
      "outcomes": {
       "likely-present": 2,
-      "unclear": 7,
-      "likely-absent": 16
+      "unclear": 3,
+      "likely-absent": 5
      },
      "sameOnAllPhotos": false
     }
@@ -399,8 +399,8 @@
   "rhythm": {
    "outcomes": {
     "likely-present": 14,
-    "unclear": 12,
-    "likely-absent": 23
+    "unclear": 10,
+    "likely-absent": 10
    },
    "indicator": "rhythmicShare",
    "byGroup": {
@@ -414,11 +414,11 @@
      "sameOnAllPhotos": false
     },
     "study": {
-     "photos": 25,
+     "photos": 10,
      "outcomes": {
       "likely-present": 3,
-      "unclear": 5,
-      "likely-absent": 17
+      "unclear": 3,
+      "likely-absent": 4
      },
      "sameOnAllPhotos": false
     }
@@ -567,9 +567,9 @@
   },
   "materials": {
    "outcomes": {
-    "likely-present": 10,
-    "unclear": 34,
-    "likely-absent": 9
+    "likely-present": 7,
+    "unclear": 23,
+    "likely-absent": 8
    },
    "indicator": "texturedShare",
    "byGroup": {
@@ -583,11 +583,11 @@
      "sameOnAllPhotos": false
     },
     "study": {
-     "photos": 25,
+     "photos": 10,
      "outcomes": {
-      "likely-present": 4,
-      "unclear": 20,
-      "likely-absent": 1
+      "likely-present": 1,
+      "unclear": 9,
+      "likely-absent": 0
      },
      "sameOnAllPhotos": false
     }

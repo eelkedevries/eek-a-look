@@ -20,7 +20,7 @@ professional judgement and calls the cues a guide.
 
 In 2020, fourteen experts judged photos of streets in high-rise areas on
 three design principles (Spanjar & Suurenbroek, *Eye-tracking the city*). We
-ask you the same question about 49 photos: for each photo and principle, is
+ask you the same question about 34 photos: for each photo and principle, is
 the principle present, ambiguous or absent? Use your own professional
 judgement. There are no right answers, and nothing on this page shows what
 any computer method decided.
@@ -53,6 +53,4 @@ any computer method decided.
 ## Study images
 
 Some photos come from published studies. **Design renderings** are
-computer-made images of planned streets. **360° panoramas** are shown flat:
-the left and right edges join, and straight lines curve. Judge them as you
-would a photo.
+computer-made images of planned streets. Judge them as you would a photo.

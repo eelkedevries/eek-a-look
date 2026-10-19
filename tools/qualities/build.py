@@ -8,7 +8,7 @@
   uv run build.py --calibrate     re-run the rhythm calibration
   uv run build.py --materials     tactile materials only (prompt 042; run fetch_dms.py first)
   uv run build.py --only-missing  every measure, only for photos without a quality file (prompt 052)
-  uv run build.py --kind panorama with any of the above: only photos of that kind (prompt 061)
+  uv run build.py --kind render   with any of the above: only photos of that kind (prompt 061)
 
 Writes public/precomputed/qualities/<photo-id>.json (QualityFile in the
 specification), keeping the principles not re-run, and a check overlay per
@@ -28,7 +28,6 @@ from shared import CACHE, EXAMPLES, OUT, AreaData, check_quality, load_quality, 
 OUTCOME = {"likely-present": "present", "likely-absent": "absent", "unclear": "unclear"}
 KIND_NOTES = {
     "render": "A design rendering, not a photograph.",
-    "panorama": "A 360° panorama: straight lines curve and distant surfaces are small, so repetition and texture are harder to see.",
 }
 FRONTAGE_COLOURS = {frontage.OPEN: (0, 158, 115), frontage.TRANSPARENT: (86, 180, 233), frontage.CLOSED: (213, 94, 0)}
 
@@ -97,23 +96,6 @@ def rhythm_overlay(photo: dict, data: AreaData, detail: dict) -> None:
     sheet.save(CACHE / "check" / f"{photo['id']}-rhythm.png")
 
 
-def panorama_rhythm_overlay(photo: dict, data: AreaData, detail: dict) -> None:
-    """Prompt 061: the cell classes found in the cube faces, mapped back onto the panorama."""
-    w, h = data.width * 2, data.height * 2
-    base = greyed(photo, w, h)
-    colours = {"rhythmic": (0, 158, 115), "layers": (86, 180, 233), "bays": (0, 114, 178), "plain": (213, 94, 0)}
-    for name, colour in colours.items():
-        m = np.kron(detail["masks"][name], np.ones((2, 2), bool))
-        base[m] = base[m] * 0.45 + np.array(colour) * 0.55
-    out = Image.fromarray(base.astype(np.uint8))
-    draw = ImageDraw.Draw(out)
-    for k, (name, colour) in enumerate(colours.items()):
-        draw.rectangle((8, 8 + 18 * k, 22, 22 + 18 * k), fill=colour)
-        draw.text((28, 9 + 18 * k), name, fill=(255, 255, 255))
-    draw.text((8, h - 20), "cells per face (yaw: cells): " + ", ".join(f"{y}: {c}" for y, c in detail["faces"]), fill=(255, 255, 255))
-    out.save(CACHE / "check" / f"{photo['id']}-rhythm.png")
-
-
 MATERIAL_COLOURS = {"textured": (0, 158, 115), "planting": (240, 228, 66), "smooth": (213, 94, 0), "neutral": (154, 154, 164)}
 
 
@@ -172,7 +154,7 @@ def main() -> int:
     parser.add_argument("--calibrate", action="store_true")
     parser.add_argument("--materials", action="store_true")
     parser.add_argument("--only-missing", action="store_true")
-    parser.add_argument("--kind", choices=["photo", "render", "panorama"])
+    parser.add_argument("--kind", choices=["photo", "render"])
     args = parser.parse_args()
     run_all = not (args.ground_floor or args.rhythm or args.calibrate or args.materials)
     (CACHE / "check").mkdir(parents=True, exist_ok=True)
@@ -226,7 +208,7 @@ def main() -> int:
             quality["imageKind"] = kind
             print(f"{photo['id']}: {kind}, {photo['width']} × {photo['height']} px")
         if run_all or args.ground_floor:
-            result, classes = frontage.measure(data, panorama=kind == "panorama")
+            result, classes = frontage.measure(data)
             quality["principles"]["groundFloor"] = result
             quality["models"]["groundFloor"] = "frontage columns, tools/qualities/frontage.py (area file: ground floor, entrances, shopfronts, windows)"
             frontage_overlay(photo, data, classes)
@@ -242,7 +224,7 @@ def main() -> int:
                                           f"layer {tau['layer']}, instances scoring at least {instance_threshold} (CMP calibration); "
                                           f"SAM 3 {rhythm.elements.CANDIDATES['D']['repos'][0][0]}@"
                                           f"{rhythm.elements.CANDIDATES['D']['repos'][0][1]}; OpenCV LSD")
-            (panorama_rhythm_overlay if detail.get("panorama") else rhythm_overlay)(photo, data, detail)
+            rhythm_overlay(photo, data, detail)
             counts.setdefault("rhythm", {}).setdefault(result["outcome"], 0)
             counts["rhythm"][result["outcome"]] += 1
             rhythm_rows.append((photo["id"], result))

@@ -117,6 +117,11 @@ raters (`rate.html`), the panel as observer, an adapted frontage grade, an
 outcome scale with method disagreement, and panoramas in cube faces. What it
 did not: rectified spacing, translational symmetry and surface detail did not
 beat the current measures on held-out labels, so those rules are unchanged.
+On 2026-10-19 the 15 Guangzhou panoramas and all panorama rules and code were
+removed at the owner's request (spec 0.52–0.53); the example set is now 38
+images (34 rated and measured on all three principles), and the summaries in
+`checks.json`, `scores.json` and `panel-observed.json` were recomputed from the
+stored per-photo results.
 Next: ratings from at least three raters through `rate.html`, then
 `uv run agreement.py --labels …`; no outcome has been checked against people
 yet.

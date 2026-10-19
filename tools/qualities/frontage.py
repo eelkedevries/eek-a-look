@@ -80,19 +80,15 @@ def smoothed_bases(data: AreaData) -> np.ndarray:
     return out
 
 
-def ground_points(data: AreaData, base: np.ndarray, panorama: bool, fov: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+def ground_points(data: AreaData, base: np.ndarray, fov: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Where each column's façade base meets the ground, in metres from the camera (x across, z ahead), and its distance.
     Perspective: a level pinhole camera at eye height (groundfloor.py); the sideways position needs no focal length,
-    the depth does. Panorama: azimuth from the column, distance from the depression angle (prompt 051)."""
-    width, height = data.width, data.height
+    the depth does."""
+    width = data.width
     below = base + 0.5 - data.horizon["row"]
     below = np.where(below > 0, below, np.nan)
     x = np.arange(width) + 0.5
     c = groundfloor.CAMERA_HEIGHT_M
-    if panorama:
-        distance = c / np.tan(np.pi * below / height)
-        azimuth = 2 * np.pi * x / width
-        return distance * np.sin(azimuth), distance * np.cos(azimuth), distance
     focal = (width / 2) / np.tan(np.radians(fov) / 2)
     gx, gz = (x - width / 2) * c / below, c * focal / below
     return gx, gz, np.hypot(gx, gz)
@@ -121,9 +117,8 @@ def adapted_grade(entrances: float, openings: float, blind_passive: float) -> st
     return "E"
 
 
-def frontage_density(data: AreaData, floor: np.ndarray, classes: np.ndarray, entrances: np.ndarray, shopfronts: np.ndarray,
-                     panorama: bool) -> dict:
-    """Counted length, openings per 100 m and the adapted grade, per assumed field of view (one geometry for panoramas)."""
+def frontage_density(data: AreaData, floor: np.ndarray, classes: np.ndarray, entrances: np.ndarray, shopfronts: np.ndarray) -> dict:
+    """Counted length, openings per 100 m and the adapted grade, per assumed field of view."""
     base = smoothed_bases(data)
     doors = components(entrances & floor)
     shops = components(shopfronts & floor)
@@ -138,8 +133,8 @@ def frontage_density(data: AreaData, floor: np.ndarray, classes: np.ndarray, ent
             windows.append((i["cy"], i["cx"]))
 
     per_view = {}
-    for fov in ((None,) if panorama else FIELDS_OF_VIEW):
-        gx, gz, distance = ground_points(data, base, panorama, fov or MAIN_FOV)
+    for fov in FIELDS_OF_VIEW:
+        gx, gz, distance = ground_points(data, base, fov)
         counted = (classes != NONE) & np.isfinite(distance) & (distance <= MAX_DISTANCE_M)
         step = np.hypot(np.diff(gx), np.diff(gz))
         pairs = counted[:-1] & counted[1:] & np.isfinite(step) & (step <= MAX_STEP_M)
@@ -154,14 +149,14 @@ def frontage_density(data: AreaData, floor: np.ndarray, classes: np.ndarray, ent
         per_view[fov] = {"lengthM": length, "entrances": n_doors, "shopfronts": n_shops, "windows": n_windows,
                          "entrancesPer100m": per100(n_doors), "openingsPer100m": per100(n_doors + n_shops + n_windows),
                          "blindPassiveShare": blind_passive, "grade": grade}
-    main = per_view[None if panorama else MAIN_FOV]
+    main = per_view[MAIN_FOV]
     grades = sorted({v["grade"] for v in per_view.values() if v["grade"]})
     value = None if main["grade"] is None else grades[0] if len(grades) == 1 else f"{grades[0]}–{grades[-1]}"
     return {"main": main, "grade": {"value": value, "source": GRADE_SOURCE,
-                                    "byFieldOfView": None if panorama else {str(f): v["grade"] for f, v in per_view.items()}}}
+                                    "byFieldOfView": {str(f): v["grade"] for f, v in per_view.items()}}}
 
 
-def measure(data: AreaData, panorama: bool = False) -> dict:
+def measure(data: AreaData) -> dict:
     floor = data.mask("ground-floor")
     entrances, shopfronts, windows = data.mask("entrances"), data.mask("shopfronts"), data.mask("windows")
     classes = column_classes(floor, entrances | shopfronts, windows)
@@ -185,7 +180,7 @@ def measure(data: AreaData, panorama: bool = False) -> dict:
     }
     density = None
     if data.horizon["method"] != "assumed-level":  # prompt 040b: the geometry needs a found horizon
-        density = frontage_density(data, floor, classes, entrances, shopfronts, panorama)
+        density = frontage_density(data, floor, classes, entrances, shopfronts)
         main = density["main"]
         indicators |= {"countedFrontageM": main["lengthM"], "entrancesPer100m": main["entrancesPer100m"],
                        "openingsPer100m": main["openingsPer100m"], "blindPassiveShare": main["blindPassiveShare"],

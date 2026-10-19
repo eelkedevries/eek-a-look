@@ -16,7 +16,7 @@ from PIL import Image, ImageDraw
 import argparse
 
 from common import CACHE, CATEGORIES, CATEGORY_IDS, EXAMPLES, ONEFORMER, ONEFORMER_REVISION, OUT, OneFormer, area_entry, decode_rle, device, mask_size, photos, write_area_file
-from groundfloor import CAMERA_HEIGHT_M, STOREY_HEIGHT_M, estimate_horizon, ground_floor, ground_floor_equirectangular, head_offset
+from groundfloor import CAMERA_HEIGHT_M, STOREY_HEIGHT_M, estimate_horizon, ground_floor, head_offset
 
 MAX_FILE_BYTES = 150_000
 # Okabe–Ito colours for the check overlays; white and grey for the last two.
@@ -91,13 +91,8 @@ def main() -> int:
         size = mask_size(image.width, image.height)
         categories = model.categories(image, size)
         kind = photo.get("imageKind")
-        if kind == "panorama":
-            # A level 360° panorama: the horizon is the middle row and rows are elevation angles (prompt 051).
-            horizon, method, support = size[1] / 2, "equirectangular", 0
-            floor = ground_floor_equirectangular(categories, CATEGORY_IDS, horizon)
-        else:
-            horizon, method, support = estimate_horizon(np.asarray(image.convert("L")), categories, CATEGORY_IDS)
-            floor = ground_floor(categories, CATEGORY_IDS, horizon)
+        horizon, method, support = estimate_horizon(np.asarray(image.convert("L")), categories, CATEGORY_IDS)
+        floor = ground_floor(categories, CATEGORY_IDS, horizon)
         head = head_offset(categories, CATEGORY_IDS, horizon)
         if dev.type == "cuda":
             torch.cuda.synchronize()
@@ -124,7 +119,7 @@ def main() -> int:
             "areas": areas,
         }
         if kind:
-            # Renders: the camera height is unknown, so 1.6 m is assumed; panoramas: equirectangular rows.
+            # Renders: the camera height is unknown, so 1.6 m is assumed.
             data["imageKind"] = kind
         write_area_file(path, data)
         overlay(image, categories, floor, horizon, CACHE / "check" / f"{photo['id']}.png")
