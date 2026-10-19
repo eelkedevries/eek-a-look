@@ -211,6 +211,12 @@ the same day (028 onwards) keep their own numbers.
 | 047 | `047_qualities_view.md`: the Qualities view; deploy | |
 | 048 | `048_upclip_view.md`: matching descriptions and photos on the page; deploy | |
 
+All prompts of this round ran on 2026-10-19 (with 040b and 041b superseding
+parts of 040 and 041). Results are summarised in
+`docs-dev/planning/current_state.md`; the checks are in
+`reference/secondary_background/qualities_validation.md` and
+`upclip_reproduction.md`.
+
 ## Later
 
 - **Mobile scene video.** Run the same area tool on scene-camera frames. Assign

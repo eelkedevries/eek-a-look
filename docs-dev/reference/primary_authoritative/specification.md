@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.30 · **Last updated:** 2026-10-19
+**Version:** 0.31 · **Last updated:** 2026-10-19
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -64,7 +64,8 @@ and adds their checkbox under the image (prompt 050, owner's request of
 0.28 adds a graded run of the simulated panel: ratings from 0 to 4 with boxes
 around the evidence, never combined with gaze statistics (prompt 044). 0.29 adds UP-CLIP scores from a reproduction of the
 model and plain CLIP, for every example photo (prompt 046). 0.30 adds the Qualities view and moves the simulated
-panel there (prompt 047).
+panel there (prompt 047). 0.31 adds matching descriptions and photos with UP-CLIP
+to the Qualities view (prompt 048).
 
 ## Scope
 
@@ -645,6 +646,20 @@ was run on the photos.
     two verdicts and the UP-CLIP reproduction's score for the chosen
     principle, the outcome counts and the notes on principles that do not
     vary; choosing a photo's name selects it.
+  - at the end, **"Descriptions and photos · UP-CLIP"** (prompt 048), on
+    every example photo (also those without image measures), nothing on
+    uploads: a switch between "UP-CLIP reproduction" and "Plain CLIP"; the
+    five descriptions that best match the photo, with their similarity to
+    three decimals and a badge "Perception word · as published" or
+    "Principle description · adaptation"; a list of all descriptions,
+    grouped by kind, and the eight example photos that best match the chosen
+    one as thumbnails in order with their similarity (choosing one selects
+    it); a caption saying that UP-CLIP's trained model is not published and
+    this is the authors' script re-run on 1,000 of the 15,000 pairs, that
+    scores compare descriptions within one model only, that the principle
+    descriptions are an adaptation, and that CLIP cannot show where a match
+    comes from; and the reproduction's retrieval figures behind "How well
+    does the reproduction retrieve?".
 - **Simulated panel** (in the Qualities view since prompt 047, at the end;
   example photos only, nothing on uploads), from `public/precomputed/vlm-panel/panel.json` (`tools/vlm-panel/`):
   - the verdict on each of the three principles of Spanjar & Suurenbroek

@@ -94,6 +94,19 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     'p',
     'For the 24 Dutch and Zürich example photos, the Qualities view measures three design principles an HvA expert panel used (rhythm and variety, an active ground floor, tactile materials) from the photo itself: how regularly windows and balconies repeat, how much of the ground floor opens to the street, and which materials are visible near eye level. The definitions are this project’s, not the panel’s, and each rule was fixed before it ran on the photos. Parts of each measure were checked against people’s labels of other photos; the principles themselves were not, as no experts judged these photos.',
   );
+  const upclipHeading = el('h3', 'UP-CLIP');
+  const upclipText = el(
+    'p',
+    'UP-CLIP (Huang, Song and Jiao 2026) fine-tunes the CLIP model so that street photos and descriptions of how a street feels end up close together. Its trained model is not published, so the Qualities view uses the authors’ own training script re-run on their public sample of 1,000 street-view pairs from Wuhan, next to plain CLIP. Matching photos with perception words is what the authors tested; scoring the three design principles is our adaptation. Neither has been checked against people’s judgements of these photos, and CLIP cannot show where in a photo a match comes from.',
+  );
+  const upclipCredit = el('li');
+  upclipCredit.append(
+    'UP-CLIP: Huang, Song and Jiao (2026), ',
+    link('https://doi.org/10.1080/17538947.2026.2677402', 'International Journal of Digital Earth 19, 2677402'),
+    ' (CC BY 4.0); training script and sample from ',
+    link('https://github.com/19883120121i-afk/UP-CLIP', 'their repository'),
+    ' (no licence stated), re-run locally; nothing from it is redistributed. CLIP ViT-L/14 by OpenAI (code MIT); its model card rules out deployed use, so only scores computed in advance are published.',
+  );
   const materialsCredit = el('li');
   materialsCredit.append(
     'Materials: DMS46 by Paul Upchurch and Ransen Niu (',
@@ -145,13 +158,13 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
     link('https://github.com/eelkedevries/eek-a-look', 'Source code on GitHub'),
     '.',
   );
-  creditList.append(software, areasCredit, panelCredit, materialsCredit);
+  creditList.append(software, areasCredit, panelCredit, materialsCredit, upclipCredit);
   fillAreas(areasText, areasCredit);
   fillPanel(panelText, panelCredit);
 
   section.replaceChildren(
     heading, intro, quality, qualityText, table, large, source, limits, limitList,
-    areasHeading, areasText, panelHeading, panelText, qualitiesHeading, qualitiesText, privacy, privacyText, credits, creditList,
+    areasHeading, areasText, panelHeading, panelText, qualitiesHeading, qualitiesText, upclipHeading, upclipText, privacy, privacyText, credits, creditList,
   );
 }
 

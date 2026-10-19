@@ -47,7 +47,10 @@ Choose a view above the photo; the inspector on the right changes with it.
   (rhythm and variety, an active ground floor, tactile materials) measured
   from the photo, with the evidence drawn on it, the definitions, how a
   simulated AI panel and UP-CLIP judged the same photo, and how much
-  attention the evidence regions receive. None of it is an expert judgement.
+  attention the evidence regions receive. At the end, **Descriptions and
+  photos** shows which short descriptions UP-CLIP matches with the photo,
+  and which example photos it matches with a description you choose. None
+  of it is an expert judgement.
 - **Areas:** automatic areas for the example photos, with how much of each
   map's attention falls inside them relative to their size.
 - **Match with …** (inspector): each layer's correlation with the reference,

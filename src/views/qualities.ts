@@ -588,12 +588,14 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
     renderAll();
   }
 
-  function showEmpty(text: string) {
+  /** No quality file: a message; the UP-CLIP section stays for example photos, which all have scores (prompt 048). */
+  function showEmpty(text: string, keepUpClip = false) {
     current = null;
     empty.textContent = text;
     stage.replaceChildren(empty);
     for (const node of [legend, outcome, definitions, methods, attention, all]) node.replaceChildren();
-    for (const node of [switcher, boxToggle, upclipBlock]) node.hidden = true;
+    for (const node of [switcher, boxToggle]) node.hidden = true;
+    upclipBlock.hidden = !keepUpClip;
   }
 
   let requested: Results | null = null;
@@ -613,7 +615,7 @@ export function mountQualities(panel: HTMLElement, pickPhoto: (id: string) => vo
     const [file, checks, panelV1, graded, upclip] = await Promise.all([loadQuality(id), loadChecks(), loadPanel(), loadGraded(), loadUpClip()]);
     if (requested !== results) return;
     if (!file) {
-      showEmpty('Qualities are computed in advance for the 24 Dutch and Zürich example photos only.');
+      showEmpty('Qualities are computed in advance for the 24 Dutch and Zürich example photos only.', true);
       return;
     }
     for (const node of [switcher, upclipBlock]) node.hidden = false;

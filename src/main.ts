@@ -20,6 +20,7 @@ import { mountFixationToggle } from './views/fixation-toggle';
 import { mountInspector } from './views/inspector';
 import { mountPanel } from './views/panel';
 import { mountQualities } from './views/qualities';
+import { mountUpClip } from './views/upclip';
 import './views/qualities.css';
 import { mountMethods } from './views/methods';
 import { mountOverlay } from './views/overlay';
@@ -69,7 +70,7 @@ const pickById = (id: string) => {
   const photo = photosById.get(id);
   if (photo) void pick(photo);
 };
-mountQualities(panel('qualities'), pickById, () => photosById);
+mountUpClip(mountQualities(panel('qualities'), pickById, () => photosById), pickById, () => photosById);
 mountPanel($('#qualities-panel'));
 
 onImageChange((image) => {

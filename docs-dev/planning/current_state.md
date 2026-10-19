@@ -86,7 +86,7 @@ The v1 decisions of 2026-10-18 are recorded in `docs-dev/plan.md` and
 
 ## In progress / next
 
-Sixth round (2026-10-19, prompts 040–048, `docs-dev/plan.md`): image measures
+Sixth round (2026-10-19, prompts 040–048, all run, `docs-dev/plan.md`): image measures
 with spatial evidence for the three design principles (`tools/qualities/`),
 checks against human labels, a graded simulated panel, and a reproduction of
 UP-CLIP from the authors' public 1k sample, since no trained checkpoint is
@@ -219,3 +219,5 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
 - `047_qualities_view.md` (spec 0.30: the Qualities view, `src/views/qualities.ts`
   and `qualities.css`; the simulated panel moved there from Areas. Attention ÷
   size checked by hand on zurich-23: 0.8465 on the page and by hand)
+- `048_upclip_view.md` (spec 0.31: "Descriptions and photos · UP-CLIP" at the end
+  of the Qualities view, on all 49 example photos, `src/views/upclip.ts`)
