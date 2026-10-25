@@ -275,6 +275,19 @@ the laptop (prompt 072); the simulated panel and UP-CLIP were not extended.
   15–25 minutes for the three panel runs. Suggested scope: the Colosseum and
   the planted façade only; the country path and the rabbits have no façade.
 
+- **Model scores against measured gaze** (owner's questions of 2026-10-25).
+  For the twelve Zürich photos, score the predictions against the measured
+  fixations with standard measures: NSS, AUC-Judd, shuffled AUC and, for
+  DeepGaze IIE and MSDB, information gain over a centre bias; for the
+  predicted scanpaths of prompt 076, a sequence measure such as MultiMatch
+  or ScanMatch. Each with a human ceiling: how well the other participants
+  predict each one. Owner's decision of 2026-10-25: DeepGaze3.5-VL keeps
+  its published 3-second prompt (no 6-second prompt, no retraining), so
+  scanpaths are compared with the first 3 seconds of the measured 6-second
+  paths only; this needs the fixation start times, which
+  `<id>.scanpaths.json` does not yet keep (the source has `start` and `end`
+  in ms). Scores fit this dataset only and are not comparable with MIT300.
+
 - **Mobile scene video.** Run the same area tool on scene-camera frames. Assign
   each fixation to the area under the gaze point (or a 1° disc, after Orquin et
   al. 2016). Take the horizon from the headset's IMU (pitch and roll) and the

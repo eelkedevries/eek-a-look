@@ -38,13 +38,8 @@ systems or future prompts.
   published model and must be documented as such.
 - Measured gaze for the A images (`zurich-42`, `zurich-33`, `zurich-53`):
   Wilming et al. (2017) fixations in `public/precomputed/measured/`. The
-  `points.json` files keep no observer or order; since prompt 077,
-  `<id>.scanpaths.json` keeps them per participant and in order, without
-  timing (the source has `start` and `end` in ms).
-- Owner's decision of 2026-10-25: DeepGaze3.5-VL keeps its published
-  3-second prompt (no 6-second prompt, no retraining). Any comparison with
-  the measured 6-second paths uses only their first 3 seconds, which needs
-  the fixation start times from the source.
+  `points.json` files keep no observer or order; the source data have
+  `SUBJECTINDEX` and fixation index.
 
 ## Questions for the owner
 
