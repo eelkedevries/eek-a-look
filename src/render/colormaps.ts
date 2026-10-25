@@ -42,10 +42,9 @@ function fromStops(stops: string[]): Lut {
 
 export const INFERNO: Lut = fromHex(INFERNO_HEX);
 
-/** Blue (less) → neutral → orange (more), with luminous ends so both read over a greyed photo; blue and orange stay distinct with red–green colour blindness. */
-export const BLUE_ORANGE: Lut = fromStops(['#2f7fd0', '#5ea3e3', '#a6cbeb', '#ededed', '#f7c27c', '#f0983a', '#dd7a16']);
-
-export function cssColour(lut: Lut, t: number): string {
-  const i = Math.round(Math.min(Math.max(t, 0), 1) * 255) * 3;
-  return `rgb(${lut[i]}, ${lut[i + 1]}, ${lut[i + 2]})`;
-}
+/**
+ * Blue (less) → neutral → orange (more); blue and orange stay distinct with every common colour blindness. The orange
+ * half is toned towards the photo's grey so that, drawn over it, both halves differ from it about equally at equal
+ * values (CIEDE2000; prompt 079).
+ */
+export const BLUE_ORANGE: Lut = fromStops(['#2f7fd0', '#5ea3e3', '#a6cbeb', '#ededed', '#dcb077', '#d08c42', '#bc7329']);

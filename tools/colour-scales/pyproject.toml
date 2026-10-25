@@ -1,0 +1,15 @@
+[project]
+name = "colour-scales"
+version = "0.1.0"
+description = "Measures how faithfully eek-a-look's heatmap and difference colour scales show the stored maps (prompt 079)."
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "numpy",
+  "scipy",
+  "pillow",
+  "matplotlib",
+  "scikit-image",
+]
+
+[tool.uv]
+package = false

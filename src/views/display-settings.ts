@@ -1,6 +1,6 @@
 import { getResults, onResults, type Results } from '../results';
 import { getViewState, onViewState, setViewState } from '../view-state';
-import { gradientCss } from './overlay';
+import { heatGradientCss } from '../render/heatmap';
 
 /** Views that draw a heatmap at the chosen strength. */
 const VIEWS_WITH_STRENGTH = ['overlay', 'side'];
@@ -53,7 +53,7 @@ export function mountDisplaySettings(host: HTMLDetailsElement): void {
   const strength = slider('Heatmap strength', state.opacity, (opacity) => setViewState({ opacity }));
   const legend = el('div', 'legend');
   const bar = el('span', 'legend-bar');
-  bar.style.background = gradientCss();
+  bar.style.background = heatGradientCss();
   legend.append('less likely', bar, 'more likely');
   heat.append(strength.wrap, legend);
 

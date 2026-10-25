@@ -1,9 +1,8 @@
 import { difference, pearson } from '../maps/saliency-map';
 import { models } from '../models/registry';
 import { mapLabel, type ModelSpec } from '../models/types';
-import { BLUE_ORANGE, cssColour } from '../render/colormaps';
 import { dotsOver, dotsTag, fixationLayer, syncFixations } from '../render/fixations';
-import { drawDifference, drawGreyed, drawHeatmap } from '../render/heatmap';
+import { DIFFERENCE_SCALE, differenceGradientCss, drawDifference, drawGreyed, drawHeatmap } from '../render/heatmap';
 import { bestModel, getResults, modelsFor, onResults, type Results } from '../results';
 import { onViewState } from '../view-state';
 
@@ -110,7 +109,8 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
   const more = document.createElement('span');
   const bar = document.createElement('span');
   bar.className = 'legend-bar legend-bar-wide';
-  bar.style.background = `linear-gradient(90deg, ${[0, 0.25, 0.5, 0.75, 1].map((t) => cssColour(BLUE_ORANGE, t)).join(', ')})`;
+  bar.style.background = differenceGradientCss();
+  bar.title = `From −${DIFFERENCE_SCALE}× to +${DIFFERENCE_SCALE}× the image average density, the same on every photo`;
   legend.append(less, bar, more, score);
 
   const stage = document.createElement('div');
@@ -178,6 +178,7 @@ export function mountContrast(panel: HTMLElement, controls: HTMLElement): void {
         : b.kind === 'measured'
           ? `Orange: ${a.name} predicts more looking here than people showed. Blue: less. Grey: about the same.`
           : `Orange: ${a.name} expects more looking here than ${b.name}. Blue: less. Grey: about the same.`;
+    caption.textContent += ` Colour scale: ±${DIFFERENCE_SCALE}× the image average density, the same on every photo and for every pair.`;
 
     if (aId === bId) {
       note.textContent = 'Choose two different maps.';

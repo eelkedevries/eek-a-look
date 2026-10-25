@@ -1,15 +1,9 @@
 import { models } from '../models/registry';
 import { mapLabel } from '../models/types';
-import { INFERNO, cssColour } from '../render/colormaps';
 import { dotsOver, dotsTag, fixationLayer, syncFixations } from '../render/fixations';
 import { drawGreyed, drawHeatmap } from '../render/heatmap';
 import { getResults, onResults, shownLayer, type Results } from '../results';
 import { getViewState, onViewState } from '../view-state';
-
-export function gradientCss(steps = 8): string {
-  const stops = Array.from({ length: steps + 1 }, (_, i) => cssColour(INFERNO, 0.35 + (0.65 * i) / steps));
-  return `linear-gradient(90deg, ${stops.join(', ')})`;
-}
 
 /** The single-map view: the layer chosen in the inspector on the photo, at the chosen strength. */
 export function mountOverlay(stage: HTMLElement, status: HTMLElement): void {

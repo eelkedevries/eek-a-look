@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.61 · **Last updated:** 2026-10-25
+**Version:** 0.62 · **Last updated:** 2026-10-25
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -158,6 +158,15 @@ the image average density, for all three examples, with colour and opacity
 linear in the magnitude and no colour floor, so a small difference looks
 small; the caption names the value of A and B's brightest colour (prompt
 078, owner's request of 2026-10-25).
+0.62 sets the colour scales by measurement and blind review
+(`docs-dev/reference/secondary_background/colour_scales_evaluation.md`):
+heatmaps to the 99.9th percentile, at least 4× the image average, through
+t^0.6, so peaks keep their order and a nearly flat map is drawn faint; every
+difference on the site, the Contrast view included, on one fixed scale of
+±12× the image average through |t|^0.6; the orange half of the blue–orange
+table toned so both halves weigh the same over the photo; colour bars that
+show what the image shows; and the same scales for the eek-a-predict figures
+(prompt 079, owner's request of 2026-10-25).
 
 ## Scope
 
@@ -834,12 +843,12 @@ was run on the photos.
 - **Contrast** = P_a − P_b on the shared grid for any two layers the visitor
   chooses (with a swap button). By default *b* is the best model and *a* is
   measured gaze where the photo has it, otherwise the next model below *b*
-  in display order. It is drawn with a diverging colour map symmetric around
-  zero, with both names in the legend and the caption, the selectors in the
-  inspector ("Orange: *a* expects
-  more looking here than *b*. Blue: less."), their Pearson r, and both
-  heatmaps beneath. A difference involving measured gaze is labelled
-  "Measured vs predicted".
+  in display order. It is drawn with a diverging colour map on the site's
+  fixed difference scale (*Colour maps*), with both names in the legend and
+  the caption, the selectors in the inspector ("Orange: *a* expects more
+  looking here than *b*. Blue: less."), the scale in the caption, their
+  Pearson r, and both heatmaps beneath. A difference involving measured gaze
+  is labelled "Measured vs predicted".
 - **Agreement** = the Pearson correlation of two maps on the shared grid, for
   every pair of models, shown as a lower-triangle matrix to two decimals with
   the plain-language scale "0 = unrelated · 1 = same pattern"; "n/a" where a
@@ -1142,16 +1151,13 @@ was run on the photos.
   width. A "Highlight manipulated area" checkbox, on by default, outlines the
   manipulated area on all three. Each image opens in the workspace, where
   every view works on it.
-- Colour scales (prompts 068, 070, 078). A and B are drawn on one scale, from
-  the lower minimum of the two maps to the 99th percentile of both (values
-  above it saturate), so their colours compare; they have no colour bar, and
+- Colour scales (prompts 068, 070, 078, 079). A and B are drawn on one
+  heatmap scale, from the lower minimum of the two maps to the 99.9th
+  percentile of both, so their colours compare; they have no colour bar, and
   the caption names the top of the scale as a multiple of the image average.
-  The difference is drawn on one fixed scale symmetric around zero, ±4× the
-  image average density (1 / number of grid cells), the same for all three
-  examples; colour and opacity rise linearly with the magnitude from zero,
-  and values beyond the scale saturate. Its colour bar's ticks show that
-  scale, with a key: blue = higher in A, orange = higher in B, each named by
-  its condition.
+  The difference uses the site's difference scale (*Colour maps*), the same
+  for all three examples. Its colour bar's ticks show that scale, with a key:
+  blue = higher in A, orange = higher in B, each named by its condition.
 
 **Rating page** (prompt 059)
 
@@ -1240,10 +1246,24 @@ was run on the photos.
   0 % the photo shows in colour. Chosen by the owner on 2026-10-18 (option C),
   after research: Borland and Taylor (2007); Liu and Heer (CHI 2018); Crameri,
   Shephard and Heron (Nature Communications, 2020); Reda (IEEE TVCG, 2023).
-- The difference map uses a colour-blind-safe diverging map
-  (blue → neutral → orange). The pale middle of the table is skipped
-  (indexed from 0.3 of each half) and alpha = 0.92·|t|^0.75, so small
-  differences tint rather than veil the photo.
+- A heatmap's scale runs from the map's minimum to its 99.9th percentile (or
+  over the maps drawn together), but to at least 4× the image average
+  density, and t is taken through t^0.6 before the table and alpha: a higher
+  peak looks brighter than a lower one, moderate areas stay visible, and a
+  nearly flat map (classic salience peaks at about 2×) is drawn faint
+  instead of being stretched over the whole table (prompt 079).
+- Every difference map on the site uses one fixed scale symmetric around
+  zero: ±12× the image average density (1 / number of grid cells), on every
+  photo and for every pair, so their colours compare. Colour and alpha follow
+  m = |t|^0.6: the colour-blind-safe diverging table (blue → neutral →
+  orange) at ±m, and alpha = 0.92·m; values beyond the scale saturate. Small
+  differences stay faint, and a spread-out change reads in proportion to the
+  gaze it moves. The table's stops are #2f7fd0, #5ea3e3, #a6cbeb, #ededed,
+  #dcb077, #d08c42 and #bc7329: its orange half is toned towards the photo's
+  grey so that, over it, equal values in blue and orange differ from the grey
+  by about the same CIEDE2000 (prompt 079).
+- Colour bars are linear in value and show the image's colours with their
+  alpha over the greyed photo's typical grey.
 - No rainbow or "jet" colour maps.
 
 ## Naming and voice

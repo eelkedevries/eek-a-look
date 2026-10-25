@@ -29,7 +29,8 @@ Choose a view above the photo; the inspector on the right changes with it.
 - **Single map:** one layer on the photo. On photos with measured gaze it opens on
   **Measured gaze**, with the fixations as dots; elsewhere on the best model.
   Choose another layer in the inspector; **Heatmap strength** fades it in and
-  out. The warmer an area, the more likely people are to look there.
+  out. The warmer an area, the more likely people are to look there; a
+  brighter peak is a higher one.
 - **Side by side:** the photo and all layers together. Move the pointer over
   any map to mark the same spot in all of them. Each map shows its match (r)
   with the reference: measured gaze where the photo has it, otherwise the best
@@ -38,7 +39,9 @@ Choose a view above the photo; the inspector on the right changes with it.
   that have it) or the next-best model against the best available model;
   choose any two maps in the inspector, swap them, or reset to the best model.
   Orange marks where the first map expects more looking, blue where the second
-  does. Both maps are shown underneath.
+  does, on one colour scale for every photo and pair (±12× the image average
+  density), so a faint colour means a small difference. Both maps are shown
+  underneath.
 - **Display settings:** directly below the view buttons and above the
   image, a section you can fold away with **Heatmap strength** and, on
   photos with measured gaze, the fixation settings below.
@@ -89,8 +92,8 @@ Choose one to see its question, background, conditions and two possible
 outcomes. Images A and B and the difference between them appear side by side
 for DeepGaze MSDB, the only model shown here; A and B share one colour scale. In the difference,
 orange marks where the predicted gaze density is higher in B and blue where
-it is higher in A, on one scale for all three examples, so a faint colour
-means a small difference. "Highlight manipulated area" outlines the area that is
+it is higher in A, on the same scale as every other difference on the site,
+so a faint colour means a small difference. "Highlight manipulated area" outlines the area that is
 measured. The predicted gaze density in that area is
 summed into one value for A and one for B, and the contrast B − A shows the
 direction of the effect.

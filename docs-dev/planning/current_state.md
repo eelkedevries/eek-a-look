@@ -106,6 +106,15 @@ wins and the gap is work still to be done.
   077's files within their first 3 s (`tools/scanpaths/window.py`), for the
   measured paths of A (`tools/scanpaths/summary.py` recomputes it). DeepGaze3.5-VL runs in 4-bit on the laptop GPU, an
   approximation of the published bf16 model.
+- Colour scales (prompt 079, `src/render/heatmap.ts`): heatmaps to the 99.9th
+  percentile (at least 4× the image average) through t^0.6; every difference
+  on one fixed scale of ±12× the image average through |t|^0.6, with the
+  orange half of the table toned to the blue half's weight; colour bars drawn
+  as the image shows them.
+  Chosen by measurement (`tools/colour-scales/`, results in
+  `docs-dev/reference/secondary_background/colour_scales_evaluation.md`) and
+  blind review. `tools/eek-a-predict/` draws the eek-a-predict page's
+  heatmap and contrast figures with the same code.
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
@@ -351,6 +360,14 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   3 s (31, 18 and 34 of 48); owner's answers: 100 paths × 8
   fixations, 800 MSDB points, temperature 1, three numbered paths drawn,
   K = 7; measured paths only through 077's selector)
+- `078_example_difference_scale.md` (spec 0.61: the Example difference on a
+  fixed ±4× scale instead of each example's own 99th percentile; superseded
+  by 079)
+- `079_colour_scales.md` (spec 0.62: heatmaps to the 99.9th percentile, at
+  least 4×, through t^0.6; every difference on ±12× through |t|^0.6; the
+  orange half of the blue–orange table toned; colour bars as drawn; 216
+  heatmap and 28 difference settings measured, two blind reviews; the
+  eek-a-predict figures regenerated with the same code)
 - `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational
   symmetry S against held-out labels; balanced accuracy on odd CMP A 0.781, R 0.776,
   S 0.613, and R's precision lower, so A is kept and no quality file changed. A

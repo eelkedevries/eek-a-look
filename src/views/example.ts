@@ -6,9 +6,8 @@ import { decodeMap, type PrecomputedMap } from '../models/deepgaze';
 import type { Scanpaths } from '../models/measured';
 import { models } from '../models/registry';
 import { mapLabel, type ModelSpec } from '../models/types';
-import { BLUE_ORANGE, cssColour } from '../render/colormaps';
 import { drawScanpath } from '../render/fixations';
-import { drawGreyed, drawHeatmap, drawSignedOnScale, sharedRange, type HeatRange } from '../render/heatmap';
+import { DIFFERENCE_SCALE, differenceGradientCss, drawDifference, drawGreyed, drawHeatmap, sharedRange, type HeatRange } from '../render/heatmap';
 
 /** Content hashes of the data folders, set by vite.config.ts, so a stale cached copy is never used. */
 declare const __COMPARISONS_VERSION__: string;
@@ -19,8 +18,6 @@ const BASE = import.meta.env.BASE_URL;
 const WIDTH = 640;
 /** A difference smaller than this (0.05 percentage points) counts as no change. */
 const NO_CHANGE = 0.0005;
-/** The difference B − A is drawn to ± this multiple of the image average density in every example, so their colours compare (prompt 078). */
-const DIFFERENCE_SCALE = 4;
 
 type MapChoice = 'photo' | (string & {});
 /** The predicted points over A and B (prompt 076): none, MSDB's sampled fixations or DeepGaze3.5-VL's scanpaths. */
@@ -192,7 +189,7 @@ function direction(d: number): string {
 }
 
 /** Outlines a mask on a canvas twice its size. */
-function drawOutline(canvas: HTMLCanvasElement, mask: Uint8Array | undefined, width: number, height: number): void {
+export function drawOutline(canvas: HTMLCanvasElement, mask: Uint8Array | undefined, width: number, height: number): void {
   const scale = 2;
   canvas.width = width * scale;
   canvas.height = height * scale;
@@ -303,7 +300,7 @@ interface ColourBar {
 function colourBar(): ColourBar {
   const root = el('div', 'comparison-colourbar');
   const bar = el('span', 'comparison-colourbar-bar');
-  bar.style.background = DIFFERENCE_GRADIENT;
+  bar.style.background = differenceGradientCss();
   const scale = el('div', 'comparison-colourbar-ticks');
   const ticks: ColourBar['ticks'] = [el('span'), el('span'), el('span')];
   scale.append(...ticks);
@@ -350,8 +347,6 @@ function figure(withColourBar = false): Figure {
   for (const canvas of [heat, outline, points, path]) canvas.setAttribute('aria-hidden', 'true');
   return { root, frame, photo, heat, outline, points, path, tag, pathTag, note, colours, caption };
 }
-
-const DIFFERENCE_GRADIENT = `linear-gradient(90deg, ${[0, 0.25, 0.5, 0.75, 1].map((t) => cssColour(BLUE_ORANGE, t)).join(', ')})`;
 
 /**
  * Draws one condition with the chosen prediction on the scale shared by A and B, the manipulated area, the chosen
@@ -405,7 +400,7 @@ function paintDifference(fig: Figure, loaded: Loaded, model: ModelSpec | undefin
   const colours = fig.colours!;
   colours.root.hidden = !(mapA && mapB);
   if (mapA && mapB) {
-    drawSignedOnScale(fig.heat, difference(mapB, mapA), WIDTH, h, DIFFERENCE_SCALE / (mapA.width * mapA.height));
+    drawDifference(fig.heat, difference(mapB, mapA), WIDTH, h);
     const [low, mid, high] = colours.ticks;
     low.textContent = `−${times(DIFFERENCE_SCALE)}`;
     mid.textContent = '0';
@@ -653,7 +648,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       const path = scanpaths?.participants.find((p) => p.index === participant);
       caption.textContent = [
         model
-          ? `A and B use one colour scale, so their colours compare: brighter = higher predicted gaze density${range && mapA ? `; the brightest yellow means ${times(range.top * mapA.width * mapA.height)} the image average density or more` : ''}. Difference B − A, over B: orange where the density is higher in B, blue where it is higher in A; the colour bar is in multiples of the image average density and is the same for all three examples, so a faint difference is a small one.`
+          ? `A and B use one colour scale, so their colours compare: brighter = higher predicted gaze density${range && mapA ? `; the brightest yellow means ${times(range.top * mapA.width * mapA.height)} the image average density or more` : ''}. Difference B − A, over B: orange where the density is higher in B, blue where it is higher in A; the colour bar is in multiples of the image average density and is the same for all three examples and every other difference on this site, so a faint difference is a small one.`
           : 'Choose DG MSDB to see where people are predicted to look.',
         {
           none: '',
