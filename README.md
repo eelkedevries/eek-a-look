@@ -19,6 +19,12 @@ page shows up to four predictions of where people would look:
   browser, so their maps were computed in advance on a laptop GPU and cover
   the example photos only.
 
+The **Example** section compares three design changes to Zürich photos. Beside
+the MSDB maps it shows fixations sampled from them, scanpaths predicted by
+**DeepGaze3.5-VL** (Agrawal, Bethge and Kümmerer, 2026; run in 4-bit on a
+laptop GPU, so an approximation of the published model, `tools/scanpaths/`)
+and, for the original photos, measured scanpaths.
+
 The page is a workspace: a photo library on the left, the views in the middle
 (one map, all maps side by side, a contrast of any two maps — by default
 against the best model — automatic areas, and qualities) and an inspector on

@@ -1,4 +1,4 @@
-import { COMPARISON_CAVEAT, COMPARISON_INTRO, COMPARISONS, MEASURED_NOTE, type ComparisonText } from '../content/comparisons';
+import { COMPARISON_CAVEAT, COMPARISON_INTRO, COMPARISONS, MEASURED_NOTE, SCANPATH_NOTE, type ComparisonText } from '../content/comparisons';
 import type { ComparisonManifest, ExamplePhoto } from '../examples';
 import { attentionShares, decodeRle, type Area } from '../maps/areas';
 import { difference, type SaliencyMap } from '../maps/saliency-map';
@@ -12,6 +12,8 @@ import { drawDifference, drawGreyed, drawHeatmap, sharedRange, type HeatRange } 
 
 /** Content hashes of the data folders, set by vite.config.ts, so a stale cached copy is never used. */
 declare const __COMPARISONS_VERSION__: string;
+/** The images that have DeepGaze3.5-VL scanpaths, set by vite.config.ts. */
+declare const __SCANPATH_PHOTOS__: string[];
 
 const BASE = import.meta.env.BASE_URL;
 const WIDTH = 640;
@@ -19,6 +21,17 @@ const WIDTH = 640;
 const NO_CHANGE = 0.0005;
 
 type MapChoice = 'photo' | (string & {});
+/** The predicted points over A and B (prompt 076): none, MSDB's sampled fixations or DeepGaze3.5-VL's scanpaths. */
+type Overlay = 'none' | 'fixations' | 'scanpaths';
+
+/** The scanpath measure counts the first K fixations after the starting one, numbered 1 to K in a Path. */
+const K = 7;
+/** Scanpaths drawn per image: the first ones of the stored set, not selected. */
+const PATHS_SHOWN = 3;
+// Orange, magenta and green: never the blue of measured gaze.
+const PATH_COLOURS = ['#ff9f1c', '#ff4fd8', '#9be15d'];
+const SCANPATH_MODEL = 'DeepGaze3.5-VL';
+const SCANPATH_SHORT = 'DG3.5-VL';
 
 /**
  * Only DeepGaze MSDB is shown here (prompt 073). Measured gaze exists for the untouched originals only, so it cannot
@@ -34,12 +47,33 @@ interface RegionFile {
   regions: { id: string; label: string; share: number; rle: number[] }[];
 }
 
-/** Everything one condition needs: its photo, the prediction's map (null where it has none) and, for an original, the measured gaze paths. */
+interface FixationFile {
+  width: number;
+  height: number;
+  points: [number, number][];
+}
+
+interface ScanpathFile {
+  width: number;
+  height: number;
+  grid: number;
+  scanpaths: [number, number][][];
+}
+
+/** A gaze path in image pixels; n numbers the fixations from 1 for the first after the starting one (prompts 076, 077). */
+type Path = { n: number; x: number; y: number }[];
+
+/**
+ * Everything one condition needs: its photo, the prediction's map (null where it has none), MSDB's sampled fixations,
+ * DeepGaze3.5-VL's scanpaths and, for an original, the measured gaze paths.
+ */
 interface Condition {
   photo: ExamplePhoto;
   bitmap: ImageBitmap;
   maps: Map<string, SaliencyMap | null>;
   scanpaths: Scanpaths | null;
+  fixations: FixationFile | null;
+  predicted: Path[] | null;
 }
 
 interface Loaded {
@@ -58,16 +92,30 @@ const fetchJson = <T>(url: string): Promise<T | null> =>
 
 async function loadCondition(photo: ExamplePhoto): Promise<Condition> {
   const bitmap = createImageBitmap(await (await fetch(`${BASE}examples/${photo.file}`)).blob());
-  const scanpaths = photo.measured ? fetchJson<Scanpaths>(`${BASE}precomputed/measured/${photo.id}.scanpaths.json`) : Promise.resolve(null);
-  const maps = new Map<string, SaliencyMap | null>(
-    await Promise.all(
+  const version = `?v=${__COMPARISONS_VERSION__}`;
+  const [maps, fixations, predicted, scanpaths] = await Promise.all([
+    Promise.all(
       predictions.map(async (m) => {
         const payload = await fetchJson<PrecomputedMap>(`${BASE}precomputed/${m.id}/${photo.id}.json`);
         return [m.id, payload && decodeMap(payload)] as [string, SaliencyMap | null];
       }),
     ),
-  );
-  return { photo, bitmap: await bitmap, maps, scanpaths: await scanpaths };
+    fetchJson<FixationFile>(`${BASE}precomputed/deepgaze-msdb-fixations/${photo.id}.json${version}`),
+    __SCANPATH_PHOTOS__.includes(photo.id) ? fetchJson<ScanpathFile>(`${BASE}precomputed/deepgaze35-vl/${photo.id}.json${version}`) : null,
+    photo.measured ? fetchJson<Scanpaths>(`${BASE}precomputed/measured/${photo.id}.scanpaths.json`) : null,
+  ]);
+  return {
+    photo,
+    bitmap: await bitmap,
+    maps: new Map(maps),
+    scanpaths,
+    fixations,
+    // The model's 0–99 grid to pixels as predict_scanpath.py of the DeepGaze3.5-VL repository (x × width / 100). Its
+    // first fixation is the starting point, left out as the fixation on the cross is for measured paths (prompt 077).
+    predicted:
+      predicted &&
+      predicted.scanpaths.map((path) => path.slice(1).map(([gx, gy], i) => ({ n: i + 1, x: (gx * predicted.width) / predicted.grid, y: (gy * predicted.height) / predicted.grid }))),
+  };
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -94,6 +142,29 @@ function share(loaded: Loaded, condition: Condition, layer: string): number | nu
   const { width, height } = loaded.maskSize;
   return attentionShares(map, [area], width, height).get(area.id) ?? null;
 }
+
+/** Whether a point in image pixels lies in the area; as inside() in tools/scanpaths/summary.py. */
+function inArea(area: Area, mask: { width: number; height: number }, photo: ExamplePhoto, x: number, y: number): boolean {
+  const mx = Math.floor((x * mask.width) / photo.width);
+  const my = Math.floor((y * mask.height) / photo.height);
+  return mx >= 0 && mx < mask.width && my >= 0 && my < mask.height && area.mask[my * mask.width + mx] === 1;
+}
+
+/** How many of the paths have a fixation in the manipulated area among their first K after the start, and of how many. */
+function reach(loaded: Loaded, condition: Condition, paths: Path[] | null): { hits: number; n: number } | null {
+  const area = areaMask(loaded);
+  if (!paths || !paths.length || !area) return null;
+  const hits = paths.filter((path) => path.some(({ n, x, y }) => n >= 1 && n <= K && inArea(area, loaded.maskSize, condition.photo, x, y))).length;
+  return { hits, n: paths.length };
+}
+
+/** The measured gaze paths of prompt 077, numbered as drawn there: the database's fixation number minus one. */
+const measuredPaths = (scanpaths: Scanpaths | null): Path[] | null =>
+  scanpaths && scanpaths.participants.map((p) => p.fixations.map(([fix, x, y]) => ({ n: fix - 1, x, y })));
+
+/** The binomial standard error of a share. */
+const standardError = ({ hits, n }: { hits: number; n: number }) => Math.sqrt(((hits / n) * (1 - hits / n)) / n);
+const share1 = (x: number) => `${(x * 100).toFixed(1)}%`;
 
 /** The direction of the effect, from the sign of B − A. */
 function direction(d: number): string {
@@ -131,6 +202,78 @@ function drawOutline(canvas: HTMLCanvasElement, mask: Uint8Array | undefined, wi
   context.putImageData(image, 0, 0);
 }
 
+/** MSDB's sampled fixations as small dots, sized for the displayed width. */
+function drawDots(context: CanvasRenderingContext2D, file: FixationFile, scale: number, cssPx: number): void {
+  const r = 1.6 * cssPx;
+  context.beginPath();
+  for (const [x, y] of file.points) {
+    const cx = x * scale;
+    const cy = y * scale;
+    context.moveTo(cx + r, cy);
+    context.arc(cx, cy, r, 0, 2 * Math.PI);
+  }
+  context.lineWidth = 0.8 * cssPx;
+  context.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+  context.stroke();
+  context.fillStyle = 'rgb(255, 228, 92)';
+  context.fill();
+}
+
+/** Scanpaths as numbered circles joined by lines, in the manner of the gaze paths of Suurenbroek & Spanjar (2023). */
+function drawPaths(context: CanvasRenderingContext2D, paths: Path[], scale: number, cssPx: number): void {
+  const r = 8 * cssPx;
+  context.lineJoin = 'round';
+  paths.forEach((path, i) => {
+    const colour = PATH_COLOURS[i % PATH_COLOURS.length];
+    const at = path.map(({ x, y }) => [x * scale, y * scale] as const);
+    for (const [width, style] of [[4.5 * cssPx, 'rgba(0, 0, 0, 0.7)'], [2 * cssPx, colour]] as const) {
+      context.beginPath();
+      at.forEach(([x, y], j) => (j ? context.lineTo(x, y) : context.moveTo(x, y)));
+      context.lineWidth = width;
+      context.strokeStyle = style;
+      context.stroke();
+    }
+    context.font = `700 ${10 * cssPx}px system-ui, sans-serif`;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    path.forEach(({ n }, j) => {
+      const [x, y] = at[j];
+      context.beginPath();
+      context.arc(x, y, r, 0, 2 * Math.PI);
+      context.fillStyle = colour;
+      context.fill();
+      context.lineWidth = 1.5 * cssPx;
+      context.strokeStyle = 'rgba(0, 0, 0, 0.85)';
+      context.stroke();
+      context.fillStyle = '#111';
+      context.fillText(String(n), x, y + 0.5 * cssPx);
+    });
+  });
+}
+
+/** Draws the chosen points over one condition; returns its tag, or the reason there is nothing to show. */
+function drawOverlay(fig: Figure, condition: Condition, overlay: Overlay): { tag: string } | { note: string } | null {
+  const canvas = fig.points;
+  const photo = condition.photo;
+  canvas.width = WIDTH * 2;
+  canvas.height = Math.round((canvas.width * photo.height) / photo.width);
+  const context = canvas.getContext('2d')!;
+  context.clearRect(0, 0, canvas.width, canvas.height);
+  const scale = canvas.width / photo.width;
+  const cssPx = canvas.width / (fig.frame.clientWidth || 360);
+  if (overlay === 'fixations') {
+    if (!condition.fixations) return { note: 'Not available' };
+    drawDots(context, condition.fixations, scale, cssPx);
+    return { tag: `Predicted fixations · DG MSDB` };
+  }
+  if (overlay === 'scanpaths') {
+    if (!condition.predicted) return { note: 'Not yet computed' };
+    drawPaths(context, condition.predicted.slice(0, PATHS_SHOWN), scale, cssPx);
+    return { tag: `Predicted scanpaths · ${SCANPATH_SHORT} · ${PATHS_SHOWN} of ${condition.predicted.length}` };
+  }
+  return null;
+}
+
 interface ColourBar {
   root: HTMLElement;
   ticks: [HTMLElement, HTMLElement, HTMLElement];
@@ -159,6 +302,7 @@ interface Figure {
   heat: HTMLCanvasElement;
   outline: HTMLCanvasElement;
   path: HTMLCanvasElement;
+  points: HTMLCanvasElement;
   tag: HTMLElement;
   pathTag: HTMLElement;
   note: HTMLElement;
@@ -172,25 +316,29 @@ function figure(withColourBar = false): Figure {
   const photo = el('canvas', 'photo');
   const heat = el('canvas', 'layer');
   const outline = el('canvas', 'layer comparison-outline');
+  const points = el('canvas', 'layer comparison-points');
   const path = el('canvas', 'layer');
   const tag = el('span', 'predicted-tag');
   const note = el('span', 'cell-note');
   path.hidden = true;
-  frame.append(photo, heat, outline, path, tag, note);
+  frame.append(photo, heat, outline, points, path, tag, note);
   const colours = withColourBar ? colourBar() : undefined;
   const caption = el('figcaption');
   // Under the image, so it never covers a fixation.
   const pathTag = el('p', 'comparison-path-tag');
   pathTag.hidden = true;
   root.append(frame, ...(colours ? [colours.root] : []), caption, pathTag);
-  for (const canvas of [heat, outline, path]) canvas.setAttribute('aria-hidden', 'true');
-  return { root, frame, photo, heat, outline, path, tag, pathTag, note, colours, caption };
+  for (const canvas of [heat, outline, points, path]) canvas.setAttribute('aria-hidden', 'true');
+  return { root, frame, photo, heat, outline, points, path, tag, pathTag, note, colours, caption };
 }
 
 const DIFFERENCE_GRADIENT = `linear-gradient(90deg, ${[0, 0.25, 0.5, 0.75, 1].map((t) => cssColour(BLUE_ORANGE, t)).join(', ')})`;
 
-/** Draws one condition with the chosen prediction on the scale shared by A and B, the manipulated area and the chosen participant's measured gaze path (originals only). */
-function paint(fig: Figure, loaded: Loaded, condition: Condition, model: ModelSpec | undefined, range: HeatRange | undefined, highlighted: boolean, participant: number | null): void {
+/**
+ * Draws one condition with the chosen prediction on the scale shared by A and B, the manipulated area, the chosen
+ * participant's measured gaze path (originals only) and the chosen predicted points.
+ */
+function paint(fig: Figure, loaded: Loaded, condition: Condition, model: ModelSpec | undefined, range: HeatRange | undefined, highlighted: boolean, participant: number | null, overlay: Overlay): void {
   const h = Math.round((WIDTH * condition.photo.height) / condition.photo.width);
   fig.photo.setAttribute('role', 'img');
   fig.photo.setAttribute('aria-label', condition.photo.title);
@@ -217,6 +365,13 @@ function paint(fig: Figure, loaded: Loaded, condition: Condition, model: ModelSp
 
   fig.outline.hidden = !highlighted;
   drawOutline(fig.outline, highlighted ? areaMask(loaded)?.mask : undefined, loaded.maskSize.width, loaded.maskSize.height);
+
+  const points = drawOverlay(fig, condition, overlay);
+  fig.points.hidden = !points || !('tag' in points);
+  if (points && 'tag' in points) {
+    fig.tag.hidden = false;
+    fig.tag.textContent = map ? `${fig.tag.textContent}\n${points.tag}` : points.tag;
+  } else if (points) fig.note.textContent = points.note;
 }
 
 /** Draws the difference B − A of the chosen prediction over B, with its colour bar: orange where B is higher, blue where A is. */
@@ -343,6 +498,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     let choice: MapChoice = 'deepgaze-msdb';
     let highlighted = true;
     let participant: number | null = null;
+    let overlay: Overlay = 'none';
 
     const head = el('header', 'comparison-head');
     head.append(el('p', 'photo-place', `Example ${text.number} · ${text.place}`), el('h3', 'comparison-title', text.title));
@@ -362,6 +518,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     for (const outcome of text.outcomes) outcomeList.append(el('li', '', outcome));
     outcomes.append(outcomeList, el('p', 'muted', 'Hypotheses, not results.'));
     const result = el('dd', 'comparison-result');
+    const scanResult = el('dd', 'comparison-result');
     facts.append(
       el('dt', '', 'Question'),
       el('dd', 'comparison-question', text.question),
@@ -373,6 +530,8 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       outcomes,
       el('dt', '', 'What DeepGaze MSDB predicts'),
       result,
+      el('dt', '', `What ${SCANPATH_MODEL} predicts`),
+      scanResult,
     );
 
     // Controls: which map, and whether the manipulated area is highlighted.
@@ -400,7 +559,26 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       update();
     });
     highlightToggle.append(highlightBox, ' Highlight manipulated area');
-    controls.append(mapGroup, highlightToggle);
+    // Prompt 076: predicted points over A and B.
+    const overlayGroup = el('div', 'view-tabs comparison-overlays');
+    overlayGroup.setAttribute('role', 'group');
+    overlayGroup.setAttribute('aria-label', 'Predicted points');
+    const overlayChoices: [Overlay, string][] = [
+      ['none', 'No points'],
+      ['fixations', 'Fixations · DG MSDB'],
+      ['scanpaths', `Scanpaths · ${SCANPATH_SHORT}`],
+    ];
+    const overlayButtons = overlayChoices.map(([id, label]) => {
+      const button = el('button', 'view-tab', label);
+      button.type = 'button';
+      button.addEventListener('click', () => {
+        overlay = id;
+        update();
+      });
+      overlayGroup.append(button);
+      return { id, button };
+    });
+    controls.append(mapGroup, overlayGroup, highlightToggle);
     const scanpaths = loaded.a.scanpaths;
     if (scanpaths) {
       const pathPick = el('label', 'comparison-path-pick', 'Measured gaze path on A');
@@ -447,17 +625,24 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     function update() {
       const model = predictions.find((m) => m.id === choice);
       for (const { id, button } of mapButtons) button.setAttribute('aria-pressed', String(id === choice));
+      for (const { id, button } of overlayButtons) button.setAttribute('aria-pressed', String(id === overlay));
       const mapA = model ? loaded.a.maps.get(model.id) : null;
       const mapB = model ? loaded.b.maps.get(model.id) : null;
       const range = mapA && mapB ? sharedRange([mapA, mapB]) : undefined;
-      paint(figA, loaded, loaded.a, model, range, highlighted, participant);
-      paint(figB, loaded, loaded.b, model, range, highlighted, null);
+      paint(figA, loaded, loaded.a, model, range, highlighted, participant, overlay);
+      paint(figB, loaded, loaded.b, model, range, highlighted, null, overlay);
       paintDifference(figDiff, loaded, model, highlighted);
       const path = scanpaths?.participants.find((p) => p.index === participant);
       caption.textContent = [
         model
           ? 'A and B use one colour scale, so their colours compare: brighter = higher predicted gaze density. Difference B − A, over B: orange where the density is higher in B, blue where it is higher in A; the colour bar is in multiples of the image average density.'
           : 'Choose DG MSDB to see where people are predicted to look.',
+        {
+          none: '',
+          fixations: `Yellow dots: ${loaded.a.fixations?.points.length ?? 0} fixations drawn at random from DeepGaze MSDB's map of each image, in no order.`,
+          scanpaths: `Numbered circles: the first ${PATHS_SHOWN} of the ${SCANPATH_MODEL} scanpaths of each image, in the predicted order, numbered from 1 for the first fixation after the model's starting point.`,
+        }[overlay],
+        overlay !== 'none' ? 'The difference B − A shows maps only.' : '',
         path && scanpaths
           ? `Measured gaze path over A: participant ${path.index} of the ${scanpaths.observers} people who viewed the untouched original (Wilming et al. 2017), ${path.fixations.length} fixations in their order.`
           : '',
@@ -465,6 +650,52 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
         .filter(Boolean)
         .join(' ');
       renderResult(model);
+    }
+
+    /** The share of scanpaths that reach the manipulated area among their first K fixations after the start, in A and B, and the measured share in A. */
+    function renderScanResult() {
+      const { phrase } = text.area;
+      const a = reach(loaded, loaded.a, loaded.a.predicted);
+      const b = reach(loaded, loaded.b, loaded.b.predicted);
+      const measured = reach(loaded, loaded.a, measuredPaths(loaded.a.scanpaths));
+      const count = (r: { hits: number; n: number }, unit: string) => `${r.hits} of ${r.n} ${unit} · ${share1(r.hits / r.n)}`;
+      const sums = el('dl', 'comparison-sums');
+      const children: HTMLElement[] = [el('p', 'comparison-result-head', `${SCANPATH_MODEL} · predicted scanpaths with a fixation on ${phrase} among their first ${K} fixations after the start`)];
+      if (a && b) {
+        const d = b.hits / b.n - a.hits / a.n;
+        const se = Math.hypot(standardError(a), standardError(b));
+        sums.append(
+          el('dt', '', 'A'),
+          el('dd', '', count(a, 'scanpaths')),
+          el('dt', '', 'B'),
+          el('dd', '', count(b, 'scanpaths')),
+          el('dt', '', 'B − A'),
+          el('dd', '', `${d > 0 ? '+' : d < 0 ? '−' : '±'}${Math.abs(d * 100).toFixed(1)} percentage points (standard error ${(se * 100).toFixed(1)})`),
+        );
+        children.push(
+          sums,
+          el(
+            'p',
+            'comparison-direction',
+            Math.abs(d) < 2 * se
+              ? 'Within sampling error: the difference is smaller than twice its standard error.'
+              : `${d > 0 ? 'More' : 'Fewer'} predicted scanpaths reach the area in B; the difference exceeds twice its standard error.`,
+          ),
+        );
+      } else children.push(el('p', 'muted', `Not yet computed: the ${SCANPATH_MODEL} scanpaths are computed on a laptop graphics card (tools/scanpaths/).`));
+      if (measured) {
+        const check = el('dl', 'comparison-sums');
+        check.append(el('dt', '', 'A, measured'), el('dd', '', count(measured, 'people')));
+        children.push(check);
+      }
+      children.push(
+        el(
+          'p',
+          'muted',
+          `How: ${SCANPATH_MODEL} writes a scanpath as eight fixations in order, for about three seconds of free viewing; ${a?.n ?? 100} were drawn per image. Its first fixation is the starting point, which in the model's training data lies at the centre of the image, so it is left out, as the fixation on the central cross is for measured paths. A scanpath counts when any of the next ${K} fixations (1–${K} in the drawing) lands in the outlined area. The model predicts the order of fixations, not their timing. The measured share applies the same rule to the measured gaze path of each of the people who viewed the original photograph (Wilming et al. 2017; fixations 1–${K} as numbered in "Measured gaze path on A"; where the dataset lacks one, that path has fewer in the window); there is none for B.`,
+        ),
+      );
+      scanResult.replaceChildren(...children);
     }
 
     /** DeepGaze MSDB's sums over the manipulated area in A and B, their contrast and its direction. */
@@ -502,12 +733,14 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       notes.replaceChildren(
         el('p', 'agreement-caption', `The outlined area, ${phrase}, covers ${covered} of the image: the same pixels in A and B.`),
         el('p', 'agreement-caption', note),
+        el('p', 'agreement-caption', SCANPATH_NOTE),
         el('p', 'agreement-caption', MEASURED_NOTE),
         el('p', 'agreement-caption', COMPARISON_CAVEAT),
       );
     }
 
     renderNotes();
+    renderScanResult();
     update();
   }
 

@@ -347,3 +347,9 @@
   font-size: 12px;
   color: var(--iris);
 }
+
+/* Prompt 076: a map tag and a points tag on two lines. */
+.comparison-figure .predicted-tag {
+  max-width: calc(100% - 20px);
+  white-space: pre-line;
+}

@@ -99,6 +99,13 @@ wins and the gap is work still to be done.
   version is gone, and every A is now an untouched photo. Since prompt 077
   the section has measured gaze again, but only as one chosen participant's
   gaze path over A ("Measured gaze path on A").
+  Since prompt 076 a second row of buttons draws predicted points over A
+  and B: fixations drawn from the MSDB maps and DeepGaze3.5-VL scanpaths
+  (`tools/scanpaths/`), with the share of scanpaths reaching the manipulated
+  area among the first seven fixations after the start, for A and B and, from
+  077's files, for the measured paths of A (`tools/scanpaths/summary.py`
+  recomputes it). DeepGaze3.5-VL runs in 4-bit on the laptop GPU, an
+  approximation of the published bf16 model.
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
@@ -337,6 +344,12 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   order for the twelve Zürich photos, with the `pupil` value and no timing; pooling
   reproduces every `points.json` exactly. Shown in the Example section only,
   as one participant's numbered gaze path over A)
+- `076_example_fixations_scanpaths.md` (spec 0.60: MSDB fixations, DeepGaze3.5-VL
+  scanpaths in 4-bit NF4 on the 8 GB laptop GPU, and the share of scanpaths
+  reaching the manipulated area among the first seven fixations after the
+  start, for A, B and the measured paths of A; owner's answers: 100 paths × 8
+  fixations, 800 MSDB points, temperature 1, three numbered paths drawn,
+  K = 7; measured paths only through 077's selector)
 - `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational
   symmetry S against held-out labels; balanced accuracy on odd CMP A 0.781, R 0.776,
   S 0.613, and R's precision lower, so A is kept and no quality file changed. A

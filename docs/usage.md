@@ -93,7 +93,22 @@ it is higher in A. "Highlight manipulated area" outlines the area that is
 measured. The predicted gaze density in that area is
 summed into one value for A and one for B, and the contrast B − A shows the
 direction of the effect.
-All maps here are predictions. Only image A, the untouched photo, was ever
+A second row of buttons draws predicted points over A and B. **Fixations ·
+DG MSDB** shows 800 yellow dots drawn at random from DeepGaze MSDB's map:
+where people are predicted to look, in no order. **Scanpaths · DG3.5-VL**
+shows the first three of 100 scanpaths per image predicted by
+DeepGaze3.5-VL, a different model: numbered circles joined by lines, in the
+predicted order, numbered from 1 for the first fixation after the model's
+starting point, as the measured paths are numbered from the first fixation
+after the fixation cross. It was run in a reduced (4-bit) form to fit a
+laptop graphics card, so its scanpaths approximate the published model.
+Under "What DeepGaze3.5-VL predicts", the page counts how many of the 100
+scanpaths of A and of B have a fixation in the outlined area among their
+first seven fixations after the start, gives the difference with its
+standard error, and applies the same count to the 48 measured gaze paths of
+A as a check. The models predict the order of fixations, not their timing.
+
+All maps, dots and predicted scanpaths are predictions. Only image A, the untouched photo, was ever
 shown to people (48 of them, for six seconds each): **Measured gaze path on
 A** draws one participant's fixations over A as numbered circles in their
 order, starting after the central fixation cross. The fixations are those

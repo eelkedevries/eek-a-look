@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { defineConfig, type Plugin } from 'vite';
 
 const BASE = '/eek-a-look/';
@@ -70,12 +70,17 @@ const examplesVersion = createHash('sha256').update(readFileSync('public/example
 function folderVersion(...paths: string[]): string {
   const hash = createHash('sha256');
   const add = (path: string) => {
+    if (!existsSync(path)) return;
     if (statSync(path).isDirectory()) for (const name of readdirSync(path).sort()) add(`${path}/${name}`);
     else hash.update(path).update(readFileSync(path));
   };
   paths.forEach(add);
   return hash.digest('hex').slice(0, 10);
 }
+
+// The images with DeepGaze3.5-VL scanpaths (prompt 076), so the page never asks for a file that is not there.
+const SCANPATHS = 'public/precomputed/deepgaze35-vl';
+const scanpathPhotos = existsSync(SCANPATHS) ? readdirSync(SCANPATHS).filter((f) => f.endsWith('.json')).map((f) => f.slice(0, -'.json'.length)) : [];
 
 export default defineConfig({
   base: BASE,
@@ -86,7 +91,10 @@ export default defineConfig({
     __PANEL_VERSION__: JSON.stringify(folderVersion('public/precomputed/vlm-panel')),
     __QUALITIES_VERSION__: JSON.stringify(folderVersion('public/precomputed/qualities')),
     __UPCLIP_VERSION__: JSON.stringify(folderVersion('public/precomputed/up-clip')),
-    __COMPARISONS_VERSION__: JSON.stringify(folderVersion('public/examples/comparisons.json', 'public/precomputed/comparisons')),
+    __COMPARISONS_VERSION__: JSON.stringify(
+      folderVersion('public/examples/comparisons.json', 'public/precomputed/comparisons', 'public/precomputed/deepgaze-msdb-fixations', SCANPATHS, 'public/precomputed/measured'),
+    ),
+    __SCANPATH_PHOTOS__: JSON.stringify(scanpathPhotos),
   },
   server: { proxy: localApi },
   preview: { proxy: localApi },

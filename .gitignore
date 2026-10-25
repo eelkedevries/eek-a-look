@@ -69,3 +69,7 @@ tools/up-clip/.venv/
 # Comparisons: check overlays
 tools/comparisons/.cache/
 tools/comparisons/.venv/
+
+# Scanpaths: the DeepGaze3.5-VL code and adapter, downloaded at run time (never published)
+tools/scanpaths/.cache/
+tools/scanpaths/.venv/

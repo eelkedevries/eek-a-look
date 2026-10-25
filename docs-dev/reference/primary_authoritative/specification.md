@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.59 · **Last updated:** 2026-10-25
+**Version:** 0.60 · **Last updated:** 2026-10-25
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -144,6 +144,14 @@ fixations come from (the eye tracker's software, as published by the
 authors; none detected here) in the method text and the Example section, and
 no longer calls `pupil` a pupil size in arbitrary units, which the source
 does not document (owner's request of 2026-10-25).
+0.60 adds predicted fixations and scanpaths to the Example section: 800
+fixations per image drawn from DeepGaze MSDB's stored map and 100 scanpaths
+of eight fixations per image from DeepGaze3.5-VL, run with its language model
+in 4-bit NF4 on the owner's 8 GB laptop GPU (a deviation from the published
+model), and per example the share of scanpaths with a fixation in the
+manipulated area among the first seven fixations after the start, for A, B
+and the measured paths of 0.58 on A (prompt 076, owner's answers of
+2026-10-25; the measured share amends 0.58's "no group summary").
 
 ## Scope
 
@@ -159,6 +167,9 @@ In scope for v1:
 - two large models, **DeepGaze IIE** and **DeepGaze MSDB**, run on the owner's
   laptop GPU (`tools/deepgaze-local/`); their maps are published for the
   example photos only;
+- one scanpath model, **DeepGaze3.5-VL**, run on the owner's laptop GPU
+  (`tools/scanpaths/`) for the six images of the Example section only
+  (prompt 076);
 - twelve example photos of Dutch high-rise streets (Zuidas, Weena,
   Wilhelminapier, Beatrixkwartier), openly licensed, with credits;
 - twelve Zürich street photos from the eye-tracking dataset of Wilming et al.
@@ -400,6 +411,22 @@ interface ExamplePhoto {
 }
 ```
 
+Predicted fixations and scanpaths of the Example section (prompt 076), each
+file with a `settings` object recording how it was made (tool, source files
+and their SHA-256, model versions and commits, seeds, quantisation, sampling):
+
+```ts
+// public/precomputed/deepgaze-msdb-fixations/<photo-id>.json
+interface FixationFile { model: 'deepgaze-msdb'; photo: string; width: number; height: number;
+  settings: object; points: [number, number][] }   // 0-based image pixels, no order
+// public/precomputed/deepgaze35-vl/<photo-id>.json
+interface ScanpathFile { model: 'deepgaze35-vl'; photo: string; width: number; height: number;
+  grid: 100; settings: object; scanpaths: [number, number][][] }  // the model's 0–99 grid, in order
+```
+
+The measured paths used by the scanpath measure are the `Scanpaths` files
+of prompt 077 above.
+
 The Example section's manifest is `public/examples/comparisons.json`:
 `images`, the edited images as `ExamplePhoto` entries with `editOf` and
 `condition` and without `measured` (same size as the photo they come from),
@@ -431,6 +458,31 @@ library.
     licence file, so their code and weights are never published, only maps;
   - photos resized to 1024 px on the long side, with the MIT1003 centre-bias
     template; MSDB at 35 px per degree with its MIT1003 parameters.
+- **DeepGaze3.5-VL** (Agrawal, Bethge & Kümmerer, 2026, arXiv:2607.02083;
+  prompt 076): the free-viewing LoRA adapter (`model/combined_adapter/`, rank
+  32, language-model layers only) on `OpenGVLab/InternVL3_5-8B-HF`, which
+  writes a scanpath as fixations on a 0–99 grid, in order, for 3 s of free
+  viewing:
+  - code and adapter from <https://github.com/Susmit-A/DeepGaze3.5-VL>
+    (pinned commit), released for non-commercial research use only; the base
+    model under its own licence (Apache-2.0 on its model card). Both are
+    downloaded at run time; only the scanpaths are published;
+  - run with transformers, peft and bitsandbytes instead of the repository's
+    vLLM: the language model's linear layers in 4-bit NF4 (double
+    quantisation, bf16 compute) so that it fits in 8 GB; vision encoder,
+    projector, output layer and adapter unquantised (the output layer
+    quantised too only if loading runs out of memory, `--lm-head-4bit`,
+    recorded in the files), the adapter unmerged, the input embeddings on the
+    CPU. The published model runs in bf16 with
+    the adapter merged; the effect of the quantisation on its output is not
+    measured, so the scanpaths are labelled as an approximation;
+  - the repository's prompt for eight fixations, in the base model's chat
+    template and processor with its defaults (13 tiles of 448 × 448, 3,500
+    prompt tokens); the prompt's cache is computed once per image and each
+    scanpath drawn from a copy, one at a time with its own seed; pure
+    sampling (temperature 1, no top-k or top-p); a draw is kept only with
+    exactly eight fixations on the grid, and the first 100 kept are stored;
+    grid to pixels as x × width / 100.
 
 **Measured gaze**
 
@@ -1034,10 +1086,40 @@ was run on the photos.
   under the image, the map's tag adds "with measured gaze path", and the
   caption names the participant, the 48 people, Wilming et al. (2017) and
   the number of fixations. The `pupil` value is kept in the file but not
-  shown. No pooled measured map or points, and no group summary of the
-  paths, in this section. An edited image never shows a measured layer,
+  shown. No pooled measured map or points in this section; the only group
+  summary of the paths is the measured share in the scanpath measure below
+  (prompt 076). An edited image never shows a measured layer,
   fixation points or a gaze path anywhere, and its place line reads "edited
   for the Example section, predictions only".
+- **Predicted fixations and scanpaths** (prompt 076). A second row of
+  buttons draws predicted points over A and B: none (the default);
+  **Fixations · DG MSDB**, 800 per image drawn from DeepGaze MSDB's stored
+  map (`tools/scanpaths/fixations.py`: a grid cell with its probability, then
+  a uniform position within it; independent draws without order), as yellow
+  dots; **Scanpaths · DG3.5-VL**, the first three of the 100 DeepGaze3.5-VL
+  scanpaths per image (`tools/scanpaths/scanpaths.py`), as numbered circles
+  joined by lines in the manner of Suurenbroek & Spanjar (2023), one colour
+  per path. The model's first fixation, its starting point (at the centre in
+  its training data), is left out of the drawing, as the cross fixation is
+  for measured paths, so 1 is the first fixation after it. Each figure's tag
+  names the points and their model. The difference B − A shows maps only.
+  A note states that the heatmap and dots (MSDB) and the scanpaths
+  (DeepGaze3.5-VL) come from different models, that MSDB's dots have no
+  order, and that the scanpaths come from a 4-bit approximation of the
+  published model. No durations or time axis: the models predict order, not
+  timing. Measured paths are shown only through the selector above.
+- **Scanpath measure** (prompt 076), "What DeepGaze3.5-VL predicts": the share
+  of the 100 scanpaths with at least one fixation in the manipulated area
+  among the first seven fixations after the start (K = 7: the model's
+  fixations 2–8), for A and B, and B − A in percentage points with its
+  binomial standard error; a difference under twice that error is reported
+  as within sampling error. A fixation is in the area when its pixel, scaled
+  to the 640 × 480 mask, is set. The same rule on the measured paths of
+  0.58 gives "A, measured": the share of the 48 participants with a
+  fixation in the area among database fixation numbers 2–8 (the first seven
+  after the cross, gaps included), as a check on the predicted A.
+  `tools/scanpaths/summary.py` recomputes every number from the stored
+  files.
 - View (prompt 067): A, B and the difference B − A of the chosen predicted
   map (blue–orange, as in Contrast, over B) side by side; one column at phone
   width. A "Highlight manipulated area" checkbox, on by default, outlines the
