@@ -42,8 +42,9 @@ change inside a search box (RGB difference blurred 4 px above 20, closed,
 filled, patches under 2,000 px dropped, dilated 6 px) and pastes the edit
 there, softened by 3 px, over the original's own pixels. The two glazing
 versions share one mask, the union of both. Results: a hedge about 2 m tall
-along the base of zurich-33 (17.8% of the image), and the whole ground-floor
-frontage of zurich-53 either side of the red door as opaque grey panels or
+along the base of zurich-33 (17.8% of the image), and the ground-floor
+frontage of zurich-53 either side of the red door, all but the far-left bay
+(prompt 074 corrected "whole"), as opaque grey panels or
 clear glass with a lit shop interior (21.1%). They replaced the owner's
 low planting and three opaque or transparent window bays.
 

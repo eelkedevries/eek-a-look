@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.55 · **Last updated:** 2026-10-25
+**Version:** 0.56 · **Last updated:** 2026-10-25
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -128,7 +128,10 @@ owner's request of 2026-10-19).
 0.55 replaces the greenery hedge of 0.51, which came out about 4–5 m tall and
 hid the ground-floor windows, with a low hedge below them, and shows only
 DeepGaze MSDB in the Example section, without the per-model table (prompt
-073, owner's request of 2026-10-25).
+073, owner's request of 2026-10-25). 0.56 corrects the text of example 3: B
+adds a bright, colourful interior, so transparency is not the only
+difference; A's panels are lit more brightly than the shaded original; the
+far-left bay is not edited (prompt 074, owner's request of 2026-10-25).
 
 ## Scope
 
@@ -905,9 +908,12 @@ was run on the photos.
   with the whole rusticated stone block around the entrance in blue-teal,
   prompt 071), greenery (zurich-33 against a low, trimmed hedge in front of
   the grey base of the blocks, below the ground-floor windows, which stay
-  visible; prompt 073) and glazing (the whole ground-floor frontage of
-  zurich-53, either side of the red door, as opaque grey panels against
-  clear glass with a lit shop interior; both edited). All images are
+  visible; prompt 073) and glazing (the ground-floor frontage of
+  zurich-53 either side of the red door, all but the far-left bay, as opaque
+  grey panels against clear glass with a lit shop interior; both edited).
+  The interior also adds brightness, colour and detail, so transparency is
+  not the only difference, and the panels are lit more brightly than the
+  shaded original (prompt 074). All images are
   1280 × 960 px and share one grid and one set of masks.
 - Greenery and glazing images (prompt 071b; they replaced the owner's low
   planting and three window bays): FLUX.1 Kontext [dev] edits of the

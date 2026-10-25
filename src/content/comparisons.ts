@@ -87,12 +87,12 @@ export const COMPARISONS: ComparisonText[] = [
     number: 3,
     title: 'Glazing',
     place: 'Zürich 53',
-    question: 'Does transparent glazing draw more attention to a ground-floor frontage than opaque glazing?',
+    question: 'Does a transparent ground-floor frontage draw more attention than an opaque one?',
     background:
-      'Being able to see into a ground floor is often thought to make a frontage more engaging. To isolate transparency, both images are edited from the same photograph and neither is the untouched one: they differ only in the ground-floor frontage.',
-    manipulated: 'whether the ground-floor frontage is opaque or transparent; everything else is held constant.',
-    conditionA: 'The whole ground-floor frontage, either side of the red door, as opaque grey panels.',
-    conditionB: 'The same frontage as clear glass, showing a lit shop interior.',
+      'Being able to see into a ground floor is often thought to make a frontage more engaging. Both images are edited from the same photograph and neither is the untouched one, in which the frontage lies in deep shade under the canopy. Outside the edited frontage, A and B are identical.',
+    manipulated: 'whether the ground-floor frontage is opaque or transparent. B also shows a bright, colourful interior, so brightness, colour and detail change with transparency, and an effect cannot be attributed to transparency alone.',
+    conditionA: 'The ground-floor frontage either side of the red door, apart from the far-left bay, as opaque light-grey panels, lit more brightly than the shaded original.',
+    conditionB: 'The same frontage as clear glass, showing a brightly lit shop interior with colourful goods.',
     outcomes: [
       'B has a higher predicted gaze density on the frontage than A: the visible interior adds detail that draws the eye.',
       'A and B do not differ meaningfully: the frontage draws the eye in both, and the visible interior adds little.',
@@ -103,7 +103,7 @@ export const COMPARISONS: ComparisonText[] = [
       id: 'frontage',
       label: 'Ground-floor frontage',
       phrase: 'the ground-floor frontage',
-      note: 'The area is the ground-floor frontage, where the two versions differ, found from the pixel difference between them.',
+      note: 'The area is the edited ground-floor frontage, where the two versions differ, found from the pixel difference between them; it includes the red door, which is the same in both.',
     },
   },
 ];

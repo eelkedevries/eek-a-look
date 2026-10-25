@@ -46,7 +46,7 @@
       "licence": "CC0 1.0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
-      "changes": "Edited with FLUX.1 Kontext [dev]: the whole ground-floor frontage either side of the red door as opaque grey panels (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
+      "changes": "Edited with FLUX.1 Kontext [dev]: the ground-floor frontage either side of the red door, apart from the far-left bay, as opaque grey panels (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
     },
     {
       "id": "zurich-53-transparent-frontage",
@@ -62,7 +62,7 @@
       "licence": "CC0 1.0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
-      "changes": "Edited with FLUX.1 Kontext [dev]: the whole ground-floor frontage either side of the red door as clear glass with a lit shop interior (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
+      "changes": "Edited with FLUX.1 Kontext [dev]: the ground-floor frontage either side of the red door, apart from the far-left bay, as clear glass with a lit shop interior (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
     }
   ],
   "examples": [
