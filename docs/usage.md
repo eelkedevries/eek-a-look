@@ -93,8 +93,14 @@ it is higher in A. "Highlight manipulated area" outlines the area that is
 measured. The predicted gaze density in that area is
 summed into one value for A and one for B, and the contrast B − A shows the
 direction of the effect.
-All maps here are predictions; measured gaze for the untouched originals is
-in the workspace. The links under the images open either image there.
+All maps here are predictions. Only image A, the untouched photo, was ever
+shown to people (48 of them, for six seconds each): **Measured gaze path on
+A** draws one participant's fixations over A as numbered circles in their
+order, starting after the central fixation cross; a dashed line marks a
+fixation missing from the dataset. B has no measured gaze, so no
+measurement shows the effect of an edit. The pooled measured gaze of the
+originals is in the workspace. The links under the images open either
+image there.
 
 The About section explains the models, their scores on a standard lab test,
 and what the maps cannot tell you.

@@ -31,7 +31,7 @@ export function renderAbout(section: HTMLElement, photos: ExamplePhoto[]): void 
 
   const intro = el(
     'p',
-    'eek-a-look shows four predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model. The exceptions are the photos with measured eye tracking: for the Zürich photos and those from Andersson et al. (2017), an extra layer, “Measured gaze”, shows where people actually looked, recorded with an eye tracker (48 people per Zürich photo, two to five per photo in the second set). The images under “From published studies” are taken from two eye-tracking articles: they show predictions only, and each links to the heat map its study measured, which is not turned into a layer here. How each method works is explained at the bottom of the page.',
+    'eek-a-look shows four predictions of where people would look in a photo. Nobody’s eyes were measured for these maps: each one is the output of a model. The exceptions are the photos with measured eye tracking: for the Zürich photos and those from Andersson et al. (2017), an extra layer, “Measured gaze”, shows where people actually looked, recorded with an eye tracker (48 people per Zürich photo, two to five per photo in the second set). In the Example section, the untouched Zürich photo of each comparison can also show one person’s measured gaze path: their fixations in order. The images under “From published studies” are taken from two eye-tracking articles: they show predictions only, and each links to the heat map its study measured, which is not turned into a layer here. How each method works is explained at the bottom of the page.',
     'about-lead',
   );
 

@@ -3,9 +3,11 @@ import type { ComparisonManifest, ExamplePhoto } from '../examples';
 import { attentionShares, decodeRle, type Area } from '../maps/areas';
 import { difference, type SaliencyMap } from '../maps/saliency-map';
 import { decodeMap, type PrecomputedMap } from '../models/deepgaze';
+import type { Scanpaths } from '../models/measured';
 import { models } from '../models/registry';
 import { mapLabel, type ModelSpec } from '../models/types';
 import { BLUE_ORANGE, cssColour } from '../render/colormaps';
+import { drawScanpath } from '../render/fixations';
 import { drawDifference, drawGreyed, drawHeatmap, sharedRange, type HeatRange } from '../render/heatmap';
 
 /** Content hashes of the data folders, set by vite.config.ts, so a stale cached copy is never used. */
@@ -19,8 +21,8 @@ const NO_CHANGE = 0.0005;
 type MapChoice = 'photo' | (string & {});
 
 /**
- * Only DeepGaze MSDB is shown here (prompt 073). Measured gaze is left out: it exists for untouched originals only, so it
- * cannot show an edit's effect.
+ * Only DeepGaze MSDB is shown here (prompt 073). Measured gaze exists for the untouched originals only, so it cannot
+ * show an edit's effect; it appears only as one chosen participant's gaze path over A (prompt 077).
  */
 const predictions = models.filter((m) => m.id === 'deepgaze-msdb');
 
@@ -32,11 +34,12 @@ interface RegionFile {
   regions: { id: string; label: string; share: number; rle: number[] }[];
 }
 
-/** Everything one condition needs: its photo and the prediction's map (null where it has none). */
+/** Everything one condition needs: its photo, the prediction's map (null where it has none) and, for an original, the measured gaze paths. */
 interface Condition {
   photo: ExamplePhoto;
   bitmap: ImageBitmap;
   maps: Map<string, SaliencyMap | null>;
+  scanpaths: Scanpaths | null;
 }
 
 interface Loaded {
@@ -55,6 +58,7 @@ const fetchJson = <T>(url: string): Promise<T | null> =>
 
 async function loadCondition(photo: ExamplePhoto): Promise<Condition> {
   const bitmap = createImageBitmap(await (await fetch(`${BASE}examples/${photo.file}`)).blob());
+  const scanpaths = photo.measured ? fetchJson<Scanpaths>(`${BASE}precomputed/measured/${photo.id}.scanpaths.json`) : Promise.resolve(null);
   const maps = new Map<string, SaliencyMap | null>(
     await Promise.all(
       predictions.map(async (m) => {
@@ -63,7 +67,7 @@ async function loadCondition(photo: ExamplePhoto): Promise<Condition> {
       }),
     ),
   );
-  return { photo, bitmap: await bitmap, maps };
+  return { photo, bitmap: await bitmap, maps, scanpaths: await scanpaths };
 }
 
 function el<K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] {
@@ -154,7 +158,9 @@ interface Figure {
   photo: HTMLCanvasElement;
   heat: HTMLCanvasElement;
   outline: HTMLCanvasElement;
+  path: HTMLCanvasElement;
   tag: HTMLElement;
+  pathTag: HTMLElement;
   note: HTMLElement;
   colours?: ColourBar;
   caption: HTMLElement;
@@ -166,20 +172,25 @@ function figure(withColourBar = false): Figure {
   const photo = el('canvas', 'photo');
   const heat = el('canvas', 'layer');
   const outline = el('canvas', 'layer comparison-outline');
+  const path = el('canvas', 'layer');
   const tag = el('span', 'predicted-tag');
   const note = el('span', 'cell-note');
-  frame.append(photo, heat, outline, tag, note);
+  path.hidden = true;
+  frame.append(photo, heat, outline, path, tag, note);
   const colours = withColourBar ? colourBar() : undefined;
   const caption = el('figcaption');
-  root.append(frame, ...(colours ? [colours.root] : []), caption);
-  for (const canvas of [heat, outline]) canvas.setAttribute('aria-hidden', 'true');
-  return { root, frame, photo, heat, outline, tag, note, colours, caption };
+  // Under the image, so it never covers a fixation.
+  const pathTag = el('p', 'comparison-path-tag');
+  pathTag.hidden = true;
+  root.append(frame, ...(colours ? [colours.root] : []), caption, pathTag);
+  for (const canvas of [heat, outline, path]) canvas.setAttribute('aria-hidden', 'true');
+  return { root, frame, photo, heat, outline, path, tag, pathTag, note, colours, caption };
 }
 
 const DIFFERENCE_GRADIENT = `linear-gradient(90deg, ${[0, 0.25, 0.5, 0.75, 1].map((t) => cssColour(BLUE_ORANGE, t)).join(', ')})`;
 
-/** Draws one condition with the chosen prediction on the scale shared by A and B, and the manipulated area. */
-function paint(fig: Figure, loaded: Loaded, condition: Condition, model: ModelSpec | undefined, range: HeatRange | undefined, highlighted: boolean): void {
+/** Draws one condition with the chosen prediction on the scale shared by A and B, the manipulated area and the chosen participant's measured gaze path (originals only). */
+function paint(fig: Figure, loaded: Loaded, condition: Condition, model: ModelSpec | undefined, range: HeatRange | undefined, highlighted: boolean, participant: number | null): void {
   const h = Math.round((WIDTH * condition.photo.height) / condition.photo.width);
   fig.photo.setAttribute('role', 'img');
   fig.photo.setAttribute('aria-label', condition.photo.title);
@@ -192,8 +203,16 @@ function paint(fig: Figure, loaded: Loaded, condition: Condition, model: ModelSp
   const map = model ? condition.maps.get(model.id) : undefined;
   fig.heat.hidden = !map;
   if (map) drawHeatmap(fig.heat, map, WIDTH, h, undefined, range);
+  const path = condition.scanpaths?.participants.find((p) => p.index === participant);
+  fig.path.hidden = !path;
+  fig.pathTag.hidden = !path;
+  if (path) {
+    drawScanpath(fig.path, path, condition.scanpaths!, WIDTH * 2, h * 2);
+    fig.pathTag.textContent = `Measured · participant ${path.index} of ${condition.scanpaths!.observers}`;
+  }
+
   fig.tag.hidden = !map;
-  fig.tag.textContent = model ? `${mapLabel(model)} · ${short(model)}` : '';
+  fig.tag.textContent = model ? `${mapLabel(model)} · ${short(model)}${path ? ' · with measured gaze path' : ''}` : '';
   fig.note.textContent = model && !map ? 'Not available' : '';
 
   fig.outline.hidden = !highlighted;
@@ -233,7 +252,8 @@ function paintDifference(fig: Figure, loaded: Loaded, model: ModelSpec | undefin
  * The Example section (prompts 058, 066–068, 070): an overview of three design comparisons and, for the chosen one,
  * its question, background, conditions and two possible outcomes; A, B and their difference side by side, the
  * difference with a colour bar; and DeepGaze MSDB's predicted gaze density (prompt 073: the only model shown) summed over the
- * manipulated area in A and in B, whose contrast B − A gives the direction of the effect. Predictions only.
+ * manipulated area in A and in B, whose contrast B − A gives the direction of the effect. The only measured data is one
+ * chosen participant's gaze path over A (prompt 077).
  */
 export function mountExample(section: HTMLElement, manifest: ComparisonManifest, photoById: (id: string) => ExamplePhoto | undefined, open: (id: string) => void): void {
   const heading = el('h2', 'section-label', 'Example · three design comparisons');
@@ -322,6 +342,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     detail.dataset.id = text.id;
     let choice: MapChoice = 'deepgaze-msdb';
     let highlighted = true;
+    let participant: number | null = null;
 
     const head = el('header', 'comparison-head');
     head.append(el('p', 'photo-place', `Example ${text.number} · ${text.place}`), el('h3', 'comparison-title', text.title));
@@ -380,6 +401,19 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     });
     highlightToggle.append(highlightBox, ' Highlight manipulated area');
     controls.append(mapGroup, highlightToggle);
+    const scanpaths = loaded.a.scanpaths;
+    if (scanpaths) {
+      const pathPick = el('label', 'comparison-path-pick', 'Measured gaze path on A');
+      const pathSelect = el('select');
+      pathSelect.append(new Option('Off', ''));
+      for (const p of scanpaths.participants) pathSelect.append(new Option(`Participant ${p.index} · ${p.fixations.length} fixations`, String(p.index)));
+      pathSelect.addEventListener('change', () => {
+        participant = pathSelect.value ? Number(pathSelect.value) : null;
+        update();
+      });
+      pathPick.append(pathSelect);
+      controls.append(pathPick);
+    }
 
     // A, B and the difference B − A, side by side.
     const figA = figure();
@@ -416,12 +450,20 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       const mapA = model ? loaded.a.maps.get(model.id) : null;
       const mapB = model ? loaded.b.maps.get(model.id) : null;
       const range = mapA && mapB ? sharedRange([mapA, mapB]) : undefined;
-      paint(figA, loaded, loaded.a, model, range, highlighted);
-      paint(figB, loaded, loaded.b, model, range, highlighted);
+      paint(figA, loaded, loaded.a, model, range, highlighted, participant);
+      paint(figB, loaded, loaded.b, model, range, highlighted, null);
       paintDifference(figDiff, loaded, model, highlighted);
-      caption.textContent = model
-        ? 'A and B use one colour scale, so their colours compare: brighter = higher predicted gaze density. Difference B − A, over B: orange where the density is higher in B, blue where it is higher in A; the colour bar is in multiples of the image average density.'
-        : 'Choose DG MSDB to see where people are predicted to look.';
+      const path = scanpaths?.participants.find((p) => p.index === participant);
+      caption.textContent = [
+        model
+          ? 'A and B use one colour scale, so their colours compare: brighter = higher predicted gaze density. Difference B − A, over B: orange where the density is higher in B, blue where it is higher in A; the colour bar is in multiples of the image average density.'
+          : 'Choose DG MSDB to see where people are predicted to look.',
+        path && scanpaths
+          ? `Measured gaze path over A: participant ${path.index} of the ${scanpaths.observers} people who viewed the untouched original (Wilming et al. 2017), ${path.fixations.length} fixations in their order.`
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' ');
       renderResult(model);
     }
 

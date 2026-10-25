@@ -1,4 +1,4 @@
-import { loadFixations, type Fixations } from '../models/measured';
+import { loadFixations, type Fixations, type Scanpath } from '../models/measured';
 import type { ModelSpec } from '../models/types';
 import type { CurrentImage } from '../state';
 import { getViewState } from '../view-state';
@@ -58,6 +58,53 @@ export function drawFixations(target: HTMLCanvasElement, fixations: Fixations, w
   ctx.stroke();
   ctx.fillStyle = 'rgb(0, 229, 255)';
   ctx.fill();
+}
+
+/** --iris in style.css: the colour of measured gaze. */
+const MEASURED = '#6ba6e4';
+
+/**
+ * One participant's measured gaze path (prompt 077): numbered circles joined in their order. A circle's number is the
+ * database's fixation number minus one, so 1 is the first fixation after the one on the central cross, and a fixation
+ * the database does not hold leaves a gap in the numbers, bridged by a dashed line.
+ */
+export function drawScanpath(target: HTMLCanvasElement, path: Scanpath, source: { width: number; height: number }, width: number, height: number): void {
+  target.width = width;
+  target.height = height;
+  const ctx = target.getContext('2d')!;
+  ctx.clearRect(0, 0, width, height);
+  const r = width / 46;
+  const at = path.fixations.map(([fix, x, y]) => ({ n: fix - 1, x: ((x + 0.5) * width) / source.width, y: ((y + 0.5) * height) / source.height }));
+  ctx.lineCap = 'round';
+  for (let i = 1; i < at.length; i++) {
+    const [a, b] = [at[i - 1], at[i]];
+    ctx.setLineDash(b.n - a.n > 1 ? [r * 0.5, r * 0.6] : []);
+    ctx.beginPath();
+    ctx.moveTo(a.x, a.y);
+    ctx.lineTo(b.x, b.y);
+    ctx.lineWidth = r * 0.42;
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.65)';
+    ctx.stroke();
+    ctx.lineWidth = r * 0.2;
+    ctx.strokeStyle = MEASURED;
+    ctx.stroke();
+  }
+  ctx.setLineDash([]);
+  ctx.font = `600 ${Math.round(r * 1.1)}px 'JetBrains Mono', monospace`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  // Drawn last to first, so where circles overlap the earlier fixation stays readable.
+  for (const p of [...at].reverse()) {
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, r, 0, 2 * Math.PI);
+    ctx.fillStyle = MEASURED;
+    ctx.fill();
+    ctx.lineWidth = r * 0.18;
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.8)';
+    ctx.stroke();
+    ctx.fillStyle = '#0a0a0f';
+    ctx.fillText(String(p.n), p.x, p.y + r * 0.06);
+  }
 }
 
 /**

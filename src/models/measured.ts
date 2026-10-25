@@ -11,6 +11,26 @@ export interface Fixations {
   points: [number, number][];
 }
 
+/**
+ * The same fixations per participant, in their order (prompt 077): `<id>.scanpaths.json`. Each fixation is the
+ * database's fixation number in the trial (1, on the central cross, is left out), x and y in 0-based photo pixels,
+ * and the recorded pupil size in the eye tracker's arbitrary units.
+ */
+export interface Scanpaths {
+  photo: string;
+  width: number;
+  height: number;
+  observers: number;
+  fields: ['fix', 'x', 'y', 'pupil'];
+  participants: Scanpath[];
+}
+
+export interface Scanpath {
+  /** The database's anonymous SUBJECTINDEX. */
+  index: number;
+  fixations: [fix: number, x: number, y: number, pupil: number][];
+}
+
 const fixations = new Map<string, Promise<Fixations>>();
 
 /** Loads a photo's fixations once; a failed load is forgotten so it can be tried again. */

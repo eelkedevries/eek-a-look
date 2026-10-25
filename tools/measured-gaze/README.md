@@ -60,6 +60,62 @@ the Dutch ones, with the observer and fixation counts under `measured`.
 
 Each of the twelve has 48 observers and 805–929 fixations.
 
+## Fixations per participant
+
+Prompt 077 keeps the same fixations per participant and in their order, for
+the twelve Zürich photos: `build_scanpaths.py` writes
+`public/precomputed/measured/zurich-<n>.scanpaths.json`
+(`{photo, width, height, observers, fields, participants: [{index, fixations: [[fix, x, y, pupil], …]}, …]}`)
+and changes no other file.
+
+- **What the source holds per fixation** (`Baseline` group): `SUBJECTINDEX`,
+  `trial`, `fix` (the fixation's number in the trial), `x` and `y` (1-based
+  pixels), `start` and `end` (ms from image onset), `eye` (1 or 2; one eye per
+  trial), `pupil`, `category`, `filenumber` and `dataset_nr`.
+- **What is kept** (owner's choice of 25 October 2026): `index`, the
+  database's anonymous `SUBJECTINDEX`, nothing else about the person; and
+  per fixation `fix` as recorded, `x` and `y` as in the points file (0-based)
+  and `pupil` as recorded, in the EyeLink's arbitrary units, written as the
+  shortest decimal that reads back as the stored float32. Timing (`start`,
+  `end`) and `eye` are not kept.
+- **The first fixation.** About half of the trials hold `fix` 1, always on the
+  central fixation cross (it starts about 180 ms before the photo appears);
+  the other half start at `fix` 2, already away from the centre (median
+  4.3°). The rule `fix > 1` of the maps therefore drops exactly the cross
+  fixation in both cases, and it is left out here too.
+- **Gaps.** Within a trial the database lacks some fixation numbers: 61
+  across the twelve photos (1–12 per photo; 5, 3 and 2 on photos 42, 33 and
+  53). The order of the kept fixations is unaffected; the numbers show
+  where one is missing.
+- **Check.** The rows of each photo are grouped by participant in ascending
+  order, with `fix` ascending within each, so joining the participants
+  reproduces `zurich-<n>.points.json` exactly, in the same order, with the
+  same number of observers. The script checks this for every photo and
+  writes nothing for a photo that fails.
+
+```sh
+uv run build_scanpaths.py   # after fetch.py and build.py
+```
+
+| id | People | Fixations | Per person (min–median–max) | Missing numbers |
+|---|---|---|---|---|
+| `zurich-18` | 48 | 805 | 2–16–25 | 1 |
+| `zurich-19` | 48 | 870 | 10–18–26 | 4 |
+| `zurich-22` | 48 | 899 | 10–19–25 | 3 |
+| `zurich-23` | 48 | 883 | 10–18–24 | 8 |
+| `zurich-24` | 48 | 870 | 6–18–25 | 4 |
+| `zurich-27` | 48 | 857 | 10–18–24 | 5 |
+| `zurich-30` | 48 | 929 | 12–19–26 | 12 |
+| `zurich-33` | 48 | 887 | 12–18–25 | 3 |
+| `zurich-42` | 48 | 850 | 11–18–25 | 5 |
+| `zurich-46` | 48 | 862 | 11–19–24 | 5 |
+| `zurich-51` | 48 | 871 | 1–18–26 | 9 |
+| `zurich-53` | 48 | 825 | 9–17–24 | 2 |
+
+The site shows them only in the Example section, as one chosen
+participant's gaze path over image A (`src/views/example.ts`,
+`drawScanpath` in `src/render/fixations.ts`); the pupil size is not shown.
+
 ## Commands
 
 Needs [uv](https://docs.astral.sh/uv/) and the repository's Node packages

@@ -314,3 +314,36 @@
 .comparison-sums dt {
   line-height: 1.6;
 }
+
+/* One participant's measured gaze path over A (prompt 077). */
+.comparison-path-pick {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  color: var(--text-soft);
+}
+
+.comparison-path-pick select {
+  min-height: 36px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  cursor: pointer;
+}
+
+.comparison-path-pick select:hover {
+  border-color: rgba(232, 180, 58, 0.45);
+}
+
+/* Measured gaze is labelled in blue, as everywhere on the site. */
+.comparison-path-tag {
+  margin: 2px 0 0;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--iris);
+}

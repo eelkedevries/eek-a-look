@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.57 · **Last updated:** 2026-10-25
+**Version:** 0.58 · **Last updated:** 2026-10-25
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -135,6 +135,11 @@ far-left bay is not edited (prompt 074, owner's request of 2026-10-25).
 0.57 compares the transparent frontage of example 3 with the untouched
 original instead of the opaque version, which is removed with the manifest's
 `reference` field (prompt 075, owner's request of 2026-10-25).
+0.58 adds the measured fixations per participant, in their order, for the
+twelve Zürich photos (`<photo-id>.scanpaths.json`: fixation number, x, y and
+pupil size), and shows one chosen participant's measured gaze path over
+image A in the Example section, which until then had no measured gaze
+(prompt 077, owner's request of 2026-10-25).
 
 ## Scope
 
@@ -263,6 +268,24 @@ interface ModelSpec {
   oneLine: string;        // plain-language description, at most 20 words
   benchmark?: BenchmarkScore;
   predict(image: ImageBitmap, grid: GridSize): Promise<SaliencyMap>;
+}
+```
+
+Measured fixations per participant (prompt 077),
+`public/precomputed/measured/<photo-id>.scanpaths.json`, for the twelve
+Zürich photos:
+
+```ts
+interface Scanpaths {
+  photo: string;          // example photo id
+  width: number;          // photo pixels
+  height: number;
+  observers: number;      // participants with at least one fixation kept
+  fields: ['fix', 'x', 'y', 'pupil'];
+  participants: Array<{
+    index: number;        // the database's anonymous SUBJECTINDEX
+    fixations: Array<[fix: number, x: number, y: number, pupil: number]>;
+  }>;
 }
 ```
 
@@ -472,6 +495,20 @@ library.
   "Fixation points (raw data)" beside the heatmap strength in the display
   settings, 65% by default, present only on photos with measured data
   (prompt 054).
+- **Fixations per participant** (prompt 077, owner's request of
+  2026-10-25): for the twelve Zürich photos, the same fixations as the
+  points file, kept per participant and in their order, are written to
+  `<photo-id>.scanpaths.json` by `tools/measured-gaze/build_scanpaths.py`.
+  Per participant: the database's anonymous index (`SUBJECTINDEX`) and
+  nothing else about the person. Per fixation: the database's fixation
+  number in the trial (`fix`; 1, on the central fixation cross, is left out
+  as in the maps), x and y in 0-based photo pixels, and the pupil size as
+  recorded (EyeLink arbitrary units, written as the shortest decimal that
+  reads back as the stored float32). No timing is kept. A number missing
+  between two kept fixations is a fixation the database does not hold; the
+  order is kept with the gap. Pooling the participants in index order
+  reproduces `<photo-id>.points.json` exactly, which the tool checks before
+  writing. The Andersson et al. photos have no such file.
 
 **Automatic areas**
 
@@ -969,11 +1006,22 @@ was run on the photos.
   states this computation. The
   possible outcomes are labelled as hypotheses; a result that matches
   neither is shown as it is.
-- No measured gaze in the Example section (prompt 068): it exists only for
-  the untouched originals, so it cannot show an edit's effect; a note says
-  so. An edited image never shows a measured layer or fixation points
-  anywhere, and its place line reads "edited for the Example section,
-  predictions only".
+- Measured gaze in the Example section (prompt 077, replacing the rule of
+  prompt 068 that left it out): it exists only for the untouched original A,
+  so it cannot show an edit's effect; a note says so. It is shown only as
+  one participant's **measured gaze path** over A, chosen in "Measured gaze
+  path on A" (off by default; "Participant *n* · *k* fixations" for each of
+  the 48): numbered circles in the measured colour joined in their order,
+  numbered from 1 for the first fixation after the central cross (the
+  database's number minus one), with a dashed line where the database holds
+  no fixation between two. It is labelled "Measured · participant *n* of 48"
+  under the image, the map's tag adds "with measured gaze path", and the
+  caption names the participant, the 48 people, Wilming et al. (2017) and
+  the number of fixations. The pupil size is kept in the file but not
+  shown. No pooled measured map or points, and no group summary of the
+  paths, in this section. An edited image never shows a measured layer,
+  fixation points or a gaze path anywhere, and its place line reads "edited
+  for the Example section, predictions only".
 - View (prompt 067): A, B and the difference B − A of the chosen predicted
   map (blue–orange, as in Contrast, over B) side by side; one column at phone
   width. A "Highlight manipulated area" checkbox, on by default, outlines the

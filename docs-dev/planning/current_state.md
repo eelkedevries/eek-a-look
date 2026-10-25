@@ -55,6 +55,10 @@ wins and the gap is work still to be done.
   people; `city` is optional for this group; the rating page leaves it out.
   Their area files have SAM 3 façade elements and their quality files all
   three measures since prompt 072; no UP-CLIP scores or panel.
+  Since prompt 077 the twelve Zürich photos also have their fixations per
+  participant and in order (`<id>.scanpaths.json`, `build_scanpaths.py`:
+  database index, fixation number, x, y, pupil), shown only in the Example
+  section as one chosen participant's gaze path over image A.
 - Maps and models: `src/maps/saliency-map.ts` (grid, normalise, resample,
   Pearson, difference), `src/render/` (magma and blue–orange tables, heatmap
   drawing), `src/models/` (types, registry, classic salience in a Web Worker
@@ -92,7 +96,9 @@ wins and the gap is work still to be done.
   windows, and the section shows DeepGaze MSDB only (no per-model table).
   Since prompt 075 example 3 compares the transparent frontage
   (`zurich-53-glass-frontage`) with the untouched original; the opaque
-  version is gone, and every A is now an untouched photo.
+  version is gone, and every A is now an untouched photo. Since prompt 077
+  the section has measured gaze again, but only as one chosen participant's
+  gaze path over A ("Measured gaze path on A").
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.
@@ -327,6 +333,10 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   CPU (39 min) with a Hugging Face network secret for `huggingface.co`; then
   the Andersson ground-floor and rhythm measures: ground floor unclear ×4,
   rhythm present (Colosseum), absent (planted façade), unclear ×2)
+- `077_measured_scanpaths.md` (spec 0.58: fixations per participant and in
+  order for the twelve Zürich photos, with pupil size and no timing; pooling
+  reproduces every `points.json` exactly. Shown in the Example section only,
+  as one participant's numbered gaze path over A)
 - `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational
   symmetry S against held-out labels; balanced accuracy on odd CMP A 0.781, R 0.776,
   S 0.613, and R's precision lower, so A is kept and no quality file changed. A
