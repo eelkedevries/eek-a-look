@@ -27,6 +27,16 @@ The fixations come from the study `Baseline` (Onat, Açık, Schumann & König,
 photo shown full-screen at (0, 0). Each observer–trial was recorded from one
 eye only.
 
+The fixations are the eye tracker's, as the authors published them; this
+tool detects none. Wilming et al. (2017, *Methods*): the eye trackers
+"automatically generated fixation location and times from the raw gaze
+location time series … All studies used the SR-research default system
+parameters to define saccades: an acceleration threshold of 8000° per sec²,
+a velocity threshold of 30° per sec, and a deflection threshold of 0.1°.
+Fixations were defined as time periods without saccades." The paper does
+not say why some fixation numbers are missing (see *Fixations per
+participant*), and does not describe the `pupil` field.
+
 The photos used are the street scenes among the 64, by file number: 18, 19,
 22, 23, 24, 27, 30, 33, 42, 46, 51 and 53 (ids `zurich-<n>`). The dataset does
 not name the places; the captions name one only where the photo shows it
@@ -75,8 +85,9 @@ and changes no other file.
 - **What is kept** (owner's choice of 25 October 2026): `index`, the
   database's anonymous `SUBJECTINDEX`, nothing else about the person; and
   per fixation `fix` as recorded, `x` and `y` as in the points file (0-based)
-  and `pupil` as recorded, in the EyeLink's arbitrary units, written as the
-  shortest decimal that reads back as the stored float32. Timing (`start`,
+  and `pupil` as stored, written as the shortest decimal that reads back as
+  the stored float32. The paper does not describe `pupil`; it is presumably
+  the EyeLink's pupil size, in unknown units. Timing (`start`,
   `end`) and `eye` are not kept.
 - **The first fixation.** About half of the trials hold `fix` 1, always on the
   central fixation cross (it starts about 180 ms before the photo appears);
@@ -114,7 +125,7 @@ uv run build_scanpaths.py   # after fetch.py and build.py
 
 The site shows them only in the Example section, as one chosen
 participant's gaze path over image A (`src/views/example.ts`,
-`drawScanpath` in `src/render/fixations.ts`); the pupil size is not shown.
+`drawScanpath` in `src/render/fixations.ts`); `pupil` is not shown.
 
 ## Commands
 

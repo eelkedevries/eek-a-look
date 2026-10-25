@@ -334,7 +334,7 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   the Andersson ground-floor and rhythm measures: ground floor unclear ×4,
   rhythm present (Colosseum), absent (planted façade), unclear ×2)
 - `077_measured_scanpaths.md` (spec 0.58: fixations per participant and in
-  order for the twelve Zürich photos, with pupil size and no timing; pooling
+  order for the twelve Zürich photos, with the `pupil` value and no timing; pooling
   reproduces every `points.json` exactly. Shown in the Example section only,
   as one participant's numbered gaze path over A)
 - `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational

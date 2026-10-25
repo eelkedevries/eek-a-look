@@ -14,7 +14,8 @@ export interface Fixations {
 /**
  * The same fixations per participant, in their order (prompt 077): `<id>.scanpaths.json`. Each fixation is the
  * database's fixation number in the trial (1, on the central cross, is left out), x and y in 0-based photo pixels,
- * and the recorded pupil size in the eye tracker's arbitrary units.
+ * and the database's `pupil` value, which the paper does not describe. The fixations are the eye tracker's, as
+ * published by Wilming et al. (2017); none is detected here.
  */
 export interface Scanpaths {
   photo: string;

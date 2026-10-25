@@ -1,11 +1,13 @@
 """Write the measured fixations of each Zürich photo per participant, in their order.
 
 Reads the same Baseline rows as build.py (Wilming et al., 2017; Onat, Açık,
-Schumann & König, 2014): category 8, the photo's file number, every fixation
-after the first (which starts on the central fixation cross), 1-based pixels
-made 0-based, points outside the image dropped. Per participant (the
+Schumann & König, 2014), whose fixations the eye tracker's software found
+and the authors published; none is detected here. Category 8, the photo's
+file number, every fixation after the first (which starts on the central
+fixation cross), 1-based pixels made 0-based, points outside the image
+dropped. Per participant (the
 database's anonymous SUBJECTINDEX) it keeps, for each fixation in its order,
-the database's fixation number, x, y and pupil size, and writes
+the database's fixation number, x, y and `pupil` value, and writes
 public/precomputed/measured/<id>.scanpaths.json.
 
 Pooling the participants' fixations must reproduce <id>.points.json exactly,

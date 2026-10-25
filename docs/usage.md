@@ -96,8 +96,10 @@ direction of the effect.
 All maps here are predictions. Only image A, the untouched photo, was ever
 shown to people (48 of them, for six seconds each): **Measured gaze path on
 A** draws one participant's fixations over A as numbered circles in their
-order, starting after the central fixation cross; a dashed line marks a
-fixation missing from the dataset. B has no measured gaze, so no
+order, starting after the central fixation cross. The fixations are those
+published by Wilming et al. (2017), found by the eye tracker's own software;
+eek-a-look detects none itself. A dashed line marks a fixation missing from
+the dataset, which does not say why. B has no measured gaze, so no
 measurement shows the effect of an edit. The pooled measured gaze of the
 originals is in the workspace. The links under the images open either
 image there.

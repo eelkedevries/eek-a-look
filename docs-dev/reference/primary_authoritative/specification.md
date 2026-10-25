@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.58 · **Last updated:** 2026-10-25
+**Version:** 0.59 · **Last updated:** 2026-10-25
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -137,9 +137,13 @@ original instead of the opaque version, which is removed with the manifest's
 `reference` field (prompt 075, owner's request of 2026-10-25).
 0.58 adds the measured fixations per participant, in their order, for the
 twelve Zürich photos (`<photo-id>.scanpaths.json`: fixation number, x, y and
-pupil size), and shows one chosen participant's measured gaze path over
+the database's `pupil` value), and shows one chosen participant's measured gaze path over
 image A in the Example section, which until then had no measured gaze
-(prompt 077, owner's request of 2026-10-25).
+(prompt 077, owner's request of 2026-10-25). 0.59 states where the Zürich
+fixations come from (the eye tracker's software, as published by the
+authors; none detected here) in the method text and the Example section, and
+no longer calls `pupil` a pupil size in arbitrary units, which the source
+does not document (owner's request of 2026-10-25).
 
 ## Scope
 
@@ -435,6 +439,16 @@ library.
   free viewing for 6 s, EyeLink II, 45.6 px per degree, photos of 1280 × 960
   shown full-screen. Built by `tools/measured-gaze/` into
   `public/precomputed/measured/<photo-id>.json` (model `'measured'`).
+- Where the fixations come from: the EyeLink recorded the gaze at 500 Hz,
+  and its software found the fixations with SR Research's default
+  parameters (saccades: acceleration 8000°/s², velocity 30°/s, deflection
+  0.1°; fixations are the periods without saccades, Wilming et al. 2017,
+  *Methods*). The authors published these fixations; eek-a-look detects
+  none and only selects, converts and groups them (recipe below). The paper
+  does not say why some fixation numbers are missing, nor what the `pupil`
+  field measures. The method text and the Example section's note say that
+  the fixations are the eye tracker's, as published, and that none is
+  detected here.
 - Recipe, per photo:
   - the fixations of category 8 and that file number, without the first
     fixation of each trial (it starts on the central fixation cross);
@@ -502,9 +516,11 @@ library.
   Per participant: the database's anonymous index (`SUBJECTINDEX`) and
   nothing else about the person. Per fixation: the database's fixation
   number in the trial (`fix`; 1, on the central fixation cross, is left out
-  as in the maps), x and y in 0-based photo pixels, and the pupil size as
-  recorded (EyeLink arbitrary units, written as the shortest decimal that
-  reads back as the stored float32). No timing is kept. A number missing
+  as in the maps), x and y in 0-based photo pixels, and the database's
+  `pupil` value as stored (written as the shortest decimal that reads back
+  as the stored float32). The paper does not describe `pupil`; it is
+  presumably the EyeLink's pupil size, in unknown units, and is not to be
+  read as more until confirmed. No timing is kept. A number missing
   between two kept fixations is a fixation the database does not hold; the
   order is kept with the gap. Pooling the participants in index order
   reproduces `<photo-id>.points.json` exactly, which the tool checks before
@@ -1017,7 +1033,7 @@ was run on the photos.
   no fixation between two. It is labelled "Measured · participant *n* of 48"
   under the image, the map's tag adds "with measured gaze path", and the
   caption names the participant, the 48 people, Wilming et al. (2017) and
-  the number of fixations. The pupil size is kept in the file but not
+  the number of fixations. The `pupil` value is kept in the file but not
   shown. No pooled measured map or points, and no group summary of the
   paths, in this section. An edited image never shows a measured layer,
   fixation points or a gaze path anywhere, and its place line reads "edited
