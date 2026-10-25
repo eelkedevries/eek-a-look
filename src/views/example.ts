@@ -8,7 +8,7 @@ import { models } from '../models/registry';
 import { mapLabel, type ModelSpec } from '../models/types';
 import { BLUE_ORANGE, cssColour } from '../render/colormaps';
 import { drawScanpath } from '../render/fixations';
-import { drawDifference, drawGreyed, drawHeatmap, sharedRange, type HeatRange } from '../render/heatmap';
+import { drawGreyed, drawHeatmap, drawSignedOnScale, sharedRange, type HeatRange } from '../render/heatmap';
 
 /** Content hashes of the data folders, set by vite.config.ts, so a stale cached copy is never used. */
 declare const __COMPARISONS_VERSION__: string;
@@ -19,6 +19,8 @@ const BASE = import.meta.env.BASE_URL;
 const WIDTH = 640;
 /** A difference smaller than this (0.05 percentage points) counts as no change. */
 const NO_CHANGE = 0.0005;
+/** The difference B − A is drawn to ± this multiple of the image average density in every example, so their colours compare (prompt 078). */
+const DIFFERENCE_SCALE = 4;
 
 type MapChoice = 'photo' | (string & {});
 /** The predicted points over A and B (prompt 076): none, MSDB's sampled fixations or DeepGaze3.5-VL's scanpaths. */
@@ -403,12 +405,11 @@ function paintDifference(fig: Figure, loaded: Loaded, model: ModelSpec | undefin
   const colours = fig.colours!;
   colours.root.hidden = !(mapA && mapB);
   if (mapA && mapB) {
-    const top = drawDifference(fig.heat, difference(mapB, mapA), WIDTH, h);
-    const cells = mapA.width * mapA.height;
+    drawSignedOnScale(fig.heat, difference(mapB, mapA), WIDTH, h, DIFFERENCE_SCALE / (mapA.width * mapA.height));
     const [low, mid, high] = colours.ticks;
-    low.textContent = `−${times(top * cells)}`;
+    low.textContent = `−${times(DIFFERENCE_SCALE)}`;
     mid.textContent = '0';
-    high.textContent = `+${times(top * cells)}`;
+    high.textContent = `+${times(DIFFERENCE_SCALE)}`;
     const [keyA, keyB] = colours.key;
     keyA.textContent = `Blue: higher in ${loaded.text.labelA}`;
     keyB.textContent = `Orange: higher in ${loaded.text.labelB}`;
@@ -652,7 +653,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       const path = scanpaths?.participants.find((p) => p.index === participant);
       caption.textContent = [
         model
-          ? 'A and B use one colour scale, so their colours compare: brighter = higher predicted gaze density. Difference B − A, over B: orange where the density is higher in B, blue where it is higher in A; the colour bar is in multiples of the image average density.'
+          ? `A and B use one colour scale, so their colours compare: brighter = higher predicted gaze density${range && mapA ? `; the brightest yellow means ${times(range.top * mapA.width * mapA.height)} the image average density or more` : ''}. Difference B − A, over B: orange where the density is higher in B, blue where it is higher in A; the colour bar is in multiples of the image average density and is the same for all three examples, so a faint difference is a small one.`
           : 'Choose DG MSDB to see where people are predicted to look.',
         {
           none: '',

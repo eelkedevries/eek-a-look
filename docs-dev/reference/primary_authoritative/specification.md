@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.60 · **Last updated:** 2026-10-25
+**Version:** 0.61 · **Last updated:** 2026-10-25
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -153,6 +153,11 @@ manipulated area among the first seven fixations after the start, for A and
 B, and for the measured paths of 0.58 on A within their first 3 s (prompt
 076, owner's answers and decisions of 2026-10-25; the measured share amends
 0.58's "no group summary").
+0.61 draws the Example section's difference B − A on one fixed scale, ±4×
+the image average density, for all three examples, with colour and opacity
+linear in the magnitude and no colour floor, so a small difference looks
+small; the caption names the value of A and B's brightest colour (prompt
+078, owner's request of 2026-10-25).
 
 ## Scope
 
@@ -1137,13 +1142,16 @@ was run on the photos.
   width. A "Highlight manipulated area" checkbox, on by default, outlines the
   manipulated area on all three. Each image opens in the workspace, where
   every view works on it.
-- Colour scales (prompts 068, 070). A and B are drawn on one scale, from the
-  lower minimum of the two maps to the 99th percentile of both (values above
-  it saturate), so their colours compare; they have no colour bar. The
-  difference is drawn on a scale symmetric around zero to the 99th
-  percentile of its magnitude, with a colour bar whose ticks are densities as
-  multiples of the image average (1 / number of grid cells) and a key: blue
-  = higher in A, orange = higher in B, each named by its condition.
+- Colour scales (prompts 068, 070, 078). A and B are drawn on one scale, from
+  the lower minimum of the two maps to the 99th percentile of both (values
+  above it saturate), so their colours compare; they have no colour bar, and
+  the caption names the top of the scale as a multiple of the image average.
+  The difference is drawn on one fixed scale symmetric around zero, ±4× the
+  image average density (1 / number of grid cells), the same for all three
+  examples; colour and opacity rise linearly with the magnitude from zero,
+  and values beyond the scale saturate. Its colour bar's ticks show that
+  scale, with a key: blue = higher in A, orange = higher in B, each named by
+  its condition.
 
 **Rating page** (prompt 059)
 

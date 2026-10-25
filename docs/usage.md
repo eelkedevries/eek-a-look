@@ -89,7 +89,8 @@ Choose one to see its question, background, conditions and two possible
 outcomes. Images A and B and the difference between them appear side by side
 for DeepGaze MSDB, the only model shown here; A and B share one colour scale. In the difference,
 orange marks where the predicted gaze density is higher in B and blue where
-it is higher in A. "Highlight manipulated area" outlines the area that is
+it is higher in A, on one scale for all three examples, so a faint colour
+means a small difference. "Highlight manipulated area" outlines the area that is
 measured. The predicted gaze density in that area is
 summed into one value for A and one for B, and the contrast B − A shows the
 direction of the effect.

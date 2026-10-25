@@ -84,6 +84,23 @@ export function drawDifference(target: HTMLCanvasElement, field: SignedField, wi
   return top;
 }
 
+/**
+ * Draws a signed field on a fixed scale symmetric around zero (±top), so fields drawn with the same top compare.
+ * Colour and alpha rise linearly with the magnitude from zero; values beyond the scale saturate.
+ */
+export function drawSignedOnScale(target: HTMLCanvasElement, field: SignedField, width: number, height: number, top: number, lut: Lut = BLUE_ORANGE): void {
+  const rgba = new Uint8ClampedArray(field.width * field.height * 4);
+  for (let i = 0; i < field.data.length; i++) {
+    const t = Math.max(-1, Math.min(field.data[i] / top, 1));
+    const k = Math.round(((t + 1) / 2) * 255) * 3;
+    rgba[i * 4] = lut[k];
+    rgba[i * 4 + 1] = lut[k + 1];
+    rgba[i * 4 + 2] = lut[k + 2];
+    rgba[i * 4 + 3] = Math.round(235 * Math.abs(t));
+  }
+  paint(target, width, height, rgba, field.width, field.height);
+}
+
 /** Draws the photo in grey (Rec. 709 luminance, dimmed), so heatmap colours do not mix with the photo's own. */
 export function drawGreyed(target: HTMLCanvasElement, image: CanvasImageSource, width: number, height: number, dim = 0.75): void {
   target.width = width;
