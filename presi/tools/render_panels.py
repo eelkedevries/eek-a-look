@@ -204,6 +204,8 @@ def main() -> None:
     save(heat_panel(grey_ref, meas, rng, points=pts["points"]), out / f"{args.example}-measured.png")
     d_mp, top_mp = diff_panel(grey_ref, meas - mref)
     save(d_mp, out / f"{args.example}-measured-minus-msdb.png")
+    d_pm, _ = diff_panel(grey_ref, mref - meas)
+    save(d_pm, out / f"{args.example}-msdb-minus-measured.png")
     if ref_id != a_id:
         save(heat_panel(grey_ref, mref, rng), out / f"{args.example}-msdb-ref.png")
 
