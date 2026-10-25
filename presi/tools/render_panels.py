@@ -185,28 +185,51 @@ def main() -> None:
         rgba, top = diff_rgba(field, blue_orange)
         return over(over(base, upscale_rgba(rgba, size)), ol), top
 
-    # sharedRange as on the site, but over all three maps, so one colour is one density on every heat panel.
-    maps = [meas, ma, mb]
+    # Measured gaze exists only for the untouched photograph (the reference); when A is itself an
+    # edit (glazing), the measured panels are compared with the model's map of the reference.
+    if ref_id == a_id:
+        mref, grey_ref = ma, grey_a
+    else:
+        mref = load_map(pre / "deepgaze-msdb" / f"{ref_id}.json")
+        grey_ref = greyed(repo / "public/examples" / f"{ref_id}.jpg", size)
+
+    # sharedRange as on the site, but over every heat map on the slide, so one colour is one density everywhere.
+    maps = [meas, mref, ma, mb]
     rng = (min(m.min() for m in maps), percentile(np.concatenate([m.ravel() for m in maps]), 0.99))
 
     save(heat_panel(grey_a, ma, rng), out / f"{args.example}-msdb-a.png")
     save(heat_panel(grey_b, mb, rng), out / f"{args.example}-msdb-b.png")
     d_ba, top_ba = diff_panel(grey_b, mb - ma)
     save(d_ba, out / f"{args.example}-msdb-diff.png")
-    save(heat_panel(grey_a, meas, rng, points=pts["points"]), out / f"{args.example}-measured.png")
-    d_mp, top_mp = diff_panel(grey_a, meas - ma)
+    save(heat_panel(grey_ref, meas, rng, points=pts["points"]), out / f"{args.example}-measured.png")
+    d_mp, top_mp = diff_panel(grey_ref, meas - mref)
     save(d_mp, out / f"{args.example}-measured-minus-msdb.png")
+    if ref_id != a_id:
+        save(heat_panel(grey_ref, mref, rng), out / f"{args.example}-msdb-ref.png")
 
-    m = np.asarray(Image.fromarray(mask * 255).resize(meas.shape[::-1], Image.BOX)) / 255
-    share = lambda x: float((x * m).sum())
-    r = float(np.corrcoef(meas.ravel(), ma.ravel())[0, 1])
+    def resample(src: np.ndarray, w: int, h: int) -> np.ndarray:
+        """src/maps/saliency-map.ts resample(): bilinear, cell centres aligned, renormalised."""
+        sh, sw = src.shape
+        fy = np.clip((np.arange(h) + 0.5) * sh / h - 0.5, 0, sh - 1)
+        fx = np.clip((np.arange(w) + 0.5) * sw / w - 0.5, 0, sw - 1)
+        y0, x0 = np.floor(fy).astype(int), np.floor(fx).astype(int)
+        y1, x1 = np.minimum(y0 + 1, sh - 1), np.minimum(x0 + 1, sw - 1)
+        wy, wx = (fy - y0)[:, None], (fx - x0)[None, :]
+        top = src[y0][:, x0] * (1 - wx) + src[y0][:, x1] * wx
+        bottom = src[y1][:, x0] * (1 - wx) + src[y1][:, x1] * wx
+        out = top * (1 - wy) + bottom * wy
+        return out / out.sum()
+
+    # As attentionShares() in src/maps/areas.ts: the map upsampled to the mask, summed inside it.
+    share = lambda x: float(resample(x, mask.shape[1], mask.shape[0])[mask.astype(bool)].sum())
+    r = float(np.corrcoef(meas.ravel(), mref.ravel())[0, 1])
     stats = {
         "example": args.example, "a": a_id, "b": b_id, "reference": ref_id,
         "observers": pts["observers"], "fixations": len(pts["points"]),
-        "share_in_region": {"measured": share(meas), "msdb_a": share(ma), "msdb_b": share(mb)},
+        "share_in_region": {"measured": share(meas), "msdb_reference": share(mref), "msdb_a": share(ma), "msdb_b": share(mb)},
         "region_share_of_image": float(mask.mean()),
-        "pearson_measured_msdb_a": r,
-        "diff_scale_top": {"b_minus_a": top_ba, "measured_minus_a": top_mp},
+        "pearson_measured_msdb_reference": r,
+        "diff_scale_top": {"b_minus_a": top_ba, "measured_minus_reference": top_mp},
     }
     (out / f"{args.example}-stats.json").write_text(json.dumps(stats, indent=1))
     print(json.dumps(stats, indent=1))
