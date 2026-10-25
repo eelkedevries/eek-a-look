@@ -360,7 +360,11 @@ function paint(fig: Figure, loaded: Loaded, condition: Condition, model: ModelSp
     fig.photo.width = WIDTH;
     fig.photo.height = h;
     fig.photo.getContext('2d')!.drawImage(condition.bitmap, 0, 0, WIDTH, h);
-  } else drawGreyed(fig.photo, condition.bitmap, WIDTH, h);
+  } else {
+    // A recolouring keeps the lightness, so in grey the edit would vanish: its area keeps its colour (prompt 080).
+    const area = condition.photo.recolour ? areaMask(loaded) : undefined;
+    drawGreyed(fig.photo, condition.bitmap, WIDTH, h, undefined, area && { mask: area.mask, ...loaded.maskSize });
+  }
 
   const map = model ? condition.maps.get(model.id) : undefined;
   fig.heat.hidden = !map;

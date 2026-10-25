@@ -145,20 +145,32 @@ export function differenceGradientCss(steps = 24): string {
   );
 }
 
-/** Draws the photo in grey (Rec. 709 luminance, dimmed), so heatmap colours do not mix with the photo's own. */
-export function drawGreyed(target: HTMLCanvasElement, image: CanvasImageSource, width: number, height: number, dim = 0.75): void {
+/** A mask on a grid of its own, such as an area file's: 1 inside the area. */
+export interface KeepColour {
+  mask: Uint8Array;
+  width: number;
+  height: number;
+}
+
+/**
+ * Draws the photo in grey (Rec. 709 luminance, dimmed), so heatmap colours do not mix with the photo's own. Inside
+ * `keep` the photo keeps its colour, dimmed alike: an edit that changes only colour would be invisible in grey.
+ */
+export function drawGreyed(target: HTMLCanvasElement, image: CanvasImageSource, width: number, height: number, dim = 0.75, keep?: KeepColour): void {
   target.width = width;
   target.height = height;
   const context = target.getContext('2d')!;
   context.imageSmoothingQuality = 'high';
-  context.drawImage(greyCopy(image, dim), 0, 0, width, height);
+  context.drawImage(greyCopy(image, dim, keep), 0, 0, width, height);
 }
 
-// Each photo is greyed once, at full size; every view then scales that copy.
-const greyCache = new WeakMap<object, { dim: number; canvas: HTMLCanvasElement }>();
+// Each photo is greyed once per mask, at full size; every view then scales that copy.
+const greyCache = new WeakMap<object, Map<Uint8Array | null, { dim: number; canvas: HTMLCanvasElement }>>();
 
-function greyCopy(image: CanvasImageSource, dim: number): HTMLCanvasElement {
-  const cached = greyCache.get(image);
+function greyCopy(image: CanvasImageSource, dim: number, keep?: KeepColour): HTMLCanvasElement {
+  const variants = greyCache.get(image) ?? new Map();
+  greyCache.set(image, variants);
+  const cached = variants.get(keep?.mask ?? null);
   if (cached?.dim === dim) return cached.canvas;
   const { width, height } = image as { width: number; height: number };
   const canvas = document.createElement('canvas');
@@ -168,10 +180,18 @@ function greyCopy(image: CanvasImageSource, dim: number): HTMLCanvasElement {
   context.drawImage(image, 0, 0);
   const pixels = context.getImageData(0, 0, width, height);
   const d = pixels.data;
-  for (let i = 0; i < d.length; i += 4) {
-    d[i] = d[i + 1] = d[i + 2] = dim * (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]);
+  for (let y = 0; y < height; y++) {
+    const my = keep ? Math.min(keep.height - 1, Math.floor((y * keep.height) / height)) * keep.width : 0;
+    for (let x = 0; x < width; x++) {
+      const i = (y * width + x) * 4;
+      if (keep && keep.mask[my + Math.min(keep.width - 1, Math.floor((x * keep.width) / width))]) {
+        d[i] *= dim;
+        d[i + 1] *= dim;
+        d[i + 2] *= dim;
+      } else d[i] = d[i + 1] = d[i + 2] = dim * (0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]);
+    }
   }
   context.putImageData(pixels, 0, 0);
-  greyCache.set(image, { dim, canvas });
+  variants.set(keep?.mask ?? null, { dim, canvas });
   return canvas;
 }

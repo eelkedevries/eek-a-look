@@ -23,6 +23,8 @@ export interface ExamplePhoto {
   /** Edited images of the Example section only (prompt 058): the photo it was edited from, and what was changed. */
   editOf?: string;
   condition?: string;
+  /** Edited images only (prompt 080): the edit changes colour but hardly lightness, so heatmaps show the edited area in colour. */
+  recolour?: boolean;
 }
 
 /** The Example section's edited images and its three comparisons, each of image `a` against image `b`. */

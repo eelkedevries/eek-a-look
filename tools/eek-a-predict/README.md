@@ -23,6 +23,8 @@ writes fifteen 1024 × 768 JPEGs, five per example:
 | `<example>-contrast-manipulated-original.jpg` | edited minus original, both predicted |
 
 The three heatmaps of an example share one colour scale, so they compare. The
-contrasts use the site's fixed difference scale. Every figure outlines the
-edited area. The photographs and scanpath figures of the page are not drawn
-here.
+contrasts use the site's fixed difference scale. As in the Example section, an
+edited image marked `recolour` in `public/examples/comparisons.json` keeps the
+edited area in colour on its heatmap, since a recolouring vanishes in grey.
+Every figure outlines the edited area. The photographs and scanpath figures of
+the page are not drawn here.

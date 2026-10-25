@@ -2,9 +2,10 @@
 import { decodeRle } from '../../src/maps/areas';
 import { difference, type SaliencyMap } from '../../src/maps/saliency-map';
 import { decodeMap, type PrecomputedMap } from '../../src/models/deepgaze';
+import type { ComparisonManifest } from '../../src/examples';
 import type { Fixations } from '../../src/models/measured';
 import { drawFixations } from '../../src/render/fixations';
-import { drawDifference, drawGreyed, drawHeatmap, sharedRange, type HeatRange } from '../../src/render/heatmap';
+import { drawDifference, drawGreyed, drawHeatmap, sharedRange, type HeatRange, type KeepColour } from '../../src/render/heatmap';
 import { drawOutline } from '../../src/views/example';
 
 const BASE = import.meta.env.BASE_URL;
@@ -45,16 +46,20 @@ interface Area {
   regions: { rle: number[] }[];
 }
 
-async function outline(example: string): Promise<HTMLCanvasElement> {
+async function editedArea(example: string): Promise<KeepColour> {
   const area = await json<Area>(`precomputed/comparisons/${example}.json`);
+  return { mask: decodeRle(area.regions[0].rle, area.width * area.height), width: area.width, height: area.height };
+}
+
+function outline(area: KeepColour): HTMLCanvasElement {
   const c = document.createElement('canvas');
-  drawOutline(c, decodeRle(area.regions[0].rle, area.width * area.height), area.width, area.height);
+  drawOutline(c, area.mask, area.width, area.height);
   return c;
 }
 
-function heat(bitmap: ImageBitmap, m: SaliencyMap, range?: HeatRange): HTMLCanvasElement[] {
+function heat(bitmap: ImageBitmap, m: SaliencyMap, range?: HeatRange, keep?: KeepColour): HTMLCanvasElement[] {
   const grey = canvas();
-  drawGreyed(grey, bitmap, W, H);
+  drawGreyed(grey, bitmap, W, H, undefined, keep);
   const layer = canvas();
   drawHeatmap(layer, m, W, H, undefined, range);
   return [grey, layer];
@@ -62,15 +67,19 @@ function heat(bitmap: ImageBitmap, m: SaliencyMap, range?: HeatRange): HTMLCanva
 
 /** The figures of one example: measured and predicted maps, and the two contrasts, all with the edited area outlined. */
 async function render(example: string, original: string, manipulated: string): Promise<Record<string, string>> {
-  const [bitmapA, bitmapB, measured, predictedA, predictedB, points, line] = await Promise.all([
+  const [bitmapA, bitmapB, measured, predictedA, predictedB, points, area, manifest] = await Promise.all([
     photo(original),
     photo(manipulated),
     map('measured', original),
     map('deepgaze-msdb', original),
     map('deepgaze-msdb', manipulated),
     json<Fixations>(`precomputed/measured/${original}.points.json`),
-    outline(example),
+    editedArea(example),
+    json<ComparisonManifest>('examples/comparisons.json'),
   ]);
+  const line = outline(area);
+  // As in the Example section (prompt 080): a recolouring would vanish in grey, so its area keeps its colour.
+  const keep = manifest.images.find((image) => image.id === manipulated)?.recolour ? area : undefined;
   // One heatmap scale per example for the measured map and both predictions, so all three compare.
   const range = sharedRange([measured, predictedA, predictedB]);
   const dots = canvas();
@@ -85,7 +94,7 @@ async function render(example: string, original: string, manipulated: string): P
   return {
     measured: flatten([...heat(bitmapA, measured, range), [dots, DOT_OPACITY], line]),
     'predicted-original': flatten([...heat(bitmapA, predictedA, range), line]),
-    'predicted-manipulated': flatten([...heat(bitmapB, predictedB, range), line]),
+    'predicted-manipulated': flatten([...heat(bitmapB, predictedB, range, keep), line]),
     // Orange where the prediction is higher, blue where people looked more, as the page's key says.
     'contrast-measured-predicted': contrast(bitmapA, difference(predictedA, measured)),
     'contrast-manipulated-original': contrast(bitmapB, difference(predictedB, predictedA)),

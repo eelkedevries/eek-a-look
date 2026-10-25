@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.62 · **Last updated:** 2026-10-25
+**Version:** 0.63 · **Last updated:** 2026-10-25
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -167,6 +167,10 @@ difference on the site, the Contrast view included, on one fixed scale of
 table toned so both halves weigh the same over the photo; colour bars that
 show what the image shows; and the same scales for the eek-a-predict figures
 (prompt 079, owner's request of 2026-10-25).
+0.63 shows the edited area of a recoloured image (`recolour` in
+`comparisons.json`: example 1's blue-teal block, which keeps the stone's
+lightness) in colour on its heatmaps, since in grey the edit was invisible
+(prompt 080, owner's request of 2026-10-25).
 
 ## Scope
 
@@ -1241,7 +1245,11 @@ was run on the photos.
 - Heatmaps use matplotlib's **inferno** (perceptually uniform, readable with
   colour blindness, brightest at the peaks), drawn over a **greyed copy of the
   photo** (Rec. 709 luminance × 0.75), so heatmap colours do not mix with the
-  photo's own (for example red brick). The table is indexed from 0.35 and
+  photo's own (for example red brick). Exception (prompt 080): on the heatmaps
+  of an edited image marked `recolour` in `comparisons.json`, the edited area
+  keeps its colour, dimmed by the same 0.75, because a recolouring that keeps
+  the lightness vanishes in grey; its difference maps stay grey, so the
+  photo's colour cannot be mistaken for the blue of the difference. The table is indexed from 0.35 and
   alpha = 0.9·t^0.8. In the overlay, the grey copy fades with the slider, so at
   0 % the photo shows in colour. Chosen by the owner on 2026-10-18 (option C),
   after research: Borland and Taylor (2007); Liu and Heer (CHI 2018); Crameri,

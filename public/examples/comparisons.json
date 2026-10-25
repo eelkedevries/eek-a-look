@@ -4,6 +4,7 @@
       "id": "zurich-42-entrance-block",
       "editOf": "zurich-42",
       "condition": "Blue-teal entrance block",
+      "recolour": true,
       "area": "Zürich",
       "city": "Zürich",
       "title": "Street corner with the stone block around the entrance in blue-teal",

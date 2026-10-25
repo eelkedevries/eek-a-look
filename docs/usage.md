@@ -90,7 +90,8 @@ with AI image editing, a low hedge along a building base and a transparent,
 lit ground-floor frontage. Each is compared with the untouched photo.
 Choose one to see its question, background, conditions and two possible
 outcomes. Images A and B and the difference between them appear side by side
-for DeepGaze MSDB, the only model shown here; A and B share one colour scale. In the difference,
+for DeepGaze MSDB, the only model shown here; A and B share one colour scale. Heatmaps are drawn over the photo in grey, but
+the recoloured entrance block of the first example keeps its colour on B, since in grey the edit would not show. In the difference,
 orange marks where the predicted gaze density is higher in B and blue where
 it is higher in A, on the same scale as every other difference on the site,
 so a faint colour means a small difference. "Highlight manipulated area" outlines the area that is

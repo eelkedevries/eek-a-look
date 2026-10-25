@@ -368,6 +368,9 @@ Later work is listed in `docs-dev/plan.md` (*Later*).
   orange half of the blue–orange table toned; colour bars as drawn; 216
   heatmap and 28 difference settings measured, two blind reviews; the
   eek-a-predict figures regenerated with the same code)
+- `080_recoloured_area_in_colour.md` (spec 0.63: the recoloured entrance
+  block keeps its colour on its heatmaps, on eek-a-look, eek-a-predict and
+  presi-slides 11–12; in grey the edit was invisible)
 - `065_rhythm_rectified.md` (no spec change: rectified spacing R and translational
   symmetry S against held-out labels; balanced accuracy on odd CMP A 0.781, R 0.776,
   S 0.613, and R's precision lower, so A is kept and no quality file changed. A

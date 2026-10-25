@@ -81,6 +81,7 @@ for (const [index, image] of comparisons.images.entries()) {
   if (!source) errors.push(`${where}: editOf ${image.editOf} is not an example photo`);
   else if (source.width !== image.width || source.height !== image.height) errors.push(`${where}: not the size of ${image.editOf}`);
   if (image.measured !== undefined || image.study !== undefined) errors.push(`${where}: an edited image cannot have measured gaze or a study`);
+  if (image.recolour !== undefined && typeof image.recolour !== 'boolean') errors.push(`${where}: recolour must be true or false`);
   for (const file of [image.file, image.file.replace(/\.jpg$/, '-thumb.jpg')]) {
     try {
       await access(join(DIR, file));
