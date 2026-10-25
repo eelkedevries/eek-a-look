@@ -28,7 +28,7 @@ export interface ExamplePhoto {
 /** The Example section's edited images and its three comparisons, each of image `a` against image `b`. */
 export interface ComparisonManifest {
   images: ExamplePhoto[];
-  examples: { id: string; a: string; b: string; reference?: string }[];
+  examples: { id: string; a: string; b: string }[];
 }
 
 const EXAMPLES_URL = `${import.meta.env.BASE_URL}examples/`;

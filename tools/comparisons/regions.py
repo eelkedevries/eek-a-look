@@ -10,9 +10,8 @@ comparison is over identical pixels:
   blueness between A and B;
 - greenery: the changed pixels themselves along the building base (the added
   hedge, prompt 071b), closed, filled and slightly dilated;
-- glazing: the changed pixels between the opaque and the transparent version
-  (the whole ground-floor frontage, prompt 071b), closed, filled and slightly
-  dilated.
+- glazing: the changed pixels between the original and the transparent
+  frontage (prompts 071b, 075), closed, filled and slightly dilated.
 
 Writes public/precomputed/comparisons/<example>.json (masks as row-major run
 lengths at 640 × 480, as in the area files) and check overlays in .cache/.
@@ -48,7 +47,7 @@ RECOLOUR_THRESHOLD = 15
 REGIONS = {
     "entrance": [{"id": "entrance", "label": "Door and surround", "box": (300, 600, 580, 850), "shape": "frame"}],
     "greenery": [{"id": "planting", "label": "Added hedge", "box": (0, 560, 1280, 960), "shape": "mask"}],
-    "glazing": [{"id": "frontage", "label": "Ground-floor frontage", "box": (180, 330, 1280, 760), "shape": "mask"}],
+    "glazing": [{"id": "frontage", "label": "New glazing", "box": (180, 330, 1280, 760), "shape": "mask"}],
 }
 # Prompt 073: the Example section shows DeepGaze MSDB only; measured gaze exists for untouched originals.
 LAYERS = ["measured", "deepgaze-msdb"]
@@ -133,7 +132,7 @@ def resample(p: np.ndarray, w: int, h: int) -> np.ndarray:
 
 
 def summary(example: dict, regions: list[tuple[dict, np.ndarray]]) -> None:
-    ids = [example["a"], example["b"]] + ([example["reference"]] if "reference" in example else [])
+    ids = [example["a"], example["b"]]
     print(f"\n{example['id']}: share of attention in each region, %  ({' | '.join(ids)})")
     for spec, mask in regions:
         for layer in LAYERS:

@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.56 · **Last updated:** 2026-10-25
+**Version:** 0.57 · **Last updated:** 2026-10-25
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -132,6 +132,9 @@ DeepGaze MSDB in the Example section, without the per-model table (prompt
 adds a bright, colourful interior, so transparency is not the only
 difference; A's panels are lit more brightly than the shaded original; the
 far-left bay is not edited (prompt 074, owner's request of 2026-10-25).
+0.57 compares the transparent frontage of example 3 with the untouched
+original instead of the opaque version, which is removed with the manifest's
+`reference` field (prompt 075, owner's request of 2026-10-25).
 
 ## Scope
 
@@ -373,9 +376,9 @@ interface ExamplePhoto {
 The Example section's manifest is `public/examples/comparisons.json`:
 `images`, the edited images as `ExamplePhoto` entries with `editOf` and
 `condition` and without `measured` (same size as the photo they come from),
-and `examples`, each `{ id, a, b, reference? }` naming the two images
-compared and, where neither is the untouched photo, that photo. Edited images
-are not in the library.
+and `examples`, each `{ id, a, b }` naming the two images compared (since
+prompt 075, A is always the untouched photo). Edited images are not in the
+library.
 
 ## Domain rules
 
@@ -908,12 +911,11 @@ was run on the photos.
   with the whole rusticated stone block around the entrance in blue-teal,
   prompt 071), greenery (zurich-33 against a low, trimmed hedge in front of
   the grey base of the blocks, below the ground-floor windows, which stay
-  visible; prompt 073) and glazing (the ground-floor frontage of
-  zurich-53 either side of the red door, all but the far-left bay, as opaque
-  grey panels against clear glass with a lit shop interior; both edited).
-  The interior also adds brightness, colour and detail, so transparency is
-  not the only difference, and the panels are lit more brightly than the
-  shaded original (prompt 074). All images are
+  visible; prompt 073) and glazing (zurich-53 against the same photo with
+  the ground-floor frontage either side of the red door, all but the
+  far-left bay, as clear glass with a lit shop interior; prompt 075). The
+  interior also adds brightness, colour and detail, so transparency is not
+  the only difference (prompt 074). All images are
   1280 × 960 px and share one grid and one set of masks.
 - Greenery and glazing images (prompt 071b; they replaced the owner's low
   planting and three window bays): FLUX.1 Kontext [dev] edits of the
@@ -921,7 +923,7 @@ was run on the photos.
   `tools/comparisons/edits/edits.json`), registered to the original by an
   affine fit to block matches (residuals ≤ 1.3 px) and used only inside the
   change mask (RGB difference inside a search box, cleaned and dilated,
-  softened by 3 px; one shared mask for the two glazing versions) by
+  softened by 3 px) by
   `tools/comparisons/composite.py`. Outside it every pixel is the
   original's, apart from JPEG re-encoding noise.
 - Entrance image B (prompt 071) is made by rule from the original by
@@ -939,15 +941,17 @@ was run on the photos.
   section opens. The automatic areas of the edited images, used in the
   workspace only, come from `tools/areas/build.py` (categories and ground
   floor) with SAM 3 façade elements by `elements.py --apply --only-missing`
-  (prompt 072); the hedge image of prompt 073 has no area file and no
-  DeepGaze IIE map yet.
+  (prompt 072; for the hedge and glass images of prompts 073 and 075, added
+  in prompt 075). Every edited image also has a DeepGaze IIE map for the
+  workspace.
 - **Manipulated area** (prompt 067): the one area of interest of each
   comparison, the same pixels in A and B (`tools/comparisons/regions.py`,
   masks at 640 × 480 in `public/precomputed/comparisons/<id>.json`).
   Entrance: the door and its recoloured surround, i.e. the bounding rectangle
   of the recoloured stone found from the change in blueness between A and B
-  (3.4% of the image). Greenery (the added hedge) and glazing (the
-  ground-floor frontage): where A and B differ, from the pixel difference
+  (3.4% of the image). Greenery (the added hedge) and glazing (the new
+  glass panes; the red door and the frames between the panes barely change
+  and fall outside it): where A and B differ, from the pixel difference
   inside a search box set around the described change. No
   other area (automatic areas, the lower third) is measured in this section.
 - Each comparison is described in a fixed format (prompt 066): **Question**

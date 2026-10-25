@@ -83,8 +83,8 @@ Choose a view above the photo; the inspector on the right changes with it.
 
 **Example** in the top bar opens three illustrations on Zürich photos: the
 stone block around an entrance in blue-teal (recoloured by rule), and, made
-with AI image editing, a low hedge along a building base and an opaque
-against a transparent ground-floor frontage.
+with AI image editing, a low hedge along a building base and a transparent,
+lit ground-floor frontage. Each is compared with the untouched photo.
 Choose one to see its question, background, conditions and two possible
 outcomes. Images A and B and the difference between them appear side by side
 for DeepGaze MSDB, the only model shown here; A and B share one colour scale. In the difference,

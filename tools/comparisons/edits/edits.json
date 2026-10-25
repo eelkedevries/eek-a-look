@@ -14,13 +14,8 @@
       "prompt": "Add a low, neatly trimmed hedge of dense green shrubs, about 1 metre tall, along the entire base of all the apartment buildings, directly in front of the grey plinth with the ventilation grilles. The hedge stays below the ground-floor windows, which remain fully visible. Keep the buildings, windows, lawn, paths, sky, lighting and camera view exactly the same."
     },
     {
-      "file": "zurich-53-opaque-frontage.webp",
-      "source": "https://eelkedevries.com/eek-a-look/examples/zurich-53.jpg",
-      "seed": 11,
-      "prompt": "Make the whole ground-floor frontage under the canopy, from the red door to the right edge of the image, one continuous row of floor-to-ceiling opaque matt grey panels, with no glass and nothing visible behind them. Keep the red door, the canopy, the upper floors, the walkway, the shadows and the camera view exactly the same."
-    },
-    {
-      "file": "zurich-53-transparent-frontage.webp",
+      "file": "zurich-53-glass-frontage.webp",
+      "note": "prompt 075: the 071b output (then zurich-53-transparent-frontage.webp), now composited with its own mask; the opaque version was removed",
       "source": "https://eelkedevries.com/eek-a-look/examples/zurich-53.jpg",
       "seed": 11,
       "prompt": "Make the whole ground-floor frontage under the canopy, from the red door to the right edge of the image, one continuous row of floor-to-ceiling clear glass shop windows showing a bright, lit shop interior with shelves and goods. Keep the red door, the canopy, the upper floors, the walkway, the shadows and the camera view exactly the same."

@@ -90,7 +90,7 @@ for (const [index, image] of comparisons.images.entries()) {
   }
 }
 for (const example of comparisons.examples) {
-  for (const key of ['a', 'b', 'reference']) {
+  for (const key of ['a', 'b']) {
     if (example[key] !== undefined && !ids.has(example[key])) errors.push(`comparison ${example.id}: ${key} ${example[key]} is unknown`);
   }
 }

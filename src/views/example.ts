@@ -43,8 +43,6 @@ interface Loaded {
   text: ComparisonText;
   a: Condition;
   b: Condition;
-  /** The untouched original, when neither A nor B is (glazing); only linked. */
-  reference?: ExamplePhoto;
   regions: Area[];
   maskSize: { width: number; height: number };
 }
@@ -250,7 +248,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     const entry = manifest.examples.find((e) => e.id === text.id);
     const a = entry && photoById(entry.a);
     const b = entry && photoById(entry.b);
-    return entry && a && b ? [{ text, entry, a, b, reference: entry.reference ? photoById(entry.reference) : undefined }] : [];
+    return entry && a && b ? [{ text, entry, a, b }] : [];
   });
 
   const cardLinks = examples.map(({ text, a, b }) => {
@@ -296,7 +294,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
         if (!regionFile) throw new Error('The regions could not be loaded.');
         const length = regionFile.width * regionFile.height;
         const regions: Area[] = regionFile.regions.map((r) => ({ ...r, group: 'element', mask: decodeRle(r.rle, length) }));
-        return { text: found.text, a, b, reference: found.reference, regions, maskSize: { width: regionFile.width, height: regionFile.height } };
+        return { text: found.text, a, b, regions, maskSize: { width: regionFile.width, height: regionFile.height } };
       })();
       pending.catch(() => cache.delete(id));
       cache.set(id, pending);
@@ -403,7 +401,6 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       return button;
     };
     links.append('Open in the workspace: ', workspaceLink(loaded.a.photo, text.labelA), ' · ', workspaceLink(loaded.b.photo, text.labelB));
-    if (loaded.reference) links.append(' · ', workspaceLink(loaded.reference, 'Untouched original'));
     const credit = el('p', 'credit');
     const source = loaded.a.photo.editOf ?? loaded.a.photo.id;
     credit.textContent = `Photo: ${photoById(source)?.title ?? source}, Zürich; Wilming et al. (2017), CC0 1.0. ${[loaded.a.photo, loaded.b.photo]

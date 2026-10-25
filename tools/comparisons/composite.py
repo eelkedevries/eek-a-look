@@ -11,8 +11,8 @@ seeds in edits/edits.json) is not used as it is. For each edit:
 2. change mask: the mean absolute RGB difference between the registered edit
    and the original, blurred (4 px) and above 20, inside a search box set by
    hand around the requested change, closed, filled, cleared of patches
-   under 2,000 px and dilated by 6 px; the two glazing versions share the
-   union of their masks, so they differ from each other only inside it;
+   under 2,000 px and dilated by 6 px (images listed in one group would
+   share the union of their masks; since prompt 075 every group has one);
 3. composite: the registered edit inside the mask, softened by 3 px, and the
    original's own pixels everywhere else.
 
@@ -46,10 +46,7 @@ FEATHER = 3.0
 # Images listed in one group share one mask.
 GROUPS = [
     {"zurich-33-low-hedge": ("zurich-33", "zurich-33-low-hedge.webp", (0, 560, 1280, 960))},
-    {
-        "zurich-53-opaque-frontage": ("zurich-53", "zurich-53-opaque-frontage.webp", (180, 330, 1280, 760)),
-        "zurich-53-transparent-frontage": ("zurich-53", "zurich-53-transparent-frontage.webp", (180, 330, 1280, 760)),
-    },
+    {"zurich-53-glass-frontage": ("zurich-53", "zurich-53-glass-frontage.webp", (180, 330, 1280, 760))},
 ]
 
 

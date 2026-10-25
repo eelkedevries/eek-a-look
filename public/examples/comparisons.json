@@ -33,41 +33,25 @@
       "changes": "Edited with FLUX.1 Kontext [dev]: a continuous low, trimmed hedge in front of the grey base of the blocks, below the ground-floor windows (25 October 2026, prompt 073; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompts 071b, 073); everywhere else the original photograph's pixels. Saved as JPEG"
     },
     {
-      "id": "zurich-53-opaque-frontage",
-      "editOf": "zurich-53",
-      "condition": "Opaque frontage",
-      "area": "Zürich",
-      "city": "Zürich",
-      "title": "Walkway with an opaque ground-floor frontage",
-      "file": "zurich-53-opaque-frontage.jpg",
-      "width": 1280,
-      "height": 960,
-      "author": "Edited from Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
-      "licence": "CC0 1.0",
-      "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
-      "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
-      "changes": "Edited with FLUX.1 Kontext [dev]: the ground-floor frontage either side of the red door, apart from the far-left bay, as opaque grey panels (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
-    },
-    {
-      "id": "zurich-53-transparent-frontage",
+      "id": "zurich-53-glass-frontage",
       "editOf": "zurich-53",
       "condition": "Transparent frontage",
       "area": "Zürich",
       "city": "Zürich",
       "title": "Walkway with a transparent ground-floor frontage",
-      "file": "zurich-53-transparent-frontage.jpg",
+      "file": "zurich-53-glass-frontage.jpg",
       "width": 1280,
       "height": 960,
       "author": "Edited from Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
       "licence": "CC0 1.0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
-      "changes": "Edited with FLUX.1 Kontext [dev]: the ground-floor frontage either side of the red door, apart from the far-left bay, as clear glass with a lit shop interior (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
+      "changes": "Edited with FLUX.1 Kontext [dev]: the ground-floor frontage either side of the red door, apart from the far-left bay, as clear glass with a lit shop interior (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompts 071b, 075); everywhere else the original photograph's pixels. Saved as JPEG"
     }
   ],
   "examples": [
     { "id": "entrance", "a": "zurich-42", "b": "zurich-42-entrance-block" },
     { "id": "greenery", "a": "zurich-33", "b": "zurich-33-low-hedge" },
-    { "id": "glazing", "a": "zurich-53-opaque-frontage", "b": "zurich-53-transparent-frontage", "reference": "zurich-53" }
+    { "id": "glazing", "a": "zurich-53", "b": "zurich-53-glass-frontage" }
   ]
 }

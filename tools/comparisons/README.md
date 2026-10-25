@@ -7,7 +7,7 @@ photos, each of image A against image B. The images and their credits are in
 
 ## Steps
 
-Make the B images (and, for glazing, A) as below, prepare them with
+Make the B images as below, prepare them with
 `scripts/prepare-photos.mjs`, then:
 
 ```sh
@@ -48,6 +48,13 @@ frontage of zurich-53 either side of the red door, all but the far-left bay
 clear glass with a lit shop interior (21.1%). They replaced the owner's
 low planting and three opaque or transparent window bays.
 
+Prompt 075 (25 October 2026) compares the transparent frontage with the
+untouched zurich-53 instead of the opaque version, which was removed with
+its raw edit. Composited with its own mask (19.1% of the image instead of
+the 21.1% union), the transparent edit changed slightly (mean 0.1 of 255
+levels; no pixel by more than 20), so it has a new id,
+`zurich-53-glass-frontage`, and new maps and areas.
+
 Prompt 073 (25 October 2026) redid the hedge: the 071b edit, asked for at
 1.5–2 m, came out about 4–5 m tall and hid the whole ground floor, windows
 included, so the comparison mixed added planting with removed façade detail.
@@ -76,7 +83,7 @@ Both Python tools read `comparisons.json` as well as `examples.json`.
   between A and B, blurred (2 px) and above 15. Greenery and glazing (prompt 071b): the
   mean absolute RGB difference between A and B, blurred (4 px) and above 20,
   the changed pixels closed, filled and dilated: the hedge, and the frontage
-  where the two glazing versions differ. It writes `public/precomputed/comparisons/<example>.json` (masks
+  where the transparent frontage differs from the original (prompt 075). It writes `public/precomputed/comparisons/<example>.json` (masks
   as run lengths at 640 × 480, as in the area files), check overlays in
   `.cache/`, and the share of attention per region for DeepGaze MSDB and,
   on untouched originals, measured gaze.
@@ -91,7 +98,8 @@ façade elements were added later by `elements.py --apply --only-missing` in a
 cloud session (prompt 072, `tools/areas/README.md`).
 
 Share of attention in the manipulated area, % (entrance as of prompt 071,
-greenery as of prompt 073, which recomputed DeepGaze MSDB only):
+greenery as of prompt 073 and glazing as of prompt 075, both DeepGaze MSDB
+only, the model the section shows):
 
 | Comparison | Layer | A | B |
 |---|---|---|---|
@@ -102,13 +110,8 @@ greenery as of prompt 073, which recomputed DeepGaze MSDB only):
 | | DeepGaze MSDB | 6.51 | 10.88 |
 | Greenery, added low hedge (13.4%; prompt 073) | Measured (A only) | 7.68 | – |
 | | DeepGaze MSDB | 4.75 | 3.74 |
-| Glazing, ground-floor frontage (20.8%; prompt 071b) | Classic salience | 18.05 | 28.12 |
-| | UNISAL | 27.91 | 61.03 |
-| | DeepGaze IIE | 21.09 | 63.10 |
-| | DeepGaze MSDB | 15.78 | 48.67 |
-
-On the untouched zurich-53, measured gaze puts 30.58% of attention on the
-ground-floor frontage (DeepGaze MSDB predicts 34.84%).
+| Glazing, new glass panes (18.6%; prompt 075) | Measured (A only) | 22.06 | – |
+| | DeepGaze MSDB | 26.03 | 40.42 |
 
 Known limits: outside the edited areas all images keep the originals' pixels
 (JPEG re-encoding noise only, mean 0.3–0.5 of 255 levels), but inside them
