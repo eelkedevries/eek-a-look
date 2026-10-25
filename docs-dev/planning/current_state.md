@@ -76,9 +76,8 @@ wins and the gap is work still to be done.
 - Example section (prompt 058, `src/views/example.ts`, `example.css`, text in
   `src/content/comparisons.ts`): three design comparisons (entrance,
   greenery, glazing) on four edited Zürich images listed in
-  `public/examples/comparisons.json`, outside the library. All maps and
-  areas are pre-computed; Classic salience and UNISAL by the app's code in
-  headless Chromium and the manipulated areas by `tools/comparisons/`. Since
+  `public/examples/comparisons.json`, outside the library. The maps and
+  the manipulated areas (`tools/comparisons/`) are pre-computed. Since
   prompt 067 each comparison shows A, B and the difference B − A side by side
   and measures one manipulated area only (entrance: the door and its
   recoloured surround; since prompt 071 the whole stone block, recoloured by
@@ -89,6 +88,9 @@ wins and the gap is work still to be done.
   colour scale (`sharedRange()` in `src/render/heatmap.ts`), the selected
   model's Σ A, Σ B and B − A with its direction, and no measured gaze in the
   section. The edited images have SAM 3 façade elements since prompt 072.
+  Since prompt 073 the hedge of example 2 is low, below the ground-floor
+  windows, and the section shows DeepGaze MSDB only (no per-model table); the
+  new hedge image has no DeepGaze IIE map or area file yet.
 - Example photos: 12 Commons photos in `public/examples/` with `examples.json`
   (credits), prepared by `scripts/prepare-photos.mjs`, checked by
   `scripts/validate-examples.mjs`; picker and credit line in `src/examples.ts`.

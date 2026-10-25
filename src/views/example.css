@@ -267,14 +267,6 @@
   display: none;
 }
 
-.comparison-table {
-  margin-top: 6px;
-}
-
-.comparison-table th.measured {
-  color: var(--iris);
-}
-
 .comparison-notes .agreement-caption {
   max-width: 820px;
   margin-top: 8px;
@@ -321,10 +313,4 @@
 
 .comparison-sums dt {
   line-height: 1.6;
-}
-
-.comparison-table tr.selected th,
-.comparison-table tr.selected td {
-  color: var(--text-bright);
-  background: var(--border);
 }

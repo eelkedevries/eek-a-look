@@ -16,7 +16,8 @@ comparison is over identical pixels:
 
 Writes public/precomputed/comparisons/<example>.json (masks as row-major run
 lengths at 640 × 480, as in the area files) and check overlays in .cache/.
-When the maps exist, prints each layer's share of attention in each region.
+When the maps exist, prints the share of attention in each region for DeepGaze
+MSDB and, where it exists, measured gaze.
 """
 
 import base64
@@ -49,7 +50,8 @@ REGIONS = {
     "greenery": [{"id": "planting", "label": "Added hedge", "box": (0, 560, 1280, 960), "shape": "mask"}],
     "glazing": [{"id": "frontage", "label": "Ground-floor frontage", "box": (180, 330, 1280, 760), "shape": "mask"}],
 }
-LAYERS = ["measured", "classic-salience", "unisal", "deepgaze-iie", "deepgaze-msdb"]
+# Prompt 073: the Example section shows DeepGaze MSDB only; measured gaze exists for untouched originals.
+LAYERS = ["measured", "deepgaze-msdb"]
 
 
 def encode_rle(mask: np.ndarray) -> list[int]:
@@ -110,8 +112,7 @@ def overlay(pid: str, masks: list[np.ndarray], path: Path) -> None:
 
 
 def load_map(layer: str, pid: str) -> np.ndarray | None:
-    folder = PRECOMPUTED / ("comparisons/" + layer if layer in ("classic-salience", "unisal") else layer)
-    path = folder / f"{pid}.json"
+    path = PRECOMPUTED / layer / f"{pid}.json"
     if not path.exists():
         return None
     d = json.loads(path.read_text())

@@ -83,19 +83,18 @@ Choose a view above the photo; the inspector on the right changes with it.
 
 **Example** in the top bar opens three illustrations on Zürich photos: the
 stone block around an entrance in blue-teal (recoloured by rule), and, made
-with AI image editing, a tall hedge along a building base and an opaque
+with AI image editing, a low hedge along a building base and an opaque
 against a transparent ground-floor frontage.
 Choose one to see its question, background, conditions and two possible
 outcomes. Images A and B and the difference between them appear side by side
-for the model you choose; A and B share one colour scale. In the difference,
+for DeepGaze MSDB, the only model shown here; A and B share one colour scale. In the difference,
 orange marks where the predicted gaze density is higher in B and blue where
 it is higher in A. "Highlight manipulated area" outlines the area that is
-measured. For the chosen model, the predicted gaze density in that area is
+measured. The predicted gaze density in that area is
 summed into one value for A and one for B, and the contrast B − A shows the
 direction of the effect.
-The table lists the same numbers for every model. All maps here are
-predictions; measured gaze for the untouched originals is in the workspace.
-The links under the table open either image there.
+All maps here are predictions; measured gaze for the untouched originals is
+in the workspace. The links under the images open either image there.
 
 The About section explains the models, their scores on a standard lab test,
 and what the maps cannot tell you.

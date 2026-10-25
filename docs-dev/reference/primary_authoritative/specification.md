@@ -1,6 +1,6 @@
 # Specification
 
-**Version:** 0.54 · **Last updated:** 2026-10-19
+**Version:** 0.55 · **Last updated:** 2026-10-25
 
 The authoritative design canon for this project. **Only filled sections are
 binding.** An empty or stubbed section means "not yet decided", not a
@@ -125,6 +125,10 @@ from the stored per-photo results (owner's request of 2026-10-19).
 edited Example images, run in a cloud session instead of on the laptop, and
 with them the Andersson photos' ground-floor and rhythm measures (prompt 072,
 owner's request of 2026-10-19).
+0.55 replaces the greenery hedge of 0.51, which came out about 4–5 m tall and
+hid the ground-floor windows, with a low hedge below them, and shows only
+DeepGaze MSDB in the Example section, without the per-model table (prompt
+073, owner's request of 2026-10-25).
 
 ## Scope
 
@@ -899,8 +903,9 @@ was run on the photos.
 
 - Three comparisons, A against B: entrance (zurich-42 against the same photo
   with the whole rusticated stone block around the entrance in blue-teal,
-  prompt 071), greenery (zurich-33 against a hedge about 2 m tall along the
-  base of all three blocks) and glazing (the whole ground-floor frontage of
+  prompt 071), greenery (zurich-33 against a low, trimmed hedge in front of
+  the grey base of the blocks, below the ground-floor windows, which stay
+  visible; prompt 073) and glazing (the whole ground-floor frontage of
   zurich-53, either side of the red door, as opaque grey panels against
   clear glass with a lit shop interior; both edited). All images are
   1280 × 960 px and share one grid and one set of masks.
@@ -923,13 +928,13 @@ was run on the photos.
   levels). It replaced the owner's first edit, a blue-teal door frame
   (1.0% of the image), on the owner's request for a much larger
   manipulation.
-- Every map is computed in advance, so nothing runs when the section opens:
-  DeepGaze IIE and MSDB by `tools/deepgaze-local/`, Classic salience and
-  UNISAL by the app's own code in headless Chromium
-  (`tools/comparisons/browser-models.mjs`, into
-  `public/precomputed/comparisons/<model-id>/`), and the automatic areas by
-  `tools/areas/build.py` (categories and ground floor), with SAM 3 façade
-  elements by `elements.py --apply --only-missing` (prompt 072).
+- **One model** (prompt 073): the section shows DeepGaze MSDB only,
+  computed in advance by `tools/deepgaze-local/`, so nothing runs when the
+  section opens. The automatic areas of the edited images, used in the
+  workspace only, come from `tools/areas/build.py` (categories and ground
+  floor) with SAM 3 façade elements by `elements.py --apply --only-missing`
+  (prompt 072); the hedge image of prompt 073 has no area file and no
+  DeepGaze IIE map yet.
 - **Manipulated area** (prompt 067): the one area of interest of each
   comparison, the same pixels in A and B (`tools/comparisons/regions.py`,
   masks at 640 × 480 in `public/precomputed/comparisons/<id>.json`).
@@ -942,17 +947,16 @@ was run on the photos.
 - Each comparison is described in a fixed format (prompt 066): **Question**
   (one short sentence), **Background** (only what the question needs),
   **Conditions** (A, B and what is manipulated) and **Possible outcomes**
-  (two that can be contrasted), followed by "What the selected model
+  (two that can be contrasted), followed by "What DeepGaze MSDB
   predicts".
-- **Effect** (prompt 068), for the selected model only: its map is a
+- **Effect** (prompt 068), for DeepGaze MSDB (prompt 073): its map is a
   **predicted gaze density** (prompt 070: the term used throughout the
   section) summing to 1 over the image; summed over the manipulated area it
   gives one value per condition, Σ A and Σ B (the share of predicted
   fixations in the area). The contrast B − A, in percentage points, gives
   the direction of the effect: positive = higher predicted gaze density in
   B, negative = lower, below 0.05 points = no change. The page
-  states this computation. A table lists Σ A, Σ B, B − A and the Pearson r
-  between the two maps for every model, the selected one highlighted. The
+  states this computation. The
   possible outcomes are labelled as hypotheses; a result that matches
   neither is shown as it is.
 - No measured gaze in the Example section (prompt 068): it exists only for

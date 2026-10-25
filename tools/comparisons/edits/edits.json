@@ -6,9 +6,12 @@
   "edits": [
     {
       "file": "zurich-33-hedge.webp",
-      "source": "https://eelkedevries.com/eek-a-look/examples/zurich-33.jpg",
+      "source": "public/examples/zurich-33.jpg",
+      "date": "2026-10-25",
+      "promptFile": "073_example_greenery_msdb.md",
+      "replaces": "the 071b edit (seed 7, 'dense green shrubs and flowering bushes about 1.5 to 2 metres tall'), which came out about 4-5 m tall and hid the ground-floor windows",
       "seed": 7,
-      "prompt": "Add a wide planting bed along the entire base of all the apartment buildings: dense green shrubs and flowering bushes about 1.5 to 2 metres tall, in front of the grey ground-floor wall. Keep the buildings, windows, lawn, paths, sky, lighting and camera view exactly the same."
+      "prompt": "Add a low, neatly trimmed hedge of dense green shrubs, about 1 metre tall, along the entire base of all the apartment buildings, directly in front of the grey plinth with the ventilation grilles. The hedge stays below the ground-floor windows, which remain fully visible. Keep the buildings, windows, lawn, paths, sky, lighting and camera view exactly the same."
     },
     {
       "file": "zurich-53-opaque-frontage.webp",

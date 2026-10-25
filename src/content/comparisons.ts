@@ -68,13 +68,13 @@ export const COMPARISONS: ComparisonText[] = [
       'Planting at the foot of a building can soften a hard base and add detail at eye level. In the original photograph, residential tower blocks rise from a bare grey base above grass.',
     manipulated: 'whether there is planting along the base.',
     conditionA: 'The original scene.',
-    conditionB: 'A continuous hedge of dense shrubs, about 2 m tall, along the base of all three blocks; the rest of the scene unchanged.',
+    conditionB: 'A continuous low, trimmed hedge in front of the grey base of the blocks, below the ground-floor windows, which stay visible; the rest of the scene unchanged.',
     outcomes: [
       'Predicted gaze density shifts downwards: in B, a larger share of it falls on the hedge.',
       'The density on the hedge does not rise: a uniform green hedge does not stand out, and the density stays on the façades.',
     ],
     labelA: 'A · Original',
-    labelB: 'B · Hedge along the base',
+    labelB: 'B · Low hedge along the base',
     area: {
       id: 'planting',
       label: 'Added hedge',
@@ -109,10 +109,10 @@ export const COMPARISONS: ComparisonText[] = [
 ];
 
 export const COMPARISON_INTRO =
-  'Three design changes to Zürich street photos: the first recoloured by rule, the other two made with AI image editing. Each example compares where people are predicted to look before and after the change. They are illustrations for discussing design and research questions, not studies.';
+  'Three design changes to Zürich street photos: the first recoloured by rule, the other two made with AI image editing. Each example compares where DeepGaze MSDB predicts people will look before and after the change. They are illustrations for discussing design and research questions, not studies.';
 
 export const COMPARISON_CAVEAT =
-  'The possible outcomes are hypotheses, not results; the numbers show what the models actually predict, even when the difference is small or matches neither outcome. A change in predicted gaze density does not show a change in wellbeing, preference or actual use. Outside the manipulated area every image keeps the original photograph’s pixels, apart from slight JPEG re-encoding noise; inside it, the AI edits of examples 2 and 3 may contain small unintended details.';
+  'The possible outcomes are hypotheses, not results; the numbers show what the model actually predicts, even when the difference is small or matches neither outcome. A change in predicted gaze density does not show a change in wellbeing, preference or actual use. Outside the manipulated area every image keeps the original photograph’s pixels, apart from slight JPEG re-encoding noise; inside it, the AI edits of examples 2 and 3 may contain small unintended details.';
 
 export const MEASURED_NOTE =
   'All maps here are predictions. Measured gaze (48 people, six seconds of free viewing; Wilming et al. 2017) exists only for the untouched original photographs, so it cannot show the effect of an edit and is left out; the originals’ measured gaze can be seen in the workspace.';

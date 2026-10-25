@@ -22,7 +22,7 @@
       "condition": "Hedge along the base",
       "area": "Zürich",
       "city": "Zürich",
-      "title": "Residential tower blocks with a tall hedge along the base",
+      "title": "Residential tower blocks with a low hedge along the base",
       "file": "zurich-33-hedge.jpg",
       "width": 1280,
       "height": 960,
@@ -30,7 +30,7 @@
       "licence": "CC0 1.0",
       "licenceUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
       "sourceUrl": "https://doi.org/10.5061/dryad.9pf75",
-      "changes": "Edited with FLUX.1 Kontext [dev]: a continuous hedge of dense shrubs, about 2 m tall, along the base of all three blocks (19 October 2026; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompt 071b); everywhere else the original photograph's pixels. Saved as JPEG"
+      "changes": "Edited with FLUX.1 Kontext [dev]: a continuous low, trimmed hedge in front of the grey base of the blocks, below the ground-floor windows (25 October 2026, prompt 073; prompt and seed in tools/comparisons/edits/edits.json), used only inside the edited area by tools/comparisons/composite.py (prompts 071b, 073); everywhere else the original photograph's pixels. Saved as JPEG"
     },
     {
       "id": "zurich-53-opaque-frontage",

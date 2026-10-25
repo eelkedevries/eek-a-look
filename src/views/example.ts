@@ -1,7 +1,7 @@
 import { COMPARISON_CAVEAT, COMPARISON_INTRO, COMPARISONS, MEASURED_NOTE, type ComparisonText } from '../content/comparisons';
 import type { ComparisonManifest, ExamplePhoto } from '../examples';
 import { attentionShares, decodeRle, type Area } from '../maps/areas';
-import { difference, pearson, type SaliencyMap } from '../maps/saliency-map';
+import { difference, type SaliencyMap } from '../maps/saliency-map';
 import { decodeMap, type PrecomputedMap } from '../models/deepgaze';
 import { models } from '../models/registry';
 import { mapLabel, type ModelSpec } from '../models/types';
@@ -18,8 +18,11 @@ const NO_CHANGE = 0.0005;
 
 type MapChoice = 'photo' | (string & {});
 
-/** Measured gaze is left out of this section: it exists for untouched originals only, so it cannot show an edit's effect. */
-const predictions = models.filter((m) => m.kind !== 'measured');
+/**
+ * Only DeepGaze MSDB is shown here (prompt 073). Measured gaze is left out: it exists for untouched originals only, so it
+ * cannot show an edit's effect.
+ */
+const predictions = models.filter((m) => m.id === 'deepgaze-msdb');
 
 interface RegionFile {
   example: string;
@@ -29,7 +32,7 @@ interface RegionFile {
   regions: { id: string; label: string; share: number; rle: number[] }[];
 }
 
-/** Everything one condition needs: its photo and every prediction's map (null where it has none). */
+/** Everything one condition needs: its photo and the prediction's map (null where it has none). */
 interface Condition {
   photo: ExamplePhoto;
   bitmap: ImageBitmap;
@@ -51,18 +54,13 @@ const fetchJson = <T>(url: string): Promise<T | null> =>
     .then((r) => (r.ok ? (r.json() as Promise<T>) : null))
     .catch(() => null);
 
-/** Classic salience and UNISAL run in the browser elsewhere; for these images their maps were saved by tools/comparisons/. */
-function mapUrl(layer: string, id: string): string {
-  if (layer === 'classic-salience' || layer === 'unisal') return `${BASE}precomputed/comparisons/${layer}/${id}.json?v=${__COMPARISONS_VERSION__}`;
-  return `${BASE}precomputed/${layer}/${id}.json`;
-}
 
 async function loadCondition(photo: ExamplePhoto): Promise<Condition> {
   const bitmap = createImageBitmap(await (await fetch(`${BASE}examples/${photo.file}`)).blob());
   const maps = new Map<string, SaliencyMap | null>(
     await Promise.all(
       predictions.map(async (m) => {
-        const payload = await fetchJson<PrecomputedMap>(mapUrl(m.id, photo.id));
+        const payload = await fetchJson<PrecomputedMap>(`${BASE}precomputed/${m.id}/${photo.id}.json`);
         return [m.id, payload && decodeMap(payload)] as [string, SaliencyMap | null];
       }),
     ),
@@ -228,7 +226,7 @@ function paintDifference(fig: Figure, loaded: Loaded, model: ModelSpec | undefin
   }
   fig.tag.hidden = !(mapA && mapB);
   fig.tag.textContent = model ? `Predicted B − A · ${short(model)}` : '';
-  fig.note.textContent = mapA && mapB ? '' : model ? 'Not available' : 'Choose a model to see the difference';
+  fig.note.textContent = mapA && mapB ? '' : model ? 'Not available' : 'Choose DG MSDB to see the difference';
   fig.outline.hidden = !highlighted;
   drawOutline(fig.outline, highlighted ? areaMask(loaded)?.mask : undefined, loaded.maskSize.width, loaded.maskSize.height);
 }
@@ -236,7 +234,7 @@ function paintDifference(fig: Figure, loaded: Loaded, model: ModelSpec | undefin
 /**
  * The Example section (prompts 058, 066–068, 070): an overview of three design comparisons and, for the chosen one,
  * its question, background, conditions and two possible outcomes; A, B and their difference side by side, the
- * difference with a colour bar; and, for the selected model, its predicted gaze density summed over the
+ * difference with a colour bar; and DeepGaze MSDB's predicted gaze density (prompt 073: the only model shown) summed over the
  * manipulated area in A and in B, whose contrast B − A gives the direction of the effect. Predictions only.
  */
 export function mountExample(section: HTMLElement, manifest: ComparisonManifest, photoById: (id: string) => ExamplePhoto | undefined, open: (id: string) => void): void {
@@ -354,7 +352,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       conditions,
       el('dt', '', 'Possible outcomes'),
       outcomes,
-      el('dt', '', 'What the selected model predicts'),
+      el('dt', '', 'What DeepGaze MSDB predicts'),
       result,
     );
 
@@ -396,9 +394,6 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
     stage.append(figA.root, figB.root, figDiff.root);
 
     const caption = el('p', 'agreement-caption');
-    const tableWrap = el('div', 'agreement-wrap');
-    const table = el('table', 'agreement-matrix comparison-table');
-    tableWrap.append(table);
     const notes = el('div', 'comparison-notes');
     const links = el('p', 'comparison-links');
     const workspaceLink = (photo: ExamplePhoto, label: string) => {
@@ -407,7 +402,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       button.addEventListener('click', () => open(photo.id));
       return button;
     };
-    links.append('Open in the workspace (all views and the Areas tab): ', workspaceLink(loaded.a.photo, text.labelA), ' · ', workspaceLink(loaded.b.photo, text.labelB));
+    links.append('Open in the workspace: ', workspaceLink(loaded.a.photo, text.labelA), ' · ', workspaceLink(loaded.b.photo, text.labelB));
     if (loaded.reference) links.append(' · ', workspaceLink(loaded.reference, 'Untouched original'));
     const credit = el('p', 'credit');
     const source = loaded.a.photo.editOf ?? loaded.a.photo.id;
@@ -416,7 +411,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       .map((p) => `${p.condition}: ${p.changes}.`)
       .join(' ')}`;
 
-    detail.replaceChildren(head, facts, controls, stage, caption, tableWrap, notes, links, credit);
+    detail.replaceChildren(head, facts, controls, stage, caption, notes, links, credit);
 
     function update() {
       const model = predictions.find((m) => m.id === choice);
@@ -429,15 +424,14 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       paintDifference(figDiff, loaded, model, highlighted);
       caption.textContent = model
         ? 'A and B use one colour scale, so their colours compare: brighter = higher predicted gaze density. Difference B − A, over B: orange where the density is higher in B, blue where it is higher in A; the colour bar is in multiples of the image average density.'
-        : 'Choose a model to see where people are predicted to look.';
+        : 'Choose DG MSDB to see where people are predicted to look.';
       renderResult(model);
-      renderTable(model);
     }
 
-    /** The selected model's sums over the manipulated area in A and B, their contrast and its direction. */
+    /** DeepGaze MSDB's sums over the manipulated area in A and B, their contrast and its direction. */
     function renderResult(model: ModelSpec | undefined) {
       const { phrase } = text.area;
-      if (!model) return result.replaceChildren(el('p', 'muted', 'Choose a model above the images to see its prediction.'));
+      if (!model) return result.replaceChildren(el('p', 'muted', 'Choose DG MSDB above the images to see its prediction.'));
       const a = share(loaded, loaded.a, model.id);
       const b = share(loaded, loaded.b, model.id);
       if (a === null || b === null) return result.replaceChildren(el('p', 'muted', `${model.name}: not available.`));
@@ -462,42 +456,19 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       );
     }
 
-    function renderTable(selected: ModelSpec | undefined) {
-      const head = el('tr');
-      head.append(el('th', '', ''), el('th', '', 'Σ A'), el('th', '', 'Σ B'), el('th', '', 'B − A'), el('th', '', 'Match A–B (r)'));
-      const rows = predictions.map((m) => {
-        const tr = el('tr', m === selected ? 'selected' : '');
-        const name = el('th', '', m.name);
-        name.scope = 'row';
-        const a = share(loaded, loaded.a, m.id);
-        const b = share(loaded, loaded.b, m.id);
-        const mapA = loaded.a.maps.get(m.id);
-        const mapB = loaded.b.maps.get(m.id);
-        const cell = (value: string) => el('td', value === '–' ? 'agreement-empty' : '', value);
-        tr.append(
-          name,
-          cell(a === null ? '–' : pct(a)),
-          cell(b === null ? '–' : pct(b)),
-          cell(a === null || b === null ? '–' : points(b - a)),
-          cell(mapA && mapB ? pearson(mapA, mapB).toFixed(2) : '–'),
-        );
-        return tr;
-      });
+    function renderNotes() {
       const { phrase, note } = text.area;
-      table.replaceChildren(el('caption', 'visually-hidden', `Predicted gaze density summed over ${phrase}, every model`), el('thead'), el('tbody'));
-      table.tHead!.append(head);
-      table.tBodies[0].append(...rows);
-
       const area = areaMask(loaded);
       const covered = pct(area ? area.mask.reduce((s, v) => s + v, 0) / area.mask.length : 0);
       notes.replaceChildren(
-        el('p', 'agreement-caption', `Every model, for comparison (the selected one highlighted): predicted gaze density summed over ${phrase} (${covered} of the image, the same pixels in A and B). B − A in percentage points. Match A–B: Pearson r between the two maps (1 = same pattern).`),
+        el('p', 'agreement-caption', `The outlined area, ${phrase}, covers ${covered} of the image: the same pixels in A and B.`),
         el('p', 'agreement-caption', note),
         el('p', 'agreement-caption', MEASURED_NOTE),
         el('p', 'agreement-caption', COMPARISON_CAVEAT),
       );
     }
 
+    renderNotes();
     update();
   }
 
