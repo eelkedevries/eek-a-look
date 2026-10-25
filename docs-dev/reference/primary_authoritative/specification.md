@@ -149,9 +149,10 @@ fixations per image drawn from DeepGaze MSDB's stored map and 100 scanpaths
 of eight fixations per image from DeepGaze3.5-VL, run with its language model
 in 4-bit NF4 on the owner's 8 GB laptop GPU (a deviation from the published
 model), and per example the share of scanpaths with a fixation in the
-manipulated area among the first seven fixations after the start, for A, B
-and the measured paths of 0.58 on A (prompt 076, owner's answers of
-2026-10-25; the measured share amends 0.58's "no group summary").
+manipulated area among the first seven fixations after the start, for A and
+B, and for the measured paths of 0.58 on A within their first 3 s (prompt
+076, owner's answers and decisions of 2026-10-25; the measured share amends
+0.58's "no group summary").
 
 ## Scope
 
@@ -425,7 +426,13 @@ interface ScanpathFile { model: 'deepgaze35-vl'; photo: string; width: number; h
 ```
 
 The measured paths used by the scanpath measure are the `Scanpaths` files
-of prompt 077 above.
+of prompt 077 above, limited to their first 3 s by
+`public/precomputed/measured/<photo-id>.window3s.json` (the A images only):
+
+```ts
+interface WindowFile { photo: string; windowMs: 3000; settings: object;
+  lastFix: [index: number, fix: number][] }  // per participant, the last fixation number starting within the window
+```
 
 The Example section's manifest is `public/examples/comparisons.json`:
 `images`, the edited images as `ExamplePhoto` entries with `editOf` and
@@ -1114,12 +1121,17 @@ was run on the photos.
   fixations 2–8), for A and B, and B − A in percentage points with its
   binomial standard error; a difference under twice that error is reported
   as within sampling error. A fixation is in the area when its pixel, scaled
-  to the 640 × 480 mask, is set. The same rule on the measured paths of
-  0.58 gives "A, measured": the share of the 48 participants with a
-  fixation in the area among database fixation numbers 2–8 (the first seven
-  after the cross, gaps included), as a check on the predicted A.
-  `tools/scanpaths/summary.py` recomputes every number from the stored
-  files.
+  to the 640 × 480 mask, is set. "A, measured, first 3 s", a check on the
+  predicted A: the share of the 48 participants of 0.58 with a fixation in
+  the area among their fixations after the central cross that start within
+  3,000 ms of image onset (owner's decision of 2026-10-25: DeepGaze3.5-VL
+  keeps its published 3-second prompt, and a comparison with the 6-second
+  measured paths uses only their first 3 s). That window holds a median of
+  nine fixations per participant (5–14), against the model's seven after its
+  start; the page says so. `tools/scanpaths/window.py` writes each
+  participant's last fixation number within the window from the source's
+  start times, which are not published; `tools/scanpaths/summary.py`
+  recomputes every number from the stored files.
 - View (prompt 067): A, B and the difference B − A of the chosen predicted
   map (blue–orange, as in Contrast, over B) side by side; one column at phone
   width. A "Highlight manipulated area" checkbox, on by default, outlines the

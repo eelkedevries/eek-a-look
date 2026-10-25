@@ -3,9 +3,10 @@
 The measure: the share of scanpaths with at least one fixation in the manipulated area among their first K
 fixations after the starting one (the model's fixations 2 to 1 + K), for A and B and as B − A, with the binomial
 standard error of each share and of the difference. For the A images also the measured share over the
-participants of Wilming et al. (2017), from the per-participant files of prompt 077: database fixation numbers
-2 to 1 + K, number 1 being the fixation on the central cross. Prints the numbers the page shows, so the two can
-be compared.
+participants of Wilming et al. (2017), from the per-participant files of prompt 077, limited to their first 3 s
+(the owner's decision of 2026-10-25): database fixation numbers 2 to each participant's last within the window
+(window.py), number 1 being the fixation on the central cross. Prints the numbers the page shows, so the two
+can be compared.
 """
 
 import json
@@ -47,12 +48,13 @@ def predicted(photo: str, mask: np.ndarray) -> tuple[int, int] | None:
 
 
 def measured(photo: str, mask: np.ndarray) -> tuple[int, int] | None:
-    path = MEASURED / f"{photo}.scanpaths.json"
-    if not path.exists():
+    path, window = MEASURED / f"{photo}.scanpaths.json", MEASURED / f"{photo}.window3s.json"
+    if not (path.exists() and window.exists()):
         return None
     data = json.loads(path.read_text())
+    last = dict(json.loads(window.read_text())["lastFix"])
     w, h = data["width"], data["height"]
-    hits = sum(any(2 <= fix <= 1 + K and inside(mask, x, y, w, h) for fix, x, y, _ in p["fixations"]) for p in data["participants"])
+    hits = sum(any(2 <= fix <= last[p["index"]] and inside(mask, x, y, w, h) for fix, x, y, _ in p["fixations"]) for p in data["participants"])
     return hits, len(data["participants"])
 
 
@@ -70,7 +72,7 @@ def fmt(result: tuple[int, int] | None) -> str:
 
 def main() -> int:
     manifest = json.loads((EXAMPLES / "comparisons.json").read_text())
-    print(f"Paths with a fixation in the manipulated area among the first {K} after the start (share ± binomial SE)\n")
+    print(f"Paths with a fixation in the manipulated area: predicted, among the first {K} after the start; measured, within the first 3 s (share ± binomial SE)\n")
     print(f"{'example':10} {'A, predicted':>22} {'B, predicted':>22} {'B − A (points)':>16} {'A, measured':>22}")
     for e in manifest["examples"]:
         mask, _, _ = mask_for(e["id"])

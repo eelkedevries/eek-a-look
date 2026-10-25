@@ -105,8 +105,10 @@ laptop graphics card, so its scanpaths approximate the published model.
 Under "What DeepGaze3.5-VL predicts", the page counts how many of the 100
 scanpaths of A and of B have a fixation in the outlined area among their
 first seven fixations after the start, gives the difference with its
-standard error, and applies the same count to the 48 measured gaze paths of
-A as a check. The models predict the order of fixations, not their timing.
+standard error, and, as a check, counts how many of the 48 people who
+viewed A had a fixation in the area within the first three seconds of their
+measured gaze path, the span the model predicts. The models predict the
+order of fixations, not their timing.
 
 All maps, dots and predicted scanpaths are predictions. Only image A, the untouched photo, was ever
 shown to people (48 of them, for six seconds each): **Measured gaze path on

@@ -60,6 +60,12 @@ interface ScanpathFile {
   scanpaths: [number, number][][];
 }
 
+/** Each participant's last fixation number within the first 3 s of viewing (tools/scanpaths/window.py). */
+interface WindowFile {
+  windowMs: number;
+  lastFix: [index: number, fix: number][];
+}
+
 /** A gaze path in image pixels; n numbers the fixations from 1 for the first after the starting one (prompts 076, 077). */
 type Path = { n: number; x: number; y: number }[];
 
@@ -72,6 +78,7 @@ interface Condition {
   bitmap: ImageBitmap;
   maps: Map<string, SaliencyMap | null>;
   scanpaths: Scanpaths | null;
+  window: WindowFile | null;
   fixations: FixationFile | null;
   predicted: Path[] | null;
 }
@@ -93,7 +100,7 @@ const fetchJson = <T>(url: string): Promise<T | null> =>
 async function loadCondition(photo: ExamplePhoto): Promise<Condition> {
   const bitmap = createImageBitmap(await (await fetch(`${BASE}examples/${photo.file}`)).blob());
   const version = `?v=${__COMPARISONS_VERSION__}`;
-  const [maps, fixations, predicted, scanpaths] = await Promise.all([
+  const [maps, fixations, predicted, scanpaths, window] = await Promise.all([
     Promise.all(
       predictions.map(async (m) => {
         const payload = await fetchJson<PrecomputedMap>(`${BASE}precomputed/${m.id}/${photo.id}.json`);
@@ -103,12 +110,15 @@ async function loadCondition(photo: ExamplePhoto): Promise<Condition> {
     fetchJson<FixationFile>(`${BASE}precomputed/deepgaze-msdb-fixations/${photo.id}.json${version}`),
     __SCANPATH_PHOTOS__.includes(photo.id) ? fetchJson<ScanpathFile>(`${BASE}precomputed/deepgaze35-vl/${photo.id}.json${version}`) : null,
     photo.measured ? fetchJson<Scanpaths>(`${BASE}precomputed/measured/${photo.id}.scanpaths.json`) : null,
+    // Only the A images of the comparisons have one; an edited image has no measured gaze at all.
+    photo.measured && !photo.editOf ? fetchJson<WindowFile>(`${BASE}precomputed/measured/${photo.id}.window3s.json${version}`) : null,
   ]);
   return {
     photo,
     bitmap: await bitmap,
     maps: new Map(maps),
     scanpaths,
+    window,
     fixations,
     // The model's 0–99 grid to pixels as predict_scanpath.py of the DeepGaze3.5-VL repository (x × width / 100). Its
     // first fixation is the starting point, left out as the fixation on the cross is for measured paths (prompt 077).
@@ -150,17 +160,24 @@ function inArea(area: Area, mask: { width: number; height: number }, photo: Exam
   return mx >= 0 && mx < mask.width && my >= 0 && my < mask.height && area.mask[my * mask.width + mx] === 1;
 }
 
-/** How many of the paths have a fixation in the manipulated area among their first K after the start, and of how many. */
-function reach(loaded: Loaded, condition: Condition, paths: Path[] | null): { hits: number; n: number } | null {
+/** How many of the paths have a fixation in the manipulated area among their first `last` after the start, and of how many. */
+function reach(loaded: Loaded, condition: Condition, paths: Path[] | null, last = K): { hits: number; n: number } | null {
   const area = areaMask(loaded);
   if (!paths || !paths.length || !area) return null;
-  const hits = paths.filter((path) => path.some(({ n, x, y }) => n >= 1 && n <= K && inArea(area, loaded.maskSize, condition.photo, x, y))).length;
+  const hits = paths.filter((path) => path.some(({ n, x, y }) => n >= 1 && n <= last && inArea(area, loaded.maskSize, condition.photo, x, y))).length;
   return { hits, n: paths.length };
 }
 
-/** The measured gaze paths of prompt 077, numbered as drawn there: the database's fixation number minus one. */
-const measuredPaths = (scanpaths: Scanpaths | null): Path[] | null =>
-  scanpaths && scanpaths.participants.map((p) => p.fixations.map(([fix, x, y]) => ({ n: fix - 1, x, y })));
+/**
+ * The measured gaze paths of prompt 077 within their first 3 s (the owner's decision of 2026-10-25: DeepGaze3.5-VL
+ * predicts 3 s), numbered as drawn there: the database's fixation number minus one.
+ */
+function measuredPaths(condition: Condition): Path[] | null {
+  const { scanpaths, window } = condition;
+  if (!scanpaths || !window) return null;
+  const last = new Map(window.lastFix);
+  return scanpaths.participants.map((p) => p.fixations.filter(([fix]) => fix <= (last.get(p.index) ?? 1)).map(([fix, x, y]) => ({ n: fix - 1, x, y })));
+}
 
 /** The binomial standard error of a share. */
 const standardError = ({ hits, n }: { hits: number; n: number }) => Math.sqrt(((hits / n) * (1 - hits / n)) / n);
@@ -657,7 +674,7 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       const { phrase } = text.area;
       const a = reach(loaded, loaded.a, loaded.a.predicted);
       const b = reach(loaded, loaded.b, loaded.b.predicted);
-      const measured = reach(loaded, loaded.a, measuredPaths(loaded.a.scanpaths));
+      const measured = reach(loaded, loaded.a, measuredPaths(loaded.a), Infinity);
       const count = (r: { hits: number; n: number }, unit: string) => `${r.hits} of ${r.n} ${unit} · ${share1(r.hits / r.n)}`;
       const sums = el('dl', 'comparison-sums');
       const children: HTMLElement[] = [el('p', 'comparison-result-head', `${SCANPATH_MODEL} · predicted scanpaths with a fixation on ${phrase} among their first ${K} fixations after the start`)];
@@ -685,14 +702,14 @@ export function mountExample(section: HTMLElement, manifest: ComparisonManifest,
       } else children.push(el('p', 'muted', `Not yet computed: the ${SCANPATH_MODEL} scanpaths are computed on a laptop graphics card (tools/scanpaths/).`));
       if (measured) {
         const check = el('dl', 'comparison-sums');
-        check.append(el('dt', '', 'A, measured'), el('dd', '', count(measured, 'people')));
+        check.append(el('dt', '', 'A, measured, first 3 s'), el('dd', '', count(measured, 'people')));
         children.push(check);
       }
       children.push(
         el(
           'p',
           'muted',
-          `How: ${SCANPATH_MODEL} writes a scanpath as eight fixations in order, for about three seconds of free viewing; ${a?.n ?? 100} were drawn per image. Its first fixation is the starting point, which in the model's training data lies at the centre of the image, so it is left out, as the fixation on the central cross is for measured paths. A scanpath counts when any of the next ${K} fixations (1–${K} in the drawing) lands in the outlined area. The model predicts the order of fixations, not their timing. The measured share applies the same rule to the measured gaze path of each of the people who viewed the original photograph (Wilming et al. 2017; fixations 1–${K} as numbered in "Measured gaze path on A"; where the dataset lacks one, that path has fewer in the window); there is none for B.`,
+          `How: ${SCANPATH_MODEL} writes a scanpath as eight fixations in order, for about three seconds of free viewing; ${a?.n ?? 100} were drawn per image. Its first fixation is the starting point, which in the model's training data lies at the centre of the image, so it is left out, as the fixation on the central cross is for measured paths. A scanpath counts when any of the next ${K} fixations (1–${K} in the drawing) lands in the outlined area. The model predicts the order of fixations, not their timing. The measured share counts the people who viewed the original photograph (Wilming et al. 2017) with a fixation in the area within the first three seconds of their measured gaze path, the span the model predicts: every fixation after the central cross that starts within 3 s, a median of nine per person rather than the model's seven; there is none for B.`,
         ),
       );
       scanResult.replaceChildren(...children);

@@ -18,12 +18,21 @@ Predicted fixations and scanpaths for the six images of the Example section
   the page shows: per example the share of scanpaths with a fixation in the
   manipulated area among their first seven fixations after the start (the
   model's fixations 2–8), for A and B, B − A with its binomial standard
-  error, and the same share for the measured gaze paths of A.
+  error, and the share of the measured gaze paths of A with a fixation in
+  the area within their first 3 s.
+- **Window** (`window.py`): for each participant of each A image, the last
+  fixation number (after the one on the central cross) that starts within
+  3,000 ms of image onset, from the source's start times, to
+  `public/precomputed/measured/<id>.window3s.json`. On the owner's decision
+  of 2026-10-25, DeepGaze3.5-VL keeps its published 3-second prompt and a
+  comparison with the 6-second measured paths uses only their first 3 s. No
+  timing is published. The window holds a median of nine fixations per
+  participant (5–14), against the model's seven after its start. Needs
+  `tools/measured-gaze/.cache/etdb_v1.0.hdf5` (`tools/measured-gaze/fetch.py`).
 
 The measured gaze paths are the per-participant files of prompt 077
-(`tools/measured-gaze/build_scanpaths.py`); for them the window is the
-database's fixation numbers 2–8, number 1 being the fixation on the central
-cross. On the page, a predicted path is drawn without its starting fixation
+(`tools/measured-gaze/build_scanpaths.py`), limited to the window above;
+number 1 in the database is the fixation on the central cross. On the page, a predicted path is drawn without its starting fixation
 and numbered 1–7, as the measured paths are numbered from the first
 fixation after the cross.
 
@@ -65,6 +74,7 @@ accordingly.
 ```bash
 cd tools/scanpaths
 uv run fixations.py                        # MSDB fixations, CPU
+uv run window.py                           # 3-second window of the measured paths, CPU
 uv run --group gpu scanpaths.py            # DeepGaze3.5-VL, GPU
 uv run --group gpu scanpaths.py --check    # regenerate the first batch per image and compare
 uv run summary.py                          # the numbers the page shows
