@@ -67,9 +67,19 @@ def upscale_rgba(rgba: np.ndarray, size: tuple[int, int]) -> np.ndarray:
     return out  # premultiplied, 0–255
 
 
+# The scales of src/render/heatmap.ts since eek-a-look prompt 079.
+HEAT_TOP, HEAT_MIN_TOP, HEAT_CURVE = 0.999, 4.0, 0.6
+DIFFERENCE_SCALE, DIFFERENCE_CURVE = 12.0, 0.6
+
+
+def heat_range(maps: list[np.ndarray]) -> tuple[float, float]:
+    """sharedRange(): the lowest value to the 99.9th percentile of all, at least 4x the image average."""
+    return min(m.min() for m in maps), max(percentile(np.concatenate([m.ravel() for m in maps]), HEAT_TOP), HEAT_MIN_TOP / maps[0].size)
+
+
 def heat_rgba(m: np.ndarray, lut: np.ndarray, bottom: float, top: float) -> np.ndarray:
     span = (top - bottom) or 1
-    t = np.clip((m - bottom) / span, 0, 1)
+    t = np.clip((m - bottom) / span, 0, 1) ** HEAT_CURVE
     k = np.round((0.35 + 0.65 * t) * 255).astype(int)
     rgba = np.zeros(m.shape + (4,))
     rgba[..., :3] = lut[k]
@@ -77,14 +87,15 @@ def heat_rgba(m: np.ndarray, lut: np.ndarray, bottom: float, top: float) -> np.n
     return rgba
 
 
-def diff_rgba(field: np.ndarray, lut: np.ndarray, top: float | None = None) -> tuple[np.ndarray, float]:
-    top = top or percentile(np.abs(field), 0.99) or 1
+def diff_rgba(field: np.ndarray, lut: np.ndarray) -> tuple[np.ndarray, float]:
+    """drawDifference(): the fixed scale +-12x the image average, colour and alpha through |t|^0.6."""
+    top = DIFFERENCE_SCALE / field.size
     t = np.clip(field / top, -1, 1)
-    c = np.sign(t) * (0.3 + 0.7 * np.abs(t))
-    k = np.round((c + 1) / 2 * 255).astype(int)
+    m = np.abs(t) ** DIFFERENCE_CURVE
+    k = np.round((np.sign(t) * m + 1) / 2 * 255).astype(int)
     rgba = np.zeros(field.shape + (4,))
     rgba[..., :3] = lut[k]
-    rgba[..., 3] = np.round(235 * np.abs(t) ** 0.75)
+    rgba[..., 3] = np.round(235 * m)
     return rgba, top
 
 
@@ -194,8 +205,7 @@ def main() -> None:
         grey_ref = greyed(repo / "public/examples" / f"{ref_id}.jpg", size)
 
     # sharedRange as on the site, but over every heat map on the slide, so one colour is one density everywhere.
-    maps = [meas, mref, ma, mb]
-    rng = (min(m.min() for m in maps), percentile(np.concatenate([m.ravel() for m in maps]), 0.99))
+    rng = heat_range([meas, ma, mb] + ([mref] if ref_id != a_id else []))
 
     save(heat_panel(grey_a, ma, rng), out / f"{args.example}-msdb-a.png")
     save(heat_panel(grey_b, mb, rng), out / f"{args.example}-msdb-b.png")
