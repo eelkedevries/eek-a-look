@@ -99,11 +99,17 @@ def diff_rgba(field: np.ndarray, lut: np.ndarray) -> tuple[np.ndarray, float]:
     return rgba, top
 
 
-def greyed(photo: Path, size: tuple[int, int], dim: float = 0.75) -> np.ndarray:
+def greyed(photo: Path, size: tuple[int, int], dim: float = 0.75, keep: np.ndarray | None = None) -> np.ndarray:
+    """drawGreyed(): Rec. 709 grey, dimmed; inside the mask `keep` the photo keeps its colour, dimmed alike (prompt 080)."""
     rgb = np.asarray(Image.open(photo).convert("RGB")).astype(float)
-    g = dim * (0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2])
-    g = np.asarray(Image.fromarray(g.astype(np.float32), "F").resize(size, Image.LANCZOS))
-    return np.repeat(g[..., None], 3, -1)
+    g = np.repeat((dim * (0.2126 * rgb[..., 0] + 0.7152 * rgb[..., 1] + 0.0722 * rgb[..., 2]))[..., None], 3, -1)
+    if keep is not None:
+        h, w = rgb.shape[:2]
+        my = np.minimum(keep.shape[0] - 1, np.arange(h) * keep.shape[0] // h)
+        mx = np.minimum(keep.shape[1] - 1, np.arange(w) * keep.shape[1] // w)
+        inside = keep[my][:, mx].astype(bool)
+        g[inside] = dim * rgb[inside]
+    return np.stack([np.asarray(Image.fromarray(g[..., c].astype(np.float32), "F").resize(size, Image.LANCZOS)) for c in range(3)], -1)
 
 
 def over(base: np.ndarray, pre: np.ndarray) -> np.ndarray:
@@ -208,7 +214,10 @@ def main() -> None:
     rng = heat_range([meas, ma, mb] + ([mref] if ref_id != a_id else []))
 
     save(heat_panel(grey_a, ma, rng), out / f"{args.example}-msdb-a.png")
-    save(heat_panel(grey_b, mb, rng), out / f"{args.example}-msdb-b.png")
+    # A recolouring keeps the lightness, so its area keeps its colour on B's heat map (eek-a-look prompt 080).
+    b_image = next((i for i in comp["images"] if i["id"] == b_id), {})
+    grey_b_heat = greyed(photo_b, size, keep=mask) if b_image.get("recolour") else grey_b
+    save(heat_panel(grey_b_heat, mb, rng), out / f"{args.example}-msdb-b.png")
     d_ba, top_ba = diff_panel(grey_b, mb - ma)
     save(d_ba, out / f"{args.example}-msdb-diff.png")
     save(heat_panel(grey_ref, meas, rng, points=pts["points"]), out / f"{args.example}-measured.png")
