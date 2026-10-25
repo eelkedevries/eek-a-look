@@ -5,7 +5,7 @@
   "prompt": "071b_example_larger_edits.md",
   "edits": [
     {
-      "file": "zurich-33-hedge.webp",
+      "file": "zurich-33-low-hedge.webp",
       "source": "public/examples/zurich-33.jpg",
       "date": "2026-10-25",
       "promptFile": "073_example_greenery_msdb.md",

@@ -62,6 +62,9 @@ zipball from the cloud session; a `git clone` of `facebookresearch/dinov2`
 at commit `6a62615` into `~/.cache/torch/hub/facebookresearch_dinov2_6a62615`
 served instead. Recomputing zurich-33 that way reproduced its committed
 map (r = 1.0).
+The new image has a new id, `zurich-33-low-hedge`: the host's proxy cache
+keeps images for 30 days, and under the old file name it kept serving the
+071b hedge next to the new numbers.
 
 Both Python tools read `comparisons.json` as well as `examples.json`.
 

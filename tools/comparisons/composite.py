@@ -45,7 +45,7 @@ FEATHER = 3.0
 # Output id: original, edit file and search box (x0, y0, x1, y1) in pixels of the 1280 × 960 original.
 # Images listed in one group share one mask.
 GROUPS = [
-    {"zurich-33-hedge": ("zurich-33", "zurich-33-hedge.webp", (0, 560, 1280, 960))},
+    {"zurich-33-low-hedge": ("zurich-33", "zurich-33-low-hedge.webp", (0, 560, 1280, 960))},
     {
         "zurich-53-opaque-frontage": ("zurich-53", "zurich-53-opaque-frontage.webp", (180, 330, 1280, 760)),
         "zurich-53-transparent-frontage": ("zurich-53", "zurich-53-transparent-frontage.webp", (180, 330, 1280, 760)),

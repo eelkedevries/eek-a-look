@@ -17,13 +17,13 @@
       "changes": "Recoloured by rule with tools/comparisons/recolour.py (prompt 071): the rusticated stone block around the entrance, from the balcony slab to the pavement, in blue-teal, keeping the stone's lightness; the door, steps, sign and plants unchanged; outside the block only JPEG re-encoding noise (mean 0.5 of 255 levels). Saved as JPEG"
     },
     {
-      "id": "zurich-33-hedge",
+      "id": "zurich-33-low-hedge",
       "editOf": "zurich-33",
       "condition": "Hedge along the base",
       "area": "Zürich",
       "city": "Zürich",
       "title": "Residential tower blocks with a low hedge along the base",
-      "file": "zurich-33-hedge.jpg",
+      "file": "zurich-33-low-hedge.jpg",
       "width": 1280,
       "height": 960,
       "author": "Edited from Wilming et al. (2017), Osnabrück–Hamburg eye-tracking database",
@@ -67,7 +67,7 @@
   ],
   "examples": [
     { "id": "entrance", "a": "zurich-42", "b": "zurich-42-entrance-block" },
-    { "id": "greenery", "a": "zurich-33", "b": "zurich-33-hedge" },
+    { "id": "greenery", "a": "zurich-33", "b": "zurich-33-low-hedge" },
     { "id": "glazing", "a": "zurich-53-opaque-frontage", "b": "zurich-53-transparent-frontage", "reference": "zurich-53" }
   ]
 }
